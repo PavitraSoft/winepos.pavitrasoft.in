@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "L1nt8jbo+YpQAoKSHvWC+Z5My7Yi5vYEbNjoRh63OvAYWvTehhuRO7hvFxvxu3omaGkthSsI2ny527FpVow9cQ==",
+  "dgSpecHash": "d8Ajdz79OjnEHybVO1DqCPqI8jJq8r3USLAq8FfXx8YFmGj2Akzx1i+sTDXTIMvPRYt/rjdcp0cUj6xoyUW1RA==",
   "success": true,
-  "projectFilePath": "D:\\Study\\Dotnet\\WinePOS\\WinePOSFinal\\WinePOSFinal.csproj",
+  "projectFilePath": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\WinePOSFinal.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Parth Sabhadiya\\.nuget\\packages\\runtime.native.system.data.sqlclient.sni\\4.4.0\\runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
     "C:\\Users\\Parth Sabhadiya\\.nuget\\packages\\runtime.win-arm64.runtime.native.system.data.sqlclient.sni\\4.4.0\\runtime.win-arm64.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
