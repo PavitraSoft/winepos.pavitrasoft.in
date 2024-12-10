@@ -1,0 +1,153 @@
+﻿<Window x:Class="WinePOS.InventoryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WinePOS"
+        mc:Ignorable="d"
+        Title="InventoryWindow" Height="450" Width="800">
+    <Grid RenderTransformOrigin="0.5,0.5">
+        <Grid.RenderTransform>
+            <TransformGroup>
+                <ScaleTransform/>
+                <SkewTransform/>
+                <RotateTransform Angle="-0.71"/>
+                <TranslateTransform/>
+            </TransformGroup>
+        </Grid.RenderTransform>
+        <!-- Main Layout -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header Section -->
+        <StackPanel Orientation="Horizontal" Background="#F0F0F0" >
+            <TextBlock Text="Item: COKE 2 L T" FontSize="20" FontWeight="Bold" Margin="5"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,0">
+                <Button Content="Print Label" Background="LightGray" Margin="5" Padding="5"/>
+                <Button Content="Keyboard" Background="LightGray" Margin="5" Padding="5"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Item Details -->
+        <Grid Grid.Row="1" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Top Section: Item Info -->
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Category and Description -->
+                <StackPanel Grid.Column="0" Margin="5">
+                    <TextBlock Text="Category" FontWeight="Bold" Margin="5"/>
+                    <ComboBox Width="150" Margin="5">
+                        <ComboBoxItem Content="SODA" IsSelected="True"/>
+                        <ComboBoxItem Content="WATER"/>
+                        <ComboBoxItem Content="JUICE"/>
+                    </ComboBox>
+                    <TextBlock Text="UPC" FontWeight="Bold" Margin="5"/>
+                    <TextBox Text="4900005010" Margin="5"/>
+                    <TextBlock Text="Description" FontWeight="Bold" Margin="5"/>
+                    <TextBox Text="COKE 2 L T" Margin="5"/>
+                    <TextBlock Text="Additional Description" FontWeight="Bold" Margin="5"/>
+                    <TextBox Margin="5"/>
+                </StackPanel>
+
+                <!-- Pricing Section -->
+                <StackPanel Grid.Column="1" Margin="5">
+                    <TextBlock Text="Item Cost" FontWeight="Bold" Margin="5"/>
+                    <TextBox Text="$2.4300" Margin="5"/>
+                    <TextBlock Text="Price You Charge" FontWeight="Bold" Margin="5"/>
+                    <TextBox Text="$4.2500" Margin="5"/>
+                    <TextBlock Text="Price With Sales Tax" FontWeight="Bold" Margin="5"/>
+                    <TextBox Text="$4.25" Margin="5"/>
+                    <TextBlock Text="# In Stock" FontWeight="Bold" Margin="5"/>
+                    <TextBox Text="-165" Margin="5"/>
+                </StackPanel>
+
+                <!-- Sales Tax Section -->
+                <StackPanel Grid.Column="2" Margin="5">
+                    <TextBlock Text="Sales Tax" FontWeight="Bold" Margin="5"/>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <CheckBox Content="Sales Tax 1" Margin="5"/>
+                        <CheckBox Content="Sales Tax 2" Margin="5"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <CheckBox Content="Sales Tax 3" Margin="5"/>
+                        <CheckBox Content="Sales Tax 4" Margin="5"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <CheckBox Content="Sales Tax 5" Margin="5"/>
+                        <CheckBox Content="Sales Tax 6" Margin="5"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+
+            <!-- Tabs Section -->
+            <TabControl Grid.Row="1" Margin="5">
+                <TabItem Header="Alternative SKU"/>
+                <TabItem Header="Special Pricing"/>
+                <TabItem Header="Vendor Info">
+                    <Grid Margin="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Vendor Info Inputs -->
+                        <StackPanel Orientation="Horizontal" Margin="5">
+                            <TextBlock Text="Recorder Quality" VerticalAlignment="Center" Margin="5"/>
+                            <TextBox Width="50" Margin="5"/>
+                            <TextBlock Text="Recorder Level" VerticalAlignment="Center" Margin="5"/>
+                            <TextBox Width="50" Margin="5"/>
+                            <TextBlock Text="Recorder Cost" VerticalAlignment="Center" Margin="5"/>
+                            <TextBox Width="75" Margin="5"/>
+                            <TextBlock Text="Vendor Part #" VerticalAlignment="Center" Margin="5"/>
+                            <TextBox Width="100" Margin="5" Text="123456"/>
+                        </StackPanel>
+
+                        <!-- Vendor List -->
+                        <DataGrid Grid.Row="1" Margin="5" AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Item Cost" Width="Auto"/>
+                                <DataGridCheckBoxColumn Header="Preferred"/>
+                                <DataGridTextColumn Header="Part#" Width="Auto"/>
+                                <DataGridTextColumn Header="Case Cost" Width="Auto"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <!-- Vendor Info Buttons -->
+                        <StackPanel Orientation="Horizontal" Margin="5">
+                            <Button Content="Add Vendor Info" Background="LightGreen" Margin="5"/>
+                            <Button Content="Remove Vendor Info" Background="LightCoral" Margin="5"/>
+                        </StackPanel>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Sales History"/>
+                <TabItem Header="Recipe"/>
+                <TabItem Header="Printers"/>
+            </TabControl>
+        </Grid>
+
+        <!-- Footer Section -->
+        <UniformGrid Grid.Row="2" Columns="8" Margin="5">
+            <Button Content="Previous" Background="LightBlue" Margin="5"/>
+            <Button Content="Search Inventory" Background="LightGray" Margin="5"/>
+            <Button Content="Next" Background="LightBlue" Margin="5"/>
+            <Button Content="Add Inventory" Background="Green" Foreground="White" Margin="5"/>
+            <Button Content="Save Button" Background="Green" Foreground="White" Margin="5"/>
+            <Button Content="Copy Item" Background="LightGray" Margin="5"/>
+            <Button Content="Delete" Background="Red" Foreground="White" Margin="5"/>
+            <Button Content="Exit" Background="Red" Foreground="White" Margin="5"/>
+        </UniformGrid>
+    </Grid>
+</Window>
