@@ -36,9 +36,15 @@ namespace WinePOSFinal.ServicesLayer
         {
             return objDAL.FetchItemDataByID(intItemID);
         }
+
         public bool DeleteItemDataByID(int intItemID)
         {
             return objDAL.DeleteItemDataByID(intItemID);
+        }
+
+        public bool ValidateLogin(string strUserName, string strPassWord)
+        {
+            return objDAL.ValidateLogin(strUserName, strPassWord);
         }
     }
 }

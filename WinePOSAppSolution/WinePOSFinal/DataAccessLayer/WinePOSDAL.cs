@@ -172,7 +172,6 @@ namespace WinePOSFinal.DataAccessLayer
         public bool DeleteItemDataByID(int intItemID)
         {
             bool bIsSuccess = false;
-
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
@@ -185,10 +184,12 @@ namespace WinePOSFinal.DataAccessLayer
                     using (SqlCommand command = new SqlCommand(query, conn))
                     {
                         int rowsAffected = command.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            bIsSuccess = true;
+                        }
                     }
                 }
-                bIsSuccess = true;
-
             }
             catch (Exception ex)
             {
@@ -197,8 +198,43 @@ namespace WinePOSFinal.DataAccessLayer
             }
 
             return bIsSuccess;
+        }
 
 
+        public bool ValidateLogin(string strUserName, string strPassWord)
+        {
+            bool bIsValid = false;
+            DataTable dt = new DataTable();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    // Sample query to retrieve data
+                    string query = "SELECT TOP 1 1 FROM Users WHERE UserName = '" + strUserName.Replace(",", "''") + "' AND Password = '" + strPassWord.Replace(",", "''") + "'"; // Replace with your actual query
+
+                    using (SqlCommand command = new SqlCommand(query, conn))
+                    {
+                        SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
+                        dataAdapter.Fill(dt); // Fill the DataTable with data from the database
+
+                        if (dt != null && dt.Rows.Count > 0)
+                        {
+                            bIsValid = true;
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during the execution
+                MessageBox.Show($"Error: {ex.Message}");
+            }
+
+            return bIsValid;
         }
     }
 }
