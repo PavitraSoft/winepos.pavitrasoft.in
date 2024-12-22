@@ -9,6 +9,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100"/>
+            <RowDefinition Height="100"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
@@ -18,65 +19,103 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"></RowDefinition>
+                <RowDefinition Height="8*"></RowDefinition>
+            </Grid.RowDefinitions>
 
-            <TextBox Grid.Column="0" Height="40" VerticalAlignment="Top" Margin="5" FontSize="16" />
-            <TextBox Grid.Column="1" Height="40" VerticalAlignment="Top" Margin="5" FontSize="16" />
-            <Button Grid.Column="2" Width="100" Height="40" Margin="5" Content="Search"/>
+            <TextBlock Text="UPC:" Grid.Column="0" Grid.Row="0" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <TextBox Grid.Column="0" Grid.Row="1" Height="40" VerticalAlignment="Top" Margin="5" FontSize="16" Name="txtUPC" TextChanged="txtUPC_TextChanged" />
+            <TextBlock Text="Name:" Grid.Column="1" Grid.Row="0" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <TextBox Grid.Column="1" Grid.Row="1" Height="40" VerticalAlignment="Top" Margin="5" FontSize="16" IsEnabled="False" Name="txtName" />
+            <TextBlock Text="Quantity:" Grid.Column="2" Grid.Row="0" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <TextBox Grid.Column="2" Grid.Row="1" Height="40" VerticalAlignment="Top" Margin="5" FontSize="16" Name="txtQuantity" TextChanged="txtQuantity_TextChanged"/>
+            <Button Grid.Column="3" Grid.Row="1" Width="100" Height="40" Margin="5,-25,5,5" Content="Search" Name="btnSearch" Click="btnSearch_Click" />
+            <Button Grid.Column="4" Grid.Row="1" Width="100" Height="40" Margin="5,-25,5,5" Content="Add" Name="btnAdd" Click="btnAdd_Click"/>
         </Grid>
 
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <!-- Label -->
+                <ColumnDefinition Width="2*" />
+                <!-- Dropdown -->
+                <ColumnDefinition Width="8*" />
+                <!-- Button -->
+            </Grid.ColumnDefinitions>
+
+            <!-- Label -->
+            <TextBlock Text="Quick ADD:" Grid.Column="0" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" />
+
+            <!-- Dropdown -->
+            <ComboBox Name="cbQuickADD" Grid.Column="1" Width="150" Height="30" HorizontalAlignment="Left" Margin="5" />
+
+            <!-- Button -->
+            <Button Grid.Column="2" Width="100" Height="40" Margin="5" Content="Add" Name="btnQuickAdd" Click="btnQuickAdd_Click" HorizontalAlignment="Left"/>
+        </Grid>
+
+
+
         <!-- Middle Section: Item List and Price Info -->
-        <Grid Grid.Row="1" Margin="5">
+        <Grid Grid.Row="2" Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
 
             <!-- Item List -->
-            <DataGrid Grid.Column="0" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserAddRows="False">
+            <DataGrid Grid.Column="0" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserAddRows="False" Name="dgBilling" SelectionMode="Single" SelectionUnit="FullRow">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="#" Width="50"/>
-                    <DataGridTextColumn Header="Item Info" Width="*"/>
-                    <DataGridTextColumn Header="Price" Width="100"/>
+                    <DataGridTextColumn Header="UPC" Width="*" Binding="{Binding UPC}"/>
+                    <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}"/>
+                    <DataGridTextColumn Header="Price" Width="*" Binding="{Binding Price}"/>
+                    <DataGridTextColumn Header="Quantity" Width="*" Binding="{Binding Quantity}"/>
+                    <DataGridTextColumn Header="Tax" Width="*" Binding="{Binding Tax}"/>
+                    <DataGridTextColumn Header="Total Price" Width="*" Binding="{Binding TotalPrice}"/>
                 </DataGrid.Columns>
             </DataGrid>
 
             <!-- Right Panel: Payment and Options -->
             <Grid Grid.Column="1" Margin="10">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="3*"/>
-                    <RowDefinition Height="5*"/>
+                    <RowDefinition Height="8*"/>
                     <RowDefinition Height="2*"/>
                 </Grid.RowDefinitions>
 
                 <!-- Totals -->
                 <StackPanel Grid.Row="0" Background="LightGray">
                     <TextBlock Text="Sub Total" FontSize="16"/>
-                    <TextBlock Text="$0.00" FontSize="20" FontWeight="Bold"/>
+                    <TextBlock FontSize="20" FontWeight="Bold" Name="txtTotal" Text="{Binding SubTotal, StringFormat=C}"/>
                     <TextBlock Text="Tax" FontSize="16"/>
-                    <TextBlock Text="$0.00" FontSize="20" FontWeight="Bold"/>
+                    <TextBlock FontSize="20" FontWeight="Bold" Name="txtTax" Text="{Binding Tax, StringFormat=C}"/>
                     <TextBlock Text="Grand Total" FontSize="16"/>
-                    <TextBlock Text="$0.00" FontSize="20" FontWeight="Bold"/>
+                    <TextBlock FontSize="20" FontWeight="Bold" Name="txtGrandTotal" Text="{Binding GrandTotal, StringFormat=C}" />
                 </StackPanel>
 
                 <!-- Payment Buttons -->
-                <UniformGrid Grid.Row="1" Rows="4" Columns="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
-                    <Button Content="PAY" Background="Green" Foreground="White"/>
-                    <Button Content="VOID INVOICE" Background="Red" Foreground="White"/>
-                    <Button Content="FETCH ON HOLD" Background="Orange"/>
-                    <Button Content="CASH"/>
-                    <Button Content="CHECK"/>
-                    <Button Content="CREDIT/DEBIT"/>
-                    <Button Content="ACCOUNT"/>
+                <UniformGrid Grid.Row="1" Rows="4" Columns="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" >
+                    <Button Content="PAY TO PALM PAY" Background="Green" Foreground="White" Name="btnPalmPay" Click="btnPalmPay_Click"/>
+                    <Button Content="CASH" Name="btnCash" Click="btnCash_Click"/>
+                    <Button Content="VOID INVOICE" Background="Red" Foreground="White" Name="btnVoidInvoice" Click="btnVoidInvoice_Click"/>
+                    <Button Content="PRINT INVOICE" Background="Yellow" Name="btnPrintInvoice" Click="btnPrintInvoice_Click"/>
+                    <Button Content="REMOVE ITEM" Background="Red" Name="btnRemoveItem" Click="btnRemoveItem_Click"/>
+                    <!--<Button Content="FETCH ON HOLD" Background="Orange"/>-->
+                    <!--<Button Content="PAY THROUGH PALM PAY"/>-->
+                    <Button Content="CHECK" Name="btnCheck"  Click="btnCheck_Click"/>
+                    <Button Content="CREDIT/DEBIT" Name="btnCredit" Click="btnCredit_Click"/>
+                    <!--<Button Content="ACCOUNT"/>
                     <Button Content="CLOSE SHIFT"/>
-                    <Button Content="INVENTORY ADJUST/RECEIVE"/>
+                    <Button Content="INVENTORY ADJUST/RECEIVE"/>-->
                 </UniformGrid>
             </Grid>
         </Grid>
 
         <!-- Bottom Section: Footer with Functional Keys -->
-        <UniformGrid Grid.Row="2" Rows="1" Columns="12" Background="#D3D3D3">
+        <!--<UniformGrid Grid.Row="2" Rows="1" Columns="12" Background="#D3D3D3">
             <Button Content="F1 - Help"/>
             <Button Content="F2 - Inventory"/>
             <Button Content="F3 - Check In Out"/>
@@ -89,6 +128,6 @@
             <Button Content="F10 - Cashier Fees"/>
             <Button Content="F11 - Invoice Info"/>
             <Button Content="F12 - Item Options"/>
-        </UniformGrid>
+        </UniformGrid>-->
     </Grid>
 </UserControl>

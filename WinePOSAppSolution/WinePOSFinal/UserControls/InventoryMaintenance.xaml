@@ -10,8 +10,8 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"></RowDefinition>
-            <RowDefinition Height="3*"></RowDefinition>
-            <RowDefinition Height="3*"></RowDefinition>
+            <RowDefinition Height="4*"></RowDefinition>
+            <RowDefinition Height="2*"></RowDefinition>
             <RowDefinition Height="3*"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -48,6 +48,8 @@
                             <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
                         </Grid.RowDefinitions>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="0" Grid.Column="0" Margin="0,5">
                             <TextBlock Text="Category: " Margin="0,5" FontWeight="Bold"/>
@@ -74,6 +76,18 @@
                         <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="0,5">
                             <TextBox Name="txtADescription" Width="150" Height="25"/>
                         </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="4" Grid.Column="0" Margin="0,5">
+                            <TextBlock Text="Vendor Part No.: " Margin="0,5" FontWeight="Bold"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="0,5">
+                            <TextBox Name="txtVendorPartNo" Width="150" Height="25" Text="COKE 2 L T"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="5" Grid.Column="0" Margin="0,5">
+                            <TextBlock Text="Vendor Name: " Margin="0,5" FontWeight="Bold"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="0,5">
+                            <TextBox Name="txtVendorName" Width="150" Height="25"/>
+                        </StackPanel>
                     </Grid>
                 </StackPanel>
 
@@ -84,6 +98,8 @@
                             <ColumnDefinition Width="6*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
@@ -99,10 +115,10 @@
                             <TextBlock Text="Price You Charge($): " Margin="0,5" FontWeight="Bold"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Left" Grid.Column="1" Margin="0,5">
-                            <TextBox Name="txtChargePrice" Width="150" Height="25" Text="4900005010"/>
+                            <TextBox Name="txtChargePrice" Width="150" Height="25" TextChanged="txtChargePrice_TextChanged"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="2" Grid.Column="0" Margin="0,5">
-                            <TextBlock Text="Price With Sales Tax($): " Margin="0,5" FontWeight="Bold"/>
+                            <TextBlock Text="Price With Sales Tax($): " Margin="0,5" FontWeight="Bold" IsEnabled="False"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="0,5">
                             <TextBox Name="txtPriceWithTax" Width="150" Height="25" Text="COKE 2 L T"/>
@@ -113,22 +129,35 @@
                         <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="0,5">
                             <TextBox Name="txtStock" Width="150" Height="25"/>
                         </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="4" Grid.Column="0" Margin="0,5">
+                            <TextBlock Text="Case Cost: " Margin="0,5" FontWeight="Bold"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="0,5">
+                            <TextBox Name="txtCaseCost" Width="150" Height="25"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="5" Grid.Column="0" Margin="0,5">
+                            <TextBlock Text="# In Case: " Margin="0,5" FontWeight="Bold"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="0,5">
+                            <TextBox Name="txtCase" Width="150" Height="25"/>
+                        </StackPanel>
                     </Grid>
                 </StackPanel>
 
                 <StackPanel Grid.Row="0" Grid.Column="2">
-                    <CheckBox Name="txtchkST" Content="Sales Tax"/>
-                    <CheckBox Name="txtchkST2" Content="Sales Tax 2"/>
-                    <CheckBox Name="txtchkST3" Content="Sales Tax 3"/>
-                    <CheckBox Name="txtchkST4" Content="Sales Tax 4"/>
-                    <CheckBox Name="txtchkST5" Content="Sales Tax 5"/>
-                    <CheckBox Name="txtchkST6" Content="Sales Tax 6"/>
-                    <CheckBox Name="txtchkBT" Content="Bar Tax"/>
+                    <CheckBox Name="txtchkST" Content="Sales Tax" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
+                    <CheckBox Name="txtchkST2" Content="Sales Tax 2" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
+                    <CheckBox Name="txtchkST3" Content="Sales Tax 3" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
+                    <CheckBox Name="txtchkST4" Content="Sales Tax 4" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
+                    <CheckBox Name="txtchkST5" Content="Sales Tax 5" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
+                    <CheckBox Name="txtchkST6" Content="Sales Tax 6" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
+                    <CheckBox Name="txtchkBT" Content="Bar Tax" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
+                    <CheckBox Name="txtQuickAdd" Content="QuickAdd"/>
                 </StackPanel>
             </Grid>
         </StackPanel>
 
-        <StackPanel Grid.Row="2" Grid.Column="0">
+        <!--<StackPanel Grid.Row="2" Grid.Column="0">
             <Grid Margin="10">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -140,7 +169,7 @@
                     <ColumnDefinition Width="2*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Top Section -->
+                --><!-- Top Section --><!--
                 <Grid Grid.Row="0" Margin="5" Grid.ColumnSpan="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="12*"/>
@@ -181,10 +210,10 @@
                     <StackPanel Grid.Column="7" Orientation="Vertical" Margin="5">
                         <TextBox Width="150" Height="25" Text="0" HorizontalAlignment="Left"/>
                     </StackPanel>
-                </Grid>
+                </Grid>-->
 
                 <!-- DataGrid Section -->
-                <DataGrid Grid.Row="1" Grid.Column="0" Margin="5" AutoGenerateColumns="False" HeadersVisibility="Column" IsReadOnly="True">
+                <!--<DataGrid Grid.Row="1" Grid.Column="0" Margin="5" AutoGenerateColumns="False" HeadersVisibility="Column" IsReadOnly="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Item Cost" Width="100" Binding="{Binding ItemCost}" />
                         <DataGridTextColumn Header="Preferred" Width="100" Binding="{Binding Preferred}" />
@@ -196,21 +225,21 @@
                             <Setter Property="Height" Value="30"/>
                         </Style>
                     </DataGrid.RowStyle>
-                </DataGrid>
+                </DataGrid>-->
 
                 <!-- Buttons -->
-                <Grid Grid.Row="1" Grid.Column="1" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <!--<Grid Grid.Row="1" Grid.Column="1" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Top">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Button Grid.Row="0" Content="Add Vendor Info" Background="LightGreen" Width="150" Height="30" Margin="5"/>
                     <Button Grid.Row="1" Content="Remove Vendor Info" Background="LightCoral" Width="150" Height="30" Margin="5"/>
-                </Grid>
+                </Grid>-->
 
                 <!-- Bottom Section -->
 
-                <Grid Grid.Row="2" Margin="5" Grid.ColumnSpan="2">
+                <!--<Grid Grid.Row="2" Margin="5" Grid.ColumnSpan="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="12*"/>
                         <ColumnDefinition Width="13*"/>
@@ -251,11 +280,11 @@
                         <TextBox Width="80" Height="25" Text="0"/>
                     </StackPanel>
                 </Grid>
-            </Grid>
+            </Grid>--><!--
 
 
 
-        </StackPanel>
+        </StackPanel>-->
 
         <StackPanel Grid.Row="3" Grid.Column="0">
             <Grid Margin="10">
@@ -266,21 +295,21 @@
                
 
                 <!-- Action Buttons (Left Section) -->
-                <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10">
+                <!--<StackPanel Grid.Row="0" Orientation="Vertical" Margin="10">
                     <TextBlock Text="Profit: 74.897%" FontWeight="Bold" Margin="0,0,0,10"/>
                     <TextBlock Text="Retail Discount: 0%" FontWeight="Bold" Margin="0,0,0,10"/>
                     <TextBlock Text="Gross Margin: 42.874%" FontWeight="Bold" Margin="0,0,0,10"/>
-                </StackPanel>
+                </StackPanel>-->
 
                 <!-- Action Buttons (Right Section) -->
                 <WrapPanel Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5">
-                    <Button Content="Add Inventory" Background="LightGreen" Width="120" Height="35" Margin="5"/>
+                    <!--<Button Content="Add Inventory" Background="LightGreen" Width="120" Height="35" Margin="5"/>-->
                     <Button Name="btnSave" Content="Save Button" Background="LightGreen" Width="120" Height="35" Margin="5" Click="btnSave_Click"/>
-                    <Button Content="Help" Width="100" Height="35" Margin="5"/>
-                    <Button Content="Copy Item" Background="LightGreen" Width="120" Height="35" Margin="5"/>
+                    <!--<Button Content="Help" Width="100" Height="35" Margin="5"/>
+                    <Button Content="Copy Item" Background="LightGreen" Width="120" Height="35" Margin="5"/>-->
                     <Button Content="Delete" Background="LightCoral" Width="100" Height="35" Margin="5"/>
                     <Button Name="btnClear" Content="Clear" Background="LightCoral" Width="100" Height="35" Margin="5" Click="btnClear_Click"/>
-                    <Button Content="Edit Stock" Background="LightGray" Width="120" Height="35" Margin="5"/>
+                    <!--<Button Content="Edit Stock" Background="LightGray" Width="120" Height="35" Margin="5"/>-->
                 </WrapPanel>
             </Grid>
         </StackPanel>

@@ -7,6 +7,7 @@ using System.Data;
 using WinePOSFinal.DataAccessLayer;
 using WinePOSFinal.Classes;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace WinePOSFinal.ServicesLayer
 {
@@ -42,9 +43,26 @@ namespace WinePOSFinal.ServicesLayer
             return objDAL.DeleteItemDataByID(intItemID);
         }
 
-        public bool ValidateLogin(string strUserName, string strPassWord)
+        public int ValidateLogin(string strUserName, string strPassWord)
         {
             return objDAL.ValidateLogin(strUserName, strPassWord);
+        }
+
+        public bool SaveInlineItemData(int ItemID, string columnName, string value)
+        {
+            return objDAL.SaveInlineItemData(ItemID, columnName, value);
+        }
+
+
+
+        public bool SaveInvoice(BillingItem objBillingItem, bool IsVoidInvoice)
+        {
+            return objDAL.SaveInvoice(objBillingItem, IsVoidInvoice);
+        }
+
+        public DataTable GetTaxData()
+        {
+            return objDAL.GetTaxData();
         }
     }
 }

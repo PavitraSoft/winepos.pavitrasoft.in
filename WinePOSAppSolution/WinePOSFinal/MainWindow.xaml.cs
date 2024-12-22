@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WinePOSFinal.Classes;
 
 namespace WinePOSFinal
 {
@@ -23,6 +24,17 @@ namespace WinePOSFinal
         public MainWindow()
         {
             InitializeComponent();
+
+            string currentRole = AccessRightsManager.GetUserRole();
+
+            Inventorymaintenance.Visibility = Visibility.Collapsed;
+            SalesHistory.Visibility = Visibility.Collapsed;
+
+            if (currentRole.ToUpper() == "ADMIN")
+            {
+                Inventorymaintenance.Visibility = Visibility.Visible;
+                SalesHistory.Visibility = Visibility.Visible;
+            }
         }
     }
 }

@@ -35,14 +35,53 @@
 
                 <StackPanel Grid.Row="0" Grid.Column="0">
                     <!-- DataGrid -->
-                    <DataGrid Name="InventoryDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" SelectionMode="Single" SelectionUnit="FullRow"  Background="LightGray" SelectionChanged="InventoryDataGrid_SelectionChanged">
+                    <DataGrid Name="InventoryDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="False" SelectionMode="Single" SelectionUnit="FullRow"  Background="LightGray" SelectionChanged="InventoryDataGrid_SelectionChanged" CellEditEnding="InventoryDataGrid_CellEditEnding" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Height="500" Width="800" >
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="UPC" Width="*" Binding="{Binding UPC}"/>
+                            <DataGridTextColumn Header="UPC" Width="*" Binding="{Binding UPC}">
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <EventSetter Event="PreviewTextInput" Handler="IntegerOnly_PreviewTextInput"/>
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
                             <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Description}"/>
-                            <DataGridTextColumn Header="Price" Width="*" Binding="{Binding Price}"/>
-                            <DataGridTextColumn Header="Stock" Width="*" Binding="{Binding Stock}"/>
+                            <DataGridTextColumn Header="Item Cost" Width="*" Binding="{Binding ItemCost}">
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <EventSetter Event="PreviewTextInput" Handler="DecimalOnly_PreviewTextInput"/>
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Price Cost" Width="*" Binding="{Binding ChargedCost}">
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <EventSetter Event="PreviewTextInput" Handler="DecimalOnly_PreviewTextInput"/>
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Sales Tax" Width="*" Binding="{Binding SalesTax}">
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <EventSetter Event="PreviewTextInput" Handler="DecimalOnly_PreviewTextInput"/>
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Stock" Width="*" Binding="{Binding Stock}">
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <EventSetter Event="PreviewTextInput" Handler="IntegerOnly_PreviewTextInput"/>
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
                             <DataGridTextColumn Header="Additional Description" Width="*" Binding="{Binding AdditionalDescription}"/>
-                            <DataGridTextColumn Header="Vendor Port Num." Width="*" Binding="{Binding VendorPortNum}"/>
+                            <DataGridTextColumn Header="Vendor Part Num." Width="*" Binding="{Binding VendorPartNum}">
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <EventSetter Event="PreviewTextInput" Handler="IntegerOnly_PreviewTextInput"/>
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Vendor Name." Width="*" Binding="{Binding VendorName}"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </StackPanel>
@@ -54,8 +93,14 @@
 
                     <!-- Buttons -->
                     <Button Name="btnEdit" Content="Edit Item" Background="White" Width="120" Height="40" VerticalAlignment="Top" Margin="5" Click="btnEdit_Click"/>
-                    <Button Name="btnAdd" Content="Add Item" Background="#66CC66" Width="120" Height="40" VerticalAlignment="Top" Margin="5" Click="btnAdd_Click"/>
-                    <Button Name="btnDelete" Content="Delete" Background="#FF6666" Width="120" Height="40" VerticalAlignment="Top" Margin="5" Click="btnDelete_Click"/>
+                    <Button Name="btnAdd" Content="Add Item" Background="Yellow" Width="120" Height="40" VerticalAlignment="Top" Margin="5" Click="btnAdd_Click"/>
+                    <Button Name="btnDelete" Content="Delete" Background="Red" Width="120" Height="40" VerticalAlignment="Top" Margin="5" Click="btnDelete_Click"/>
+
+                    <Button Name="btnExport" Content="Export" Background="Green" Width="120" Height="40" VerticalAlignment="Top" Margin="5" Click="btnExport_Click"/>
+
+                    <Button Name="btnImport" Content="Import" Background="Blue" Width="120" Height="40" VerticalAlignment="Top" Margin="5" Click="btnImport_Click"/>
+                    
+                    
                 </StackPanel>
             </Grid>
 

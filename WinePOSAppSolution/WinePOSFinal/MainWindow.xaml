@@ -8,10 +8,10 @@
         Title="MainWindow" Height="700" Width="1300">
     <Grid>
         <TabControl Margin="10" Name="MainTabControl">
-            <TabItem Header="Billing"  >
+            <TabItem Name="Billing" Header="Billing" IsSelected="True" >
                 <local:Billing></local:Billing>
             </TabItem>
-            <TabItem Header="Special Pricing">
+            <!--<TabItem Name="SpecialPricing" Header="Special Pricing">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="3*"/>
@@ -25,7 +25,7 @@
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Sale Pricing Section -->
+                    --><!-- Sale Pricing Section --><!--
                     <StackPanel Grid.Column="0" Margin="5">
                         <TextBlock Text="Sale Pricing" FontSize="16" FontWeight="Bold" Margin="5"/>
                         <TextBox Height="100" Margin="5"/>
@@ -39,7 +39,7 @@
                         </StackPanel>
                     </StackPanel>
 
-                    <!-- Bulk Pricing Section -->
+                    --><!-- Bulk Pricing Section --><!--
                     <StackPanel Grid.Column="1" Margin="5">
                         <TextBlock Text="Bulk Pricing" FontSize="16" FontWeight="Bold" Margin="5"/>
                         <TextBox Height="100" Margin="5"/>
@@ -53,7 +53,7 @@
                         </StackPanel>
                     </StackPanel>
 
-                    <!-- Time-Based Pricing Section -->
+                    --><!-- Time-Based Pricing Section --><!--
                     <StackPanel Grid.Column="2" Margin="5">
                         <TextBlock Text="Time Based Pricing" FontSize="16" FontWeight="Bold" Margin="5"/>
                         <TextBox Height="100" Margin="5"/>
@@ -67,13 +67,13 @@
                         </StackPanel>
                     </StackPanel>
 
-                    <!-- Footer Section -->
+                    --><!-- Footer Section --><!--
                     <StackPanel Grid.Row="1" Grid.ColumnSpan="3" Orientation="Horizontal" Margin="5">
                         <TextBlock Text="Search by Item Number-sorted by name" VerticalAlignment="Center" Margin="5"/>
                         <TextBox Width="300" Margin="5"/>
                     </StackPanel>
 
-                    <!-- Bottom Buttons -->
+                    --><!-- Bottom Buttons --><!--
                     <UniformGrid Grid.Row="2" Grid.ColumnSpan="3" Rows="1" Columns="8" Margin="5">
                         <Button Content="Previous" Background="LightBlue" Margin="5"/>
                         <Button Content="Look up" Background="Purple" Margin="5"/>
@@ -85,14 +85,14 @@
                         <Button Content="Exit" Background="Red" Foreground="White" Margin="5"/>
                     </UniformGrid>
                 </Grid>
-            </TabItem>
-            <TabItem Header="Inventory Maintenance">
-                <local:InventoryMaintenance x:Name="InventoryMaintenance"></local:InventoryMaintenance>
-            </TabItem>
-            <TabItem Header="Search Inventory" IsSelected="True">
+            </TabItem>-->
+            <TabItem Name="SearchInventory" Header="Search Inventory">
                 <local:SearchInventory></local:SearchInventory>
             </TabItem>
-            <TabItem Header="Sales History"></TabItem>
+            <TabItem Name="Inventorymaintenance" Header="Inventory Maintenance">
+                <local:InventoryMaintenance x:Name="InventoryMaintenance"></local:InventoryMaintenance>
+            </TabItem>
+            <TabItem Name="SalesHistory" Header="Sales History"></TabItem>
         </TabControl>
     </Grid>
 </Window>

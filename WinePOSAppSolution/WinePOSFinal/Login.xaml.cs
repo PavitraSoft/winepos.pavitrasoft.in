@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using WinePOSFinal.Classes;
 using WinePOSFinal.ServicesLayer;
 
 namespace WinePOSFinal
@@ -39,6 +40,9 @@ namespace WinePOSFinal
                 // If login is successful, hide the current window and show the new window
                 MainWindow mainwindow = new MainWindow(); // Replace with your actual dashboard window
                 mainwindow.Show();
+
+                // Update the application's MainWindow reference
+                Application.Current.MainWindow = mainwindow;
                 this.Hide();
             }
             else
@@ -51,7 +55,20 @@ namespace WinePOSFinal
 
         private bool IsValidLogin(string username, string password)
         {
-            return objService.ValidateLogin(username, password);
+            int iIsAdmin = objService.ValidateLogin(username, password);
+
+            if (iIsAdmin == 1)
+            {
+                AccessRightsManager.SetUserRole("Admin");
+                AccessRightsManager.SetUserName(username);
+            }
+            else
+            {
+                AccessRightsManager.SetUserRole("Non-Admin");
+                AccessRightsManager.SetUserName(username);
+            }
+
+            return iIsAdmin != -1;
         }
     }
 }

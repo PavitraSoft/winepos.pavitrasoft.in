@@ -10,7 +10,7 @@ namespace WinePOSFinal.Classes
     {
         public int itemid;
         public string name;
-        public int category;
+        public string category;
         public string upc;
         public string additional_description;
         public decimal itemcost;
@@ -23,6 +23,12 @@ namespace WinePOSFinal.Classes
         public bool sales_tax_6;
         public bool bar_tax;
         public int instock;
+        public string vendorPartNo;
+        public string vendorName;
+        public decimal caseCost;
+        public int inCase;
+        public decimal salesTaxAmt;
+        public bool quickADD;
 
         public int ItemID
         { set { itemid = value; } get { return itemid; } }
@@ -30,7 +36,7 @@ namespace WinePOSFinal.Classes
         public string Name
         { get { return name; } set { name = value; } }
 
-        public int Category
+        public string Category
         { get { return category; } set { category = value; } }
 
         public string UPC
@@ -68,5 +74,24 @@ namespace WinePOSFinal.Classes
 
         public int InStock
         { get { return instock; } set { instock = value; } }
+
+        public string VendorPartNo
+        { get { return vendorPartNo; } set { vendorPartNo = value; } }
+
+        public string VendorName
+        { get { return vendorName; } set { vendorName = value; } }
+
+        public decimal CaseCost
+        { get { return caseCost; } set { caseCost = value; } }
+
+        public int InCase
+        { get { return inCase; } set { inCase = value; } }
+
+        public decimal SalesTaxAmt
+        { get { return salesTaxAmt; } set { salesTaxAmt = value; } }
+
+
+        public bool QuickADD
+        { get { return quickADD; } set { quickADD = value; } }
     }
 }
