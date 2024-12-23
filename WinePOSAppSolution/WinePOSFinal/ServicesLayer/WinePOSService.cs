@@ -64,5 +64,10 @@ namespace WinePOSFinal.ServicesLayer
         {
             return objDAL.GetTaxData();
         }
+
+        public DataTable FetchAndPopulateInvoice(bool IsAdmin)
+        {
+            return objDAL.FetchAndPopulateInvoice(IsAdmin);
+        }
     }
 }

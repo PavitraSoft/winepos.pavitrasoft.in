@@ -347,5 +347,29 @@ namespace WinePOSFinal.DataAccessLayer
             return dt;
 
         }
+
+
+        public DataTable FetchAndPopulateInvoice(bool IsAdmin)
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                // Sample query to retrieve data
+                string query = "SELECT UPC, Name ,Price,Quantity,Tax,TotalPrice,UserName,CreatedDateTime FROM Invoice WITH (NOLOCK) ORDER BY CreatedDateTime DESC"; // Replace with your actual query
+
+                using (SqlCommand command = new SqlCommand(query, conn))
+                {
+                    // Create a DataAdapter to fill the DataTable
+                    SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
+                    dataAdapter.Fill(dt); // Fill the DataTable with data from the database
+                }
+            }
+
+            return dt;
+
+        }
     }
 }

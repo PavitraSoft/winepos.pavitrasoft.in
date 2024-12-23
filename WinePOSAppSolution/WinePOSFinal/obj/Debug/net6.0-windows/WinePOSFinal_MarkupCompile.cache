@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET6_0;NETCOREAPP
 D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\App.xaml
-6987098019
+7-1770547229
 
-131585211037
+14-136744976
 202-920863086
-Billing.xaml;LoadingWindow.xaml;Login.xaml;MainWindow.xaml;UserControls\InventoryMaintenance.xaml;UserControls\SearchInventory.xaml;
+Billing.xaml;LoadingWindow.xaml;Login.xaml;MainWindow.xaml;UserControls\InventoryMaintenance.xaml;UserControls\SalesHistory.xaml;UserControls\SearchInventory.xaml;
 
-True
+False
 
