@@ -1,43 +1,74 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using WinePOSFinal.Classes;
 using WinePOSFinal.ServicesLayer;
 
 namespace WinePOSFinal.UserControls
 {
-    /// <summary>
-    /// Interaction logic for SalesHistory.xaml
-    /// </summary>
     public partial class SalesHistory : UserControl
     {
-        WinePOSService objService = new WinePOSService();
+        private readonly WinePOSService objService = new WinePOSService();
+        private string selectedInvoiceCode;
+
         public SalesHistory()
         {
             InitializeComponent();
-
             FetchAndPopulateInvoice();
         }
 
         private void FetchAndPopulateInvoice()
         {
+            try
+            {
+                // Fetch invoice data
+                DataTable dtInvoice = objService.FetchAndPopulateInvoice(true);
 
-           DataTable dtInvoice = objService.FetchAndPopulateInvoice(true);
+                // Bind to DataGrid
+                SalesInventoryDataGrid.ItemsSource = dtInvoice.DefaultView;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error fetching invoice data: {ex.Message}");
+            }
+        }
 
+        // Handle Row Selection
+        private void SalesInventoryDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (SalesInventoryDataGrid.SelectedItem is DataRowView selectedRow)
+            {
+                try
+                {
+                    selectedInvoiceCode = selectedRow["InvoiceCode"]?.ToString();
+                }
+                catch
+                {
+                    MessageBox.Show("Error retrieving the InvoiceCode from the selected row. Ensure the data context is correct.");
+                    selectedInvoiceCode = null;
+                }
+            }
+        }
 
-            InventoryDataGrid.ItemsSource = dtInvoice.DefaultView;
+        // Handle Print Invoice Button Click
+        private void PrintInvoiceButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(selectedInvoiceCode))
+            {
+                // Call the method to generate and display the Crystal Report
+                PrintInvoice(selectedInvoiceCode);
+            }
+            else
+            {
+                MessageBox.Show("Please select a row before printing the invoice.");
+            }
+        }
+
+        // Placeholder for the print logic
+        private void PrintInvoice(string invoiceCode)
+        {
+            // Implement your actual print logic here
+            MessageBox.Show($"Invoice {invoiceCode} sent to the printer!");
         }
     }
 }

@@ -1,0 +1,20 @@
+﻿WinePOSFinal
+1.0.0.0
+
+winexe
+C#
+.cs
+C:\Users\Deep\Downloads\winepos.pavitrasoft.in-main (1)\winepos.pavitrasoft.in-main\WinePOSAppSolution\WinePOSFinal\obj\Release\net6.0-windows\
+WinePOSFinal
+none
+false
+TRACE;RELEASE;NET;NET6_0;NETCOREAPP
+C:\Users\Deep\Downloads\winepos.pavitrasoft.in-main (1)\winepos.pavitrasoft.in-main\WinePOSAppSolution\WinePOSFinal\App.xaml
+7-1770547229
+
+1640043726
+2021502831226
+Billing.xaml;LoadingWindow.xaml;Login.xaml;MainWindow.xaml;UserControls\InventoryMaintenance.xaml;UserControls\SalesHistory.xaml;UserControls\SearchInventory.xaml;
+
+True
+

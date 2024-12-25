@@ -5,11 +5,25 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ReferencePath>C:\Program Files (x86)\SAP BusinessObjects\Crystal Reports for .NET Framework 4.0\Common\SAP BusinessObjects Enterprise XI 4.0\win64_x64\dotnet\</ReferencePath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <COMReference Include="{c0aa5023-c763-4a4b-afed-adcf78d6c08b}">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>0</VersionMinor>
+      <VersionMajor>13</VersionMajor>
+      <Guid>c0aa5023-c763-4a4b-afed-adcf78d6c08b</Guid>
+    </COMReference>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.104.2" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{c0c07587-41a7-46c8-8fbd-3f9c8ebe2ddc}" />
   </ItemGroup>
 
 </Project>

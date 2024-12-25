@@ -293,9 +293,18 @@ namespace WinePOSFinal.DataAccessLayer
             {
                 try
                 {
+                    int nextInvoiceCode = 0;
                     // Open the connection
                     connection.Open();
+                    string nextNumberQuery = "SELECT ISNULL(MAX(InvoiceCode), 0) + 1 FROM Invoice"; // Handle null case
 
+                    using (SqlCommand command = new SqlCommand(nextNumberQuery, connection))
+                    {
+                        // ExecuteScalar() fetches the first column of the first row in the result
+                        object result = command.ExecuteScalar();
+                        nextInvoiceCode = result != DBNull.Value ? Convert.ToInt32(result) : 1; // Default to 1 if null
+                        Console.WriteLine("Next Invoice Code: " + nextInvoiceCode);
+                    }
                     // Create the command to execute the stored procedure
                     SqlCommand cmd = new SqlCommand("usp_SaveInvoice", connection);
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
@@ -309,6 +318,7 @@ namespace WinePOSFinal.DataAccessLayer
                     cmd.Parameters.AddWithValue("Tax", objBillingItem.Tax);
                     cmd.Parameters.AddWithValue("UserName", objBillingItem.UserName);
                     cmd.Parameters.AddWithValue("IsVoided", IsVoidInvoice);
+                    cmd.Parameters.AddWithValue("InvoiceCode", nextInvoiceCode);
 
                     // Execute the stored procedure (this will not return anything)
                     int rowsAffected = cmd.ExecuteNonQuery();
@@ -358,7 +368,7 @@ namespace WinePOSFinal.DataAccessLayer
                 conn.Open();
 
                 // Sample query to retrieve data
-                string query = "SELECT UPC, Name ,Price,Quantity,Tax,TotalPrice,UserName,CreatedDateTime FROM Invoice WITH (NOLOCK) ORDER BY CreatedDateTime DESC"; // Replace with your actual query
+                string query = "SELECT InvoiceCode, UPC, Name ,Price,Quantity,Tax,TotalPrice,UserName,CreatedDateTime FROM Invoice WITH (NOLOCK) ORDER BY CreatedDateTime DESC"; // Replace with your actual query
 
                 using (SqlCommand command = new SqlCommand(query, conn))
                 {

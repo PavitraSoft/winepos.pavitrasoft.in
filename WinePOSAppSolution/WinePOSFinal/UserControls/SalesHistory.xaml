@@ -8,70 +8,50 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*"></RowDefinition>
-            <RowDefinition Height="8*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="0" Grid.Column="0">
+        <!-- Header Section -->
+        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="5">
             <Border Background="#FFFCF2" BorderBrush="Gray" BorderThickness="1" Margin="0,0,0,10">
-                <StackPanel Orientation="Vertical" Margin="5">
-                    <TextBlock Text="Sales History" FontSize="16" FontWeight="Bold" Foreground="DarkOrange"/>
+                <StackPanel Orientation="Horizontal" Margin="5" VerticalAlignment="Center">
+                    <TextBlock Text="Sales History" FontSize="16" FontWeight="Bold" Foreground="DarkOrange" VerticalAlignment="Center"/>
+                    <Button Name="PrintInvoiceButton" 
+                            Content="Print Invoice" 
+                            Width="120" 
+                            Height="30" 
+                            HorizontalAlignment="Right" 
+                            VerticalAlignment="Center" 
+                            Margin="10,0,0,0" 
+                            Click="PrintInvoiceButton_Click"/>
                 </StackPanel>
             </Border>
         </StackPanel>
 
-        <StackPanel Grid.Row="1" Grid.Column="0">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="10*"/>
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Grid.Row="0" Grid.Column="0">
-                    <!-- DataGrid -->
-                    <DataGrid Name="InventoryDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" SelectionMode="Single" SelectionUnit="FullRow"  Background="LightGray" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Height="500" Width="1200" >
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="UPC" Width="*" Binding="{Binding UPC}">
-                            </DataGridTextColumn>
-                            <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Name}"/>
-                            <DataGridTextColumn Header="Price" Width="*" Binding="{Binding Price}">
-                            </DataGridTextColumn>
-                            <DataGridTextColumn Header="Quantity" Width="*" Binding="{Binding Quantity}">
-                            </DataGridTextColumn>
-                            <DataGridTextColumn Header="Tax" Width="*" Binding="{Binding Tax}">
-                            </DataGridTextColumn>
-                            <DataGridTextColumn Header="Total Price" Width="*" Binding="{Binding TotalPrice}">
-                            </DataGridTextColumn>
-                            <DataGridTextColumn Header="Username" Width="*" Binding="{Binding UserName}"/>
-                            <DataGridTextColumn Header="Date Time" Width="*" Binding="{Binding CreatedDateTime}">
-                            </DataGridTextColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </StackPanel>
-                <!--<StackPanel Grid.Row="0" Grid.Column="1">
-                    --><!-- Search Section --><!--
-                    <TextBlock Text="Enter Search Text:" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                    <TextBox Name="txtDescription" Width="200" Height="25" VerticalAlignment="Top"/>
-                    <Button Name="btnSearch" Content="🔍 Search" Width="75" Height="25" VerticalAlignment="Top" Margin="2" Click="btnSearch_Click"/>
-
-                    --><!-- Buttons --><!--
-                    <Button Name="btnEdit" Content="Edit Item" Background="White" Width="120" Height="40" VerticalAlignment="Top" Margin="5" Click="btnEdit_Click"/>
-                    <Button Name="btnAdd" Content="Add Item" Background="Yellow" Width="120" Height="40" VerticalAlignment="Top" Margin="5" Click="btnAdd_Click"/>
-                    <Button Name="btnDelete" Content="Delete" Background="Red" Width="120" Height="40" VerticalAlignment="Top" Margin="5" Click="btnDelete_Click"/>
-
-                    <Button Name="btnExport" Content="Export" Background="Green" Width="120" Height="40" VerticalAlignment="Top" Margin="5" Click="btnExport_Click"/>
-
-                    <Button Name="btnImport" Content="Import" Background="Blue" Width="120" Height="40" VerticalAlignment="Top" Margin="5" Click="btnImport_Click"/>
-
-
-                </StackPanel>-->
-            </Grid>
-
+        <!-- DataGrid Section -->
+        <StackPanel Grid.Row="1" Orientation="Vertical">
+            <DataGrid Name="SalesInventoryDataGrid" AutoGenerateColumns="False" 
+                      CanUserAddRows="False" IsReadOnly="True" 
+                      SelectionMode="Single" SelectionUnit="FullRow"  
+                      Background="LightGray" VerticalScrollBarVisibility="Auto" 
+                      HorizontalScrollBarVisibility="Auto" Height="500" Width="1200" 
+                      SelectionChanged="SalesInventoryDataGrid_SelectionChanged">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="InvoiceCode" Width="*" Binding="{Binding InvoiceCode}"/>
+                    <DataGridTextColumn Header="UPC" Width="*" Binding="{Binding UPC}"/>
+                    <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Name}"/>
+                    <DataGridTextColumn Header="Price" Width="*" Binding="{Binding Price}"/>
+                    <DataGridTextColumn Header="Quantity" Width="*" Binding="{Binding Quantity}"/>
+                    <DataGridTextColumn Header="Tax" Width="*" Binding="{Binding Tax}"/>
+                    <DataGridTextColumn Header="Total Price" Width="*" Binding="{Binding TotalPrice}"/>
+                    <DataGridTextColumn Header="Username" Width="*" Binding="{Binding UserName}"/>
+                    <DataGridTextColumn Header="Date Time" Width="*" Binding="{Binding CreatedDateTime}"/>
+                </DataGrid.Columns>
+            </DataGrid>
         </StackPanel>
     </Grid>
 </UserControl>
