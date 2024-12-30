@@ -8,8 +8,9 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -28,12 +29,47 @@
                             VerticalAlignment="Center" 
                             Margin="10,0,0,0" 
                             Click="PrintInvoiceButton_Click"/>
+                    <Button Name="FlashReportButton" 
+                            Content="Flash Report" 
+                            Width="120" 
+                            Height="30" 
+                            Margin="5,0" 
+                            VerticalAlignment="Center" 
+                            Click="FlashReportButton_Click"/>
                 </StackPanel>
             </Border>
         </StackPanel>
 
+        <!-- Search Section -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5">
+            <TextBlock Text="From:" VerticalAlignment="Center" Margin="5,0"/>
+            <DatePicker Name="FromDatePicker" Width="150" Margin="5,0"/>
+
+            <TextBlock Text="To:" VerticalAlignment="Center" Margin="5,0"/>
+            <DatePicker Name="ToDatePicker" Width="150" Margin="5,0"/>
+
+            <TextBlock Text="Invoice Number:" VerticalAlignment="Center" Margin="5,0"/>
+            <TextBox Name="InvoiceNumberTextBox" Width="150" Margin="5,0"/>
+
+            <Button Name="SearchButton" 
+                    Content="Search" 
+                    Width="100" 
+                    Height="30" 
+                    Margin="5,0" 
+                    VerticalAlignment="Center" 
+                    Click="SearchButton_Click"/>
+            
+            <Button Name="ClearButton" 
+                    Content="Clear" 
+                    Width="100" 
+                    Height="30" 
+                    Margin="5,0" 
+                    VerticalAlignment="Center" 
+                    Click="ClearButton_Click"/>
+        </StackPanel>
+
         <!-- DataGrid Section -->
-        <StackPanel Grid.Row="1" Orientation="Vertical">
+        <StackPanel Grid.Row="2" Orientation="Vertical">
             <DataGrid Name="SalesInventoryDataGrid" AutoGenerateColumns="False" 
                       CanUserAddRows="False" IsReadOnly="True" 
                       SelectionMode="Single" SelectionUnit="FullRow"  

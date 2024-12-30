@@ -15,6 +15,7 @@ using System.IO;
 using System.Diagnostics;
 using Microsoft.Win32;
 using WinePOSFinal.Classes;
+using DocumentFormat.OpenXml.Vml.Office;
 
 namespace WinePOSFinal
 {
@@ -32,13 +33,19 @@ namespace WinePOSFinal
         {
             InitializeComponent();
 
+            ReloadSearchInventoryData();
+        }
+
+        public void ReloadSearchInventoryData()
+        {
             btnSearch_Click(null, null);
         }
 
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
             string strDescription = txtDescription.Text;
-            dtInventoryData = objService.GetInventoryData(strDescription);
+            string strUPC = txtUPC.Text;
+            dtInventoryData = objService.GetInventoryData(strUPC, strDescription);
 
             InventoryDataGrid.ItemsSource = dtInventoryData.DefaultView;
         }
@@ -108,7 +115,8 @@ namespace WinePOSFinal
 
                 string headerName = e.Column.Header.ToString();
                 string columnName = string.Empty;
-                string value = string.Empty;
+                string newValue = string.Empty;
+                string oldValue = string.Empty;
 
                 var selectedEditRow = e.Row.Item as DataRowView;
                 var editingElement = e.EditingElement as TextBox;
@@ -146,11 +154,47 @@ namespace WinePOSFinal
                             break;
                     }
 
-                    value = editingElement.Text;
+                    //value = editingElement.Text;
 
-                    int ItemID = Convert.ToInt32(selectedEditRow["ItemID"]);
+                    newValue = editingElement.Text;
+                    oldValue = selectedEditRow[columnName]?.ToString();
 
-                    objService.SaveInlineItemData(ItemID, columnName, value);
+                    // Check if the new value is the same as the old value
+                    if (newValue == oldValue)
+                    {
+                        MessageBox.Show("No changes were made. The value remains the same.",
+                                        "No Changes",
+                                        MessageBoxButton.OK,
+                                        MessageBoxImage.Information);
+
+                        // Cancel the edit
+                        e.Cancel = true;
+                        return;
+                    }
+
+                    // Ask for confirmation
+                    var result = MessageBox.Show($"Are you sure you want to change the value of '{columnName}' from '{oldValue}' to '{newValue}'?",
+                                                 "Confirm Change",
+                                                 MessageBoxButton.YesNo,
+                                                 MessageBoxImage.Question);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        int itemID = Convert.ToInt32(selectedEditRow["ItemID"]);
+
+                        // Save the changes
+                        objService.SaveInlineItemData(itemID, columnName, newValue);
+                    }
+                    else
+                    {
+                        // Cancel the edit
+                        e.Cancel = true;
+                        editingElement.Text = oldValue;
+                    }
+
+                    //int ItemID = Convert.ToInt32(selectedEditRow["ItemID"]);
+
+                    //objService.SaveInlineItemData(ItemID, columnName, value);
                 }
             }
         }
@@ -361,6 +405,12 @@ namespace WinePOSFinal
                 // Close the loading window
                 loadingWindow.Close();
             }
+        }
+
+        private void btnClear_Click(object sender, RoutedEventArgs e)
+        {
+            txtDescription.Text = string.Empty;
+            txtUPC.Text = string.Empty;
         }
     }
 }

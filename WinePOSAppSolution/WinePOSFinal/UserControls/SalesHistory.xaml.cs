@@ -1,8 +1,15 @@
-﻿using System;
+﻿using CrystalDecisions.Shared;
+using System;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
+using WinePOSFinal.Classes;
 using WinePOSFinal.ServicesLayer;
+using CrystalDecisions.CrystalReports.Engine;
+using CrystalDecisions.Shared;
+using System.Configuration;
+using System.Linq;
+using System.Data.SqlClient;
 
 namespace WinePOSFinal.UserControls
 {
@@ -10,10 +17,18 @@ namespace WinePOSFinal.UserControls
     {
         private readonly WinePOSService objService = new WinePOSService();
         private string selectedInvoiceCode;
+        private bool isAdmin = false;
+        DataTable dtInvoice = new DataTable();
 
         public SalesHistory()
         {
             InitializeComponent();
+            ReloadSalesHistoryData();
+        }
+
+
+        public void ReloadSalesHistoryData()
+        {
             FetchAndPopulateInvoice();
         }
 
@@ -21,8 +36,15 @@ namespace WinePOSFinal.UserControls
         {
             try
             {
+                string currentRole = AccessRightsManager.GetUserRole();
+
+                if (currentRole.ToUpper() == "ADMIN")
+                {
+                    isAdmin = true;
+                }
+
                 // Fetch invoice data
-                DataTable dtInvoice = objService.FetchAndPopulateInvoice(true);
+                dtInvoice = objService.FetchAndPopulateInvoice(isAdmin, null, null, string.Empty);
 
                 // Bind to DataGrid
                 SalesInventoryDataGrid.ItemsSource = dtInvoice.DefaultView;
@@ -69,6 +91,160 @@ namespace WinePOSFinal.UserControls
         {
             // Implement your actual print logic here
             MessageBox.Show($"Invoice {invoiceCode} sent to the printer!");
+        }
+
+        private void FlashReportButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (dtInvoice.Rows.Count > 0)
+            {
+                try
+                {
+                    // Create a new report document
+                    ReportDocument report = new ReportDocument();
+
+                    // Load the report (winebill.rpt)
+                    //string reportPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Reports\winebill.rpt");
+                    string reportPath = System.IO.Path.Combine(@"D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\flashReport.rpt");
+                    report.Load(reportPath);
+
+
+                    decimal GrossSales = Convert.ToDecimal(dtInvoice.Compute("SUM(TotalPrice)", string.Empty));
+                    decimal Tax = Convert.ToDecimal(dtInvoice.Compute("SUM(Tax)", string.Empty));
+
+                    decimal NetSales = GrossSales - Tax;
+
+                    var Cash = dtInvoice.AsEnumerable()
+                                              .Where(row => row.Field<string>("PaymentType") == "CASH")
+                                              .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
+
+                    var Checks = dtInvoice.AsEnumerable()
+                                              .Where(row => row.Field<string>("PaymentType") == "CHECKS")
+                                              .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
+
+                    var Credit = dtInvoice.AsEnumerable()
+                                              .Where(row => row.Field<string>("PaymentType") == "CREDIT")
+                                              .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
+
+                    var PalmPay = dtInvoice.AsEnumerable()
+                                              .Where(row => row.Field<string>("PaymentType") == "PALMPAY")
+                                              .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
+
+                    string QuantitySold = Convert.ToString(dtInvoice.Compute("SUM(Quantity)", string.Empty));
+
+                    string Transactions = Convert.ToString(dtInvoice.AsEnumerable()
+                                                    .Select(row => row.Field<int>("InvoiceCode"))
+                                                    .Distinct()
+                                                    .Count());
+
+
+
+
+                    // Set database logon credentials (if required)
+                    SetDatabaseLogin(report);
+
+                    // Dynamically set the InvoiceCode parameter for the report
+                    report.SetParameterValue("NetSales", "$" + Convert.ToString(NetSales));
+                    report.SetParameterValue("Tax", "$" + Convert.ToString(Tax));
+                    report.SetParameterValue("GrossSales", "$" + Convert.ToString(GrossSales));
+                    report.SetParameterValue("QuantitySold", Convert.ToString(QuantitySold));
+                    report.SetParameterValue("Cash", "$" + Convert.ToString(Cash));
+                    report.SetParameterValue("Checks", "$" + Convert.ToString(Checks));
+                    report.SetParameterValue("Credit", "$" + Convert.ToString(Credit));
+                    report.SetParameterValue("PalmPay", "$" + Convert.ToString(PalmPay));
+                    report.SetParameterValue("Transactions", Convert.ToString(Transactions));
+                    report.SetParameterValue("DateFrom", DateTime.Now);
+                    report.SetParameterValue("DateTo", DateTime.Now);
+
+                    // Export the report to a PDF file
+                    string exportPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "flashReport.pdf");
+                    report.ExportToDisk(ExportFormatType.PortableDocFormat, exportPath);
+
+                    // Display the PDF in the WebBrowser control
+                    //pdfWebViewer.Navigate(exportPath); // Navigate to the generated PDF file
+
+
+                    // Optionally, open the generated report in a PDF viewer
+                    System.Diagnostics.Process.Start(exportPath);
+
+                    //MessageBox.Show("Report generated and displayed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    //MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("No Data To Show.", "Flash Report", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void SetDatabaseLogin(ReportDocument report)
+        {
+            // Set the database login credentials
+            try
+            {
+                // Retrieve the connection string from the app.config file
+                string connectionString = ConfigurationManager.ConnectionStrings["DatabaseConnection"].ConnectionString;
+
+                // Create an instance of SqlConnectionStringBuilder to parse the connection string
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(connectionString);
+
+                // Extract the individual components from the connection string
+                string server = builder.DataSource;
+                string database = builder.InitialCatalog;
+                string username = builder.UserID;
+                string password = builder.Password;
+
+                // Get the database logon info from the report's database
+                ConnectionInfo connectionInfo = new ConnectionInfo
+                {
+                    ServerName = server,
+                    DatabaseName = database,
+                    UserID = username,
+                    Password = password
+                };
+
+                // Apply the connection info to the report
+                ApplyLogonToSubreports(report, connectionInfo);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error setting database logon: {ex.Message}");
+            }
+        }
+
+        private void ApplyLogonToSubreports(ReportDocument report, ConnectionInfo connectionInfo)
+        {
+            // Set the connection information for the main report
+            report.DataSourceConnections[0].SetConnection(connectionInfo.ServerName, connectionInfo.DatabaseName, false);
+            report.DataSourceConnections[0].SetLogon(connectionInfo.UserID, connectionInfo.Password);
+
+            // Apply the connection info to any subreports as well
+            foreach (ReportDocument subReport in report.Subreports)
+            {
+                subReport.DataSourceConnections[0].SetConnection(connectionInfo.ServerName, connectionInfo.DatabaseName, false);
+                subReport.DataSourceConnections[0].SetLogon(connectionInfo.UserID, connectionInfo.Password);
+            }
+        }
+
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Get values from UI controls
+            DateTime? fromDate = FromDatePicker.SelectedDate;
+            DateTime? toDate = ToDatePicker.SelectedDate;
+            string invoiceNumber = InvoiceNumberTextBox.Text;
+
+            dtInvoice = objService.FetchAndPopulateInvoice(isAdmin, fromDate, toDate, invoiceNumber);
+            // Bind to DataGrid
+            SalesInventoryDataGrid.ItemsSource = dtInvoice.DefaultView;
+        }
+
+        private void ClearButton_Click(object sender, RoutedEventArgs e)
+        {
+            FromDatePicker.SelectedDate = null;
+            ToDatePicker.SelectedDate = null;
+            InvoiceNumberTextBox.Text = string.Empty;
         }
     }
 }

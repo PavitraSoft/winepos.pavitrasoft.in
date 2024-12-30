@@ -30,9 +30,15 @@ namespace WinePOSFinal
         {
             InitializeComponent();
 
-            dtTax = objService.GetTaxData();
+            ReloadInventoryMaintenanceData();
 
             BindDropdown();
+        }
+
+
+        public void ReloadInventoryMaintenanceData()
+        {
+            dtTax = objService.GetTaxData();
 
             ClearFields();
         }
@@ -189,6 +195,9 @@ namespace WinePOSFinal
             if (objService.SaveItem(objItem))
             {
                 MessageBox.Show("Item Saved Successfully.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+
+
+
                 ClearFields();
             }
             else

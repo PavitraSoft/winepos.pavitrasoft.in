@@ -96,7 +96,7 @@ namespace WinePOSFinal.DataAccessLayer
             return bIsSuccess;
         }
 
-        public DataTable GetInventoryData(string strDescription)
+        public DataTable GetInventoryData(string strUPC, string strDescription)
         {
             DataTable dt = new DataTable();
 
@@ -111,6 +111,7 @@ namespace WinePOSFinal.DataAccessLayer
                     cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
                     // Add parameters to the command
+                    cmd.Parameters.AddWithValue("UPC", strUPC);
                     cmd.Parameters.AddWithValue("Description", strDescription);
 
                     SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
@@ -148,27 +149,27 @@ namespace WinePOSFinal.DataAccessLayer
 
                     if (dt != null && dt.Rows.Count > 0)
                     {
-                        items.ItemID = Convert.ToInt32(dt.Rows[0]["ItemID"]);
-                        items.Name = Convert.ToString(dt.Rows[0]["Name"]);
-                        items.Category = Convert.ToString(dt.Rows[0]["Category"]);
-                        items.UPC = Convert.ToString(dt.Rows[0]["UPC"]);
-                        items.Additional_Description = Convert.ToString(dt.Rows[0]["Additional_Description"]);
-                        items.ItemCost = Convert.ToDecimal(dt.Rows[0]["ItemCost"]);
-                        items.ChargedCost = Convert.ToDecimal(dt.Rows[0]["ChargedCost"]);
-                        items.Sales_Tax = Convert.ToBoolean(dt.Rows[0]["Sales_Tax"]);
-                        items.Sales_Tax_2 = Convert.ToBoolean(dt.Rows[0]["Sales_Tax_2"]);
-                        items.Sales_Tax_3 = Convert.ToBoolean(dt.Rows[0]["Sales_Tax_3"]);
-                        items.Sales_Tax_4 = Convert.ToBoolean(dt.Rows[0]["Sales_Tax_4"]);
-                        items.Sales_Tax_5 = Convert.ToBoolean(dt.Rows[0]["Sales_Tax_5"]);
-                        items.Sales_Tax_6 = Convert.ToBoolean(dt.Rows[0]["Sales_Tax_6"]);
-                        items.Bar_Tax = Convert.ToBoolean(dt.Rows[0]["Bar_Tax"]);
-                        items.InStock = Convert.ToInt32(dt.Rows[0]["InStock"]);
-                        items.VendorName = Convert.ToString(dt.Rows[0]["VendorName"]);
-                        items.VendorPartNo = Convert.ToString(dt.Rows[0]["VendorPartNum"]);
-                        items.SalesTaxAmt = Convert.ToInt32(dt.Rows[0]["SalesTax"]);
-                        items.CaseCost = Convert.ToDecimal(dt.Rows[0]["CaseCost"]);
-                        items.InCase = Convert.ToInt32(dt.Rows[0]["NumberInCase"]);
-                        items.QuickADD = Convert.ToBoolean(dt.Rows[0]["QuickADD"]);
+                        items.ItemID = dt.Rows[0]["ItemID"] != DBNull.Value ? Convert.ToInt32(dt.Rows[0]["ItemID"]) : 0;
+                        items.Name = dt.Rows[0]["Name"] != DBNull.Value ? Convert.ToString(dt.Rows[0]["Name"]) : string.Empty;
+                        items.Category = dt.Rows[0]["Category"] != DBNull.Value ? Convert.ToString(dt.Rows[0]["Category"]) : string.Empty;
+                        items.UPC = dt.Rows[0]["UPC"] != DBNull.Value ? Convert.ToString(dt.Rows[0]["UPC"]) : string.Empty;
+                        items.Additional_Description = dt.Rows[0]["Additional_Description"] != DBNull.Value ? Convert.ToString(dt.Rows[0]["Additional_Description"]) : string.Empty;
+                        items.ItemCost = dt.Rows[0]["ItemCost"] != DBNull.Value ? Convert.ToDecimal(dt.Rows[0]["ItemCost"]) : 0;
+                        items.ChargedCost = dt.Rows[0]["ChargedCost"] != DBNull.Value ? Convert.ToDecimal(dt.Rows[0]["ChargedCost"]) : 0;
+                        items.Sales_Tax = dt.Rows[0]["Sales_Tax"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["Sales_Tax"]) : false;
+                        items.Sales_Tax_2 = dt.Rows[0]["Sales_Tax_2"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["Sales_Tax_2"]) : false;
+                        items.Sales_Tax_3 = dt.Rows[0]["Sales_Tax_3"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["Sales_Tax_3"]) : false;
+                        items.Sales_Tax_4 = dt.Rows[0]["Sales_Tax_4"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["Sales_Tax_4"]) : false;
+                        items.Sales_Tax_5 = dt.Rows[0]["Sales_Tax_5"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["Sales_Tax_5"]) : false;
+                        items.Sales_Tax_6 = dt.Rows[0]["Sales_Tax_6"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["Sales_Tax_6"]) : false;
+                        items.Bar_Tax = dt.Rows[0]["Bar_Tax"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["Bar_Tax"]) : false;
+                        items.InStock = dt.Rows[0]["InStock"] != DBNull.Value ? Convert.ToInt32(dt.Rows[0]["InStock"]) : 0;
+                        items.VendorName = dt.Rows[0]["VendorName"] != DBNull.Value ? Convert.ToString(dt.Rows[0]["VendorName"]) : string.Empty;
+                        items.VendorPartNo = dt.Rows[0]["VendorPartNum"] != DBNull.Value ? Convert.ToString(dt.Rows[0]["VendorPartNum"]) : string.Empty;
+                        items.SalesTaxAmt = dt.Rows[0]["SalesTax"] != DBNull.Value ? Convert.ToInt32(dt.Rows[0]["SalesTax"]) : 0;
+                        items.CaseCost = dt.Rows[0]["CaseCost"] != DBNull.Value ? Convert.ToDecimal(dt.Rows[0]["CaseCost"]) : 0;
+                        items.InCase = dt.Rows[0]["NumberInCase"] != DBNull.Value ? Convert.ToInt32(dt.Rows[0]["NumberInCase"]) : 0;
+                        items.QuickADD = dt.Rows[0]["QuickADD"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["QuickADD"]) : false;
                     }
                 }
             }
@@ -258,7 +259,7 @@ namespace WinePOSFinal.DataAccessLayer
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    sb.Append("UPDATE Items SET");
+                    sb.Append("UPDATE Items SET ");
                     sb.Append(" " + columnName + " = '" + (!string.IsNullOrWhiteSpace(value) ? value : string.Empty) + "'");
                     sb.Append(" WHERE ItemID = " + Convert.ToString(ItemID));
 
@@ -284,7 +285,7 @@ namespace WinePOSFinal.DataAccessLayer
             return bIsSuccess;
         }
 
-        public bool SaveInvoice(BillingItem objBillingItem, bool IsVoidInvoice)
+        public bool SaveInvoice(BillingItem objBillingItem, bool IsVoidInvoice, string PaymentType, ref int invoiceNumber)
         {
             bool bIsSuccess = false;
 
@@ -296,14 +297,21 @@ namespace WinePOSFinal.DataAccessLayer
                     int nextInvoiceCode = 0;
                     // Open the connection
                     connection.Open();
-                    string nextNumberQuery = "SELECT ISNULL(MAX(InvoiceCode), 0) + 1 FROM Invoice"; // Handle null case
-
-                    using (SqlCommand command = new SqlCommand(nextNumberQuery, connection))
+                    if (invoiceNumber == 0)
                     {
-                        // ExecuteScalar() fetches the first column of the first row in the result
-                        object result = command.ExecuteScalar();
-                        nextInvoiceCode = result != DBNull.Value ? Convert.ToInt32(result) : 1; // Default to 1 if null
-                        Console.WriteLine("Next Invoice Code: " + nextInvoiceCode);
+                        string nextNumberQuery = "SELECT ISNULL(MAX(InvoiceCode), 0) + 1 FROM Invoice"; // Handle null case
+
+                        using (SqlCommand command = new SqlCommand(nextNumberQuery, connection))
+                        {
+                            // ExecuteScalar() fetches the first column of the first row in the result
+                            object result = command.ExecuteScalar();
+                            nextInvoiceCode = result != DBNull.Value ? Convert.ToInt32(result) : 1; // Default to 1 if null
+                            Console.WriteLine("Next Invoice Code: " + nextInvoiceCode);
+                        }
+                    }
+                    else
+                    {
+                        nextInvoiceCode = invoiceNumber;
                     }
                     // Create the command to execute the stored procedure
                     SqlCommand cmd = new SqlCommand("usp_SaveInvoice", connection);
@@ -319,10 +327,11 @@ namespace WinePOSFinal.DataAccessLayer
                     cmd.Parameters.AddWithValue("UserName", objBillingItem.UserName);
                     cmd.Parameters.AddWithValue("IsVoided", IsVoidInvoice);
                     cmd.Parameters.AddWithValue("InvoiceCode", nextInvoiceCode);
+                    cmd.Parameters.AddWithValue("PaymentType", PaymentType);
 
                     // Execute the stored procedure (this will not return anything)
                     int rowsAffected = cmd.ExecuteNonQuery();
-
+                    invoiceNumber = nextInvoiceCode;
                     bIsSuccess = true;
                 }
                 catch (Exception ex)
@@ -359,7 +368,7 @@ namespace WinePOSFinal.DataAccessLayer
         }
 
 
-        public DataTable FetchAndPopulateInvoice(bool IsAdmin)
+        public DataTable FetchAndPopulateInvoice(bool IsAdmin, DateTime? fromDate, DateTime? toDate, string InvoiceNumber)
         {
             DataTable dt = new DataTable();
 
@@ -367,8 +376,31 @@ namespace WinePOSFinal.DataAccessLayer
             {
                 conn.Open();
 
+                string where = " AND IsVoided = 0 ";
+
+                if (IsAdmin)
+                {
+                    where = " AND IsVoided = 1 ";
+                }
+
+                if (fromDate.HasValue)
+                {
+                    where += " AND CreatedDateTime >= CONVERT(DATETIME, '" + fromDate.Value.Date.ToString("yyyy-MM-dd") + "') ";
+                }
+
+                if (fromDate.HasValue)
+                {
+                    where += " AND CreatedDateTime <= CONVERT(DATETIME, '" + toDate.Value.Date.ToString("yyyy-MM-dd") + "') ";
+                }
+
+                if (!string.IsNullOrWhiteSpace(InvoiceNumber))
+                {
+                    where += " AND InvoiceCode = '" + InvoiceNumber + "' ";
+                }
+
+
                 // Sample query to retrieve data
-                string query = "SELECT InvoiceCode, UPC, Name ,Price,Quantity,Tax,TotalPrice,UserName,CreatedDateTime FROM Invoice WITH (NOLOCK) ORDER BY CreatedDateTime DESC"; // Replace with your actual query
+                string query = "SELECT InvoiceCode, UPC, Name ,Price,Quantity,Tax,TotalPrice,UserName,CreatedDateTime,PaymentType FROM Invoice WITH (NOLOCK) WHERE 1 = 1 " + where + " ORDER BY CreatedDateTime DESC"; // Replace with your actual query
 
                 using (SqlCommand command = new SqlCommand(query, conn))
                 {
@@ -380,6 +412,60 @@ namespace WinePOSFinal.DataAccessLayer
 
             return dt;
 
+        }
+
+
+        public bool UpdateSentEmailDetail(int ID)
+        {
+            bool bIsSuccess = false;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    // Sample query to retrieve data
+                    string query = "UPDATE Email SET IsSent = 1, SentDateTime = GETDATE() WHERE ID = " + Convert.ToString(ID); // Replace with your actual query
+
+                    using (SqlCommand command = new SqlCommand(query, conn))
+                    {
+                        int rowsAffected = command.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            bIsSuccess = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during the execution
+                MessageBox.Show($"Error: {ex.Message}");
+            }
+
+            return bIsSuccess;
+        }
+
+
+        public DataTable GetLowQuentityEmailDetails()
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                // Sample query to retrieve data
+                string query = "SELECT (SELECT TOP 1 [Value] FROM Config WHERE [Key] = 'LowStockAlertEmailSMTPUser') AS smtpUser, (SELECT TOP 1 [Value] FROM Config WHERE [Key] = 'LowStockAlertSMTPPassword') AS smtpPassword ,ToMail ,Subject ,Body, ID FROM Email WHERE IsSent = 0"; // Replace with your actual query
+
+                using (SqlCommand command = new SqlCommand(query, conn))
+                {
+                    // Create a DataAdapter to fill the DataTable
+                    SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
+                    dataAdapter.Fill(dt); // Fill the DataTable with data from the database
+                }
+            }
+            return dt;
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <_LastSelectedProfileId>C:\Users\Deep\Downloads\winepos.pavitrasoft.in-main %281%29\winepos.pavitrasoft.in-main\WinePOSAppSolution\WinePOSFinal\Properties\PublishProfiles\FolderProfile.pubxml</_LastSelectedProfileId>
+    <_LastSelectedProfileId>D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Properties\PublishProfiles\FolderProfile.pubxml</_LastSelectedProfileId>
   </PropertyGroup>
   <ItemGroup>
     <ApplicationDefinition Update="App.xaml">
@@ -17,6 +17,9 @@
     </Compile>
     <Compile Update="Login.xaml.cs">
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Reports\winebill.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Update="UserControls\InventoryMaintenance.xaml.cs">
       <SubType>Code</SubType>

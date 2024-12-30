@@ -28,9 +28,9 @@ namespace WinePOSFinal.ServicesLayer
             return objDAL.SaveItem(objItem);
         }
 
-        public DataTable GetInventoryData(string strDescription)
+        public DataTable GetInventoryData(string strUPC, string strDescription)
         {
-            return objDAL.GetInventoryData(strDescription);
+            return objDAL.GetInventoryData(strUPC, strDescription);
         }
 
         public Items FetchItemDataByID(int intItemID)
@@ -55,9 +55,9 @@ namespace WinePOSFinal.ServicesLayer
 
 
 
-        public bool SaveInvoice(BillingItem objBillingItem, bool IsVoidInvoice)
+        public bool SaveInvoice(BillingItem objBillingItem, bool IsVoidInvoice, string PaymentType, ref int invoiceNumber)
         {
-            return objDAL.SaveInvoice(objBillingItem, IsVoidInvoice);
+            return objDAL.SaveInvoice(objBillingItem, IsVoidInvoice, PaymentType, ref invoiceNumber);
         }
 
         public DataTable GetTaxData()
@@ -65,9 +65,19 @@ namespace WinePOSFinal.ServicesLayer
             return objDAL.GetTaxData();
         }
 
-        public DataTable FetchAndPopulateInvoice(bool IsAdmin)
+        public DataTable FetchAndPopulateInvoice(bool IsAdmin, DateTime? fromDate, DateTime? toDate, string InvoiceNumber)
         {
-            return objDAL.FetchAndPopulateInvoice(IsAdmin);
+            return objDAL.FetchAndPopulateInvoice(IsAdmin, fromDate, toDate, InvoiceNumber);
+        }
+
+        public bool UpdateSentEmailDetail(int ID)
+        {
+            return objDAL.UpdateSentEmailDetail(ID);
+        }
+
+        public DataTable GetLowQuentityEmailDetails()
+        {
+            return objDAL.GetLowQuentityEmailDetails();
         }
     }
 }

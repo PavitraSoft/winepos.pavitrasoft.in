@@ -29,9 +29,15 @@
             </Grid.RowDefinitions>
 
             <TextBlock Text="UPC:" Grid.Column="0" Grid.Row="0" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <TextBox Grid.Column="0" Grid.Row="1" Height="40" VerticalAlignment="Top" Margin="5" FontSize="16" Name="txtUPC" TextChanged="txtUPC_TextChanged" />
+            <TextBox Grid.Column="0" Grid.Row="1" Height="40" VerticalAlignment="Top" Margin="5" FontSize="16" Name="txtUPC" TextChanged="txtUPC_TextChanged" KeyDown="txtUPC_KeyDown" />
             <TextBlock Text="Name:" Grid.Column="1" Grid.Row="0" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <TextBox Grid.Column="1" Grid.Row="1" Height="40" VerticalAlignment="Top" Margin="5" FontSize="16" IsEnabled="False" Name="txtName" />
+            <!--<TextBox Grid.Column="1" Grid.Row="1" Height="40" VerticalAlignment="Top" Margin="5" FontSize="16" IsEnabled="False" Name="txtName" />-->
+            <Grid Grid.Column="1" Grid.Row="1">
+                <TextBox Height="40" VerticalAlignment="Top" Margin="5" FontSize="16" Name="txtName" TextChanged="txtName_TextChanged" />
+                <Popup Name="NameSuggestionsPopup" Placement="Bottom" PlacementTarget="{Binding ElementName=txtName}" StaysOpen="False">
+                    <ListBox Name="lstNameSuggestions" Width="{Binding ElementName=txtName, Path=ActualWidth}" SelectionChanged="lstNameSuggestions_SelectionChanged" />
+                </Popup>
+            </Grid>
             <TextBlock Text="Quantity:" Grid.Column="2" Grid.Row="0" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top"/>
             <TextBox Grid.Column="2" Grid.Row="1" Height="40" VerticalAlignment="Top" Margin="5" FontSize="16" Name="txtQuantity" TextChanged="txtQuantity_TextChanged"/>
             <Button Grid.Column="3" Grid.Row="1" Width="100" Height="40" Margin="5,-25,5,5" Content="Search" Name="btnSearch" Click="btnSearch_Click" />
@@ -40,22 +46,29 @@
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <!-- Label -->
-                <ColumnDefinition Width="2*" />
-                <!-- Dropdown -->
-                <ColumnDefinition Width="8*" />
-                <!-- Button -->
+                <ColumnDefinition Width="1*" />
+                <!-- Label for Quick ADD -->
+                <ColumnDefinition Width="1*" />
+                <!-- Dropdown for Quick ADD -->
+                <ColumnDefinition Width="1*" />
+                <!-- Button for Quick ADD -->
+                <ColumnDefinition Width="1*" />
+                <!-- Label for Discount -->
+                <ColumnDefinition Width="1*" />
+                <!-- TextBox for Discount -->
+                <ColumnDefinition Width="1*" />
+                <!-- Button for Apply -->
             </Grid.ColumnDefinitions>
 
-            <!-- Label -->
-            <TextBlock Text="Quick ADD:" Grid.Column="0" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5" />
+            <!-- Quick ADD Section -->
+            <TextBlock Text="Quick ADD:" Grid.Column="0" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5" />
+            <ComboBox Name="cbQuickADD" Grid.Column="1" Width="200" Height="30" HorizontalAlignment="Left" Margin="0" />
+            <Button Grid.Column="2" Width="100" Height="30" Margin="0" Content="Add" Name="btnQuickAdd" Click="btnQuickAdd_Click" HorizontalAlignment="Left"/>
 
-            <!-- Dropdown -->
-            <ComboBox Name="cbQuickADD" Grid.Column="1" Width="150" Height="30" HorizontalAlignment="Left" Margin="5" />
-
-            <!-- Button -->
-            <Button Grid.Column="2" Width="100" Height="40" Margin="5" Content="Add" Name="btnQuickAdd" Click="btnQuickAdd_Click" HorizontalAlignment="Left"/>
+            <!-- Discount Section -->
+            <TextBlock Text="Discount:" Grid.Column="3" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5" Name="textDiscount" />
+            <TextBox Name="txtDiscountValue" Grid.Column="4" Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" PreviewTextInput="txtDiscountValue_PreviewTextInput" />
+            <Button Grid.Column="5" Width="100" Height="30" Margin="0" Content="Apply" Name="btnApplyDiscount" Click="btnApplyDiscount_Click" HorizontalAlignment="Left"  />
         </Grid>
 
 
@@ -68,22 +81,23 @@
             </Grid.ColumnDefinitions>
 
             <!-- Item List -->
-            <DataGrid Grid.Column="0" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserAddRows="False" Name="dgBilling" SelectionMode="Single" SelectionUnit="FullRow">
+            <DataGrid Grid.Column="0" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserAddRows="False" Name="dgBilling" SelectionMode="Single" SelectionUnit="FullRow" CellEditEnding="dgBilling_CellEditEnding" PreviewTextInput="dgBilling_PreviewTextInput">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="UPC" Width="*" Binding="{Binding UPC}"/>
-                    <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}"/>
-                    <DataGridTextColumn Header="Price" Width="*" Binding="{Binding Price}"/>
-                    <DataGridTextColumn Header="Quantity" Width="*" Binding="{Binding Quantity}"/>
-                    <DataGridTextColumn Header="Tax" Width="*" Binding="{Binding Tax}"/>
-                    <DataGridTextColumn Header="Total Price" Width="*" Binding="{Binding TotalPrice}"/>
+                    <DataGridTextColumn Header="UPC" Width="*" Binding="{Binding UPC}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Price" Width="*" Binding="{Binding Price}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Quantity" Width="*" Binding="{Binding Quantity}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Tax" Width="*" Binding="{Binding Tax}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Total Price" Width="*" Binding="{Binding TotalPrice}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Discount (%)" Width="*" Binding="{Binding Discount, Mode=TwoWay}" />
                 </DataGrid.Columns>
             </DataGrid>
 
             <!-- Right Panel: Payment and Options -->
             <Grid Grid.Column="1" Margin="10">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="8*"/>
-                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="7*"/>
+                    <RowDefinition Height="3*"/>
                 </Grid.RowDefinitions>
 
                 <!-- Totals -->
@@ -92,8 +106,11 @@
                     <TextBlock FontSize="20" FontWeight="Bold" Name="txtTotal" Text="{Binding SubTotal, StringFormat=C}"/>
                     <TextBlock Text="Tax" FontSize="16"/>
                     <TextBlock FontSize="20" FontWeight="Bold" Name="txtTax" Text="{Binding Tax, StringFormat=C}"/>
+                    <TextBlock Text="Discount" FontSize="16" Visibility="Collapsed"/>
+                    <TextBlock FontSize="20" FontWeight="Bold" Name="txtDiscount" Text="{Binding Discount, StringFormat=C}"  Visibility="Collapsed"/>
                     <TextBlock Text="Grand Total" FontSize="16"/>
                     <TextBlock FontSize="20" FontWeight="Bold" Name="txtGrandTotal" Text="{Binding GrandTotal, StringFormat=C}" />
+                    <!--<TextBlock Text="Invoice Number" FontSize="16" Visibility="Collapsed" Text="0"/>-->
                 </StackPanel>
 
                 <!-- Payment Buttons -->
@@ -102,6 +119,7 @@
                     <Button Content="CASH" Name="btnCash" Click="btnCash_Click"/>
                     <Button Content="VOID INVOICE" Background="Red" Foreground="White" Name="btnVoidInvoice" Click="btnVoidInvoice_Click"/>
                     <Button Content="PRINT INVOICE" Background="Yellow" Name="btnPrintInvoice" Click="btnPrintInvoice_Click"/>
+                    <!--<WebBrowser Name="pdfWebViewer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>-->
                     <Button Content="REMOVE ITEM" Background="Red" Name="btnRemoveItem" Click="btnRemoveItem_Click"/>
                     <!--<Button Content="FETCH ON HOLD" Background="Orange"/>-->
                     <!--<Button Content="PAY THROUGH PALM PAY"/>-->

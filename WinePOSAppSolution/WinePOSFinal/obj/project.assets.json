@@ -1,37 +1,382 @@
 {
   "version": 3,
   "targets": {
-    "net6.0-windows7.0": {
+    ".NETFramework,Version=v4.7.2": {
       "ClosedXML/0.104.2": {
         "type": "package",
         "dependencies": {
           "ClosedXML.Parser": "[1.2.0, 2.0.0)",
           "DocumentFormat.OpenXml": "[3.1.1, 4.0.0)",
           "ExcelNumberFormat": "1.1.0",
+          "Microsoft.Bcl.HashCode": "1.1.1",
           "RBush": "4.0.0",
-          "SixLabors.Fonts": "1.0.0"
+          "SixLabors.Fonts": "1.0.0",
+          "System.Buffers": "4.5.1",
+          "System.Memory": "4.5.4"
         },
         "compile": {
-          "lib/netstandard2.1/ClosedXML.dll": {
+          "lib/netstandard2.0/ClosedXML.dll": {
             "related": ".pdb;.xml"
           }
         },
         "runtime": {
-          "lib/netstandard2.1/ClosedXML.dll": {
+          "lib/netstandard2.0/ClosedXML.dll": {
             "related": ".pdb;.xml"
           }
         }
       },
       "ClosedXML.Parser/1.2.0": {
         "type": "package",
+        "dependencies": {
+          "System.Memory": "4.5.4"
+        },
         "compile": {
-          "lib/netstandard2.1/ClosedXML.Parser.dll": {
+          "lib/netstandard2.0/ClosedXML.Parser.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/netstandard2.1/ClosedXML.Parser.dll": {
+          "lib/netstandard2.0/ClosedXML.Parser.dll": {
             "related": ".xml"
+          }
+        }
+      },
+      "CrystalDecisions.ReportSource/1.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/CrystalDecisions.ReportSource.dll": {}
+        },
+        "runtime": {
+          "lib/CrystalDecisions.ReportSource.dll": {}
+        }
+      },
+      "CrystalDecisions.Shared/1.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/CrystalDecisions.Shared.dll": {}
+        },
+        "runtime": {
+          "lib/CrystalDecisions.Shared.dll": {}
+        }
+      },
+      "CrystalReports.Engine/13.0.4003": {
+        "type": "package",
+        "dependencies": {
+          "CrystalReports.ReportAppServer.ClientDoc": "13.0.4003",
+          "CrystalReports.ReportAppServer.CommLayer": "13.0.4003",
+          "CrystalReports.ReportAppServer.CommonObjectModel": "13.0.4003",
+          "CrystalReports.ReportAppServer.Controllers": "13.0.4003",
+          "CrystalReports.ReportAppServer.CubeDefModel": "13.0.4003",
+          "CrystalReports.ReportAppServer.DataDefModel": "13.0.4003",
+          "CrystalReports.ReportAppServer.DataSetConversion": "13.0.4003",
+          "CrystalReports.ReportAppServer.ObjectFactory": "13.0.4003",
+          "CrystalReports.ReportAppServer.Prompting": "13.0.4003",
+          "CrystalReports.ReportAppServer.ReportDefModel": "13.0.4003",
+          "CrystalReports.ReportAppServer.XmlSerialize": "13.0.4003",
+          "CrystalReports.Shared": "13.0.4003"
+        },
+        "compile": {
+          "lib/net40/CrystalDecisions.CrystalReports.Engine.dll": {}
+        },
+        "runtime": {
+          "lib/net40/CrystalDecisions.CrystalReports.Engine.dll": {}
+        },
+        "resource": {
+          "lib/net40/cs/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net40/da/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "da"
+          },
+          "lib/net40/de/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net40/en/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "en"
+          },
+          "lib/net40/es/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net40/fi/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "fi"
+          },
+          "lib/net40/fr/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net40/hu/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "hu"
+          },
+          "lib/net40/it/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net40/ja/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net40/ko/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net40/nb-NO/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "nb-NO"
+          },
+          "lib/net40/nl/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "nl"
+          },
+          "lib/net40/pl/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net40/pt/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "pt"
+          },
+          "lib/net40/ru/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net40/sk/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "sk"
+          },
+          "lib/net40/sv/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "sv"
+          },
+          "lib/net40/th/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "th"
+          },
+          "lib/net40/tr/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net40/zh-CHS/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "zh-CHS"
+          },
+          "lib/net40/zh-CHT/CrystalDecisions.CrystalReports.Engine.resources.dll": {
+            "locale": "zh-CHT"
+          }
+        }
+      },
+      "CrystalReports.ReportAppServer.ClientDoc/13.0.4003": {
+        "type": "package",
+        "dependencies": {
+          "CrystalReports.ReportAppServer.CommLayer": "13.0.4003",
+          "CrystalReports.ReportAppServer.CommonControls": "13.0.4003",
+          "CrystalReports.ReportAppServer.CommonObjectModel": "13.0.4003",
+          "CrystalReports.ReportAppServer.Controllers": "13.0.4003",
+          "CrystalReports.ReportAppServer.CubeDefModel": "13.0.4003",
+          "CrystalReports.ReportAppServer.DataDefModel": "13.0.4003",
+          "CrystalReports.ReportAppServer.ReportDefModel": "13.0.4003"
+        },
+        "compile": {
+          "lib/net40/CrystalDecisions.ReportAppServer.ClientDoc.dll": {}
+        },
+        "runtime": {
+          "lib/net40/CrystalDecisions.ReportAppServer.ClientDoc.dll": {}
+        }
+      },
+      "CrystalReports.ReportAppServer.CommLayer/13.0.4003": {
+        "type": "package",
+        "dependencies": {
+          "CrystalReports.ReportAppServer.CommonObjectModel": "13.0.4003"
+        },
+        "compile": {
+          "lib/net40/CrystalDecisions.ReportAppServer.CommLayer.dll": {}
+        },
+        "runtime": {
+          "lib/net40/CrystalDecisions.ReportAppServer.CommLayer.dll": {}
+        }
+      },
+      "CrystalReports.ReportAppServer.CommonControls/13.0.4003": {
+        "type": "package",
+        "compile": {
+          "lib/net40/CrystalDecisions.ReportAppServer.CommonControls.dll": {}
+        },
+        "runtime": {
+          "lib/net40/CrystalDecisions.ReportAppServer.CommonControls.dll": {}
+        }
+      },
+      "CrystalReports.ReportAppServer.CommonObjectModel/13.0.4003": {
+        "type": "package",
+        "compile": {
+          "lib/net40/CrystalDecisions.ReportAppServer.CommonObjectModel.dll": {}
+        },
+        "runtime": {
+          "lib/net40/CrystalDecisions.ReportAppServer.CommonObjectModel.dll": {}
+        }
+      },
+      "CrystalReports.ReportAppServer.Controllers/13.0.4003": {
+        "type": "package",
+        "dependencies": {
+          "CrystalReports.ReportAppServer.CommLayer": "13.0.4003",
+          "CrystalReports.ReportAppServer.CommonObjectModel": "13.0.4003",
+          "CrystalReports.ReportAppServer.CubeDefModel": "13.0.4003",
+          "CrystalReports.ReportAppServer.DataDefModel": "13.0.4003",
+          "CrystalReports.ReportAppServer.ReportDefModel": "13.0.4003"
+        },
+        "compile": {
+          "lib/net40/CrystalDecisions.ReportAppServer.Controllers.dll": {}
+        },
+        "runtime": {
+          "lib/net40/CrystalDecisions.ReportAppServer.Controllers.dll": {}
+        }
+      },
+      "CrystalReports.ReportAppServer.CubeDefModel/13.0.4003": {
+        "type": "package",
+        "dependencies": {
+          "CrystalReports.ReportAppServer.CommonObjectModel": "13.0.4003",
+          "CrystalReports.ReportAppServer.DataDefModel": "13.0.4003"
+        },
+        "compile": {
+          "lib/net40/CrystalDecisions.ReportAppServer.CubeDefModel.dll": {}
+        },
+        "runtime": {
+          "lib/net40/CrystalDecisions.ReportAppServer.CubeDefModel.dll": {}
+        }
+      },
+      "CrystalReports.ReportAppServer.DataDefModel/13.0.4003": {
+        "type": "package",
+        "dependencies": {
+          "CrystalReports.ReportAppServer.CommonObjectModel": "13.0.4003"
+        },
+        "compile": {
+          "lib/net40/CrystalDecisions.ReportAppServer.DataDefModel.dll": {}
+        },
+        "runtime": {
+          "lib/net40/CrystalDecisions.ReportAppServer.DataDefModel.dll": {}
+        }
+      },
+      "CrystalReports.ReportAppServer.DataSetConversion/13.0.4003": {
+        "type": "package",
+        "dependencies": {
+          "CrystalReports.ReportAppServer.ClientDoc": "13.0.4003",
+          "CrystalReports.ReportAppServer.Controllers": "13.0.4003",
+          "CrystalReports.ReportAppServer.DataDefModel": "13.0.4003",
+          "CrystalReports.ReportAppServer.ObjectFactory": "13.0.4003",
+          "CrystalReports.ReportAppServer.ReportDefModel": "13.0.4003",
+          "CrystalReports.ReportAppServer.XmlSerialize": "13.0.4003",
+          "CrystalReports.Shared": "13.0.4003"
+        },
+        "compile": {
+          "lib/net40/CrystalDecisions.ReportAppServer.DataSetConversion.dll": {}
+        },
+        "runtime": {
+          "lib/net40/CrystalDecisions.ReportAppServer.DataSetConversion.dll": {}
+        }
+      },
+      "CrystalReports.ReportAppServer.ObjectFactory/13.0.4003": {
+        "type": "package",
+        "compile": {
+          "lib/net40/CrystalDecisions.ReportAppServer.ObjectFactory.dll": {}
+        },
+        "runtime": {
+          "lib/net40/CrystalDecisions.ReportAppServer.ObjectFactory.dll": {}
+        }
+      },
+      "CrystalReports.ReportAppServer.Prompting/13.0.4003": {
+        "type": "package",
+        "compile": {
+          "lib/net40/CrystalDecisions.ReportAppServer.Prompting.dll": {}
+        },
+        "runtime": {
+          "lib/net40/CrystalDecisions.ReportAppServer.Prompting.dll": {}
+        }
+      },
+      "CrystalReports.ReportAppServer.ReportDefModel/13.0.4003": {
+        "type": "package",
+        "dependencies": {
+          "CrystalReports.ReportAppServer.CommonObjectModel": "13.0.4003",
+          "CrystalReports.ReportAppServer.CubeDefModel": "13.0.4003",
+          "CrystalReports.ReportAppServer.DataDefModel": "13.0.4003"
+        },
+        "compile": {
+          "lib/net40/CrystalDecisions.ReportAppServer.ReportDefModel.dll": {}
+        },
+        "runtime": {
+          "lib/net40/CrystalDecisions.ReportAppServer.ReportDefModel.dll": {}
+        }
+      },
+      "CrystalReports.ReportAppServer.XmlSerialize/13.0.4003": {
+        "type": "package",
+        "compile": {
+          "lib/net40/CrystalDecisions.ReportAppServer.XmlSerialize.dll": {}
+        },
+        "runtime": {
+          "lib/net40/CrystalDecisions.ReportAppServer.XmlSerialize.dll": {}
+        }
+      },
+      "CrystalReports.Shared/13.0.4003": {
+        "type": "package",
+        "dependencies": {
+          "CrystalReports.ReportAppServer.Controllers": "13.0.4003",
+          "CrystalReports.ReportAppServer.DataDefModel": "13.0.4003",
+          "log4net": "2.0.12"
+        },
+        "compile": {
+          "lib/net40/CrystalDecisions.Shared.dll": {}
+        },
+        "runtime": {
+          "lib/net40/CrystalDecisions.Shared.dll": {}
+        },
+        "resource": {
+          "lib/net40/cs/CrystalDecisions.Shared.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net40/da/CrystalDecisions.Shared.resources.dll": {
+            "locale": "da"
+          },
+          "lib/net40/de/CrystalDecisions.Shared.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net40/en/CrystalDecisions.Shared.resources.dll": {
+            "locale": "en"
+          },
+          "lib/net40/es/CrystalDecisions.Shared.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net40/fi/CrystalDecisions.Shared.resources.dll": {
+            "locale": "fi"
+          },
+          "lib/net40/fr/CrystalDecisions.Shared.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net40/hu/CrystalDecisions.Shared.resources.dll": {
+            "locale": "hu"
+          },
+          "lib/net40/it/CrystalDecisions.Shared.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net40/ja/CrystalDecisions.Shared.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net40/ko/CrystalDecisions.Shared.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net40/nb-NO/CrystalDecisions.Shared.resources.dll": {
+            "locale": "nb-NO"
+          },
+          "lib/net40/nl/CrystalDecisions.Shared.resources.dll": {
+            "locale": "nl"
+          },
+          "lib/net40/pl/CrystalDecisions.Shared.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net40/pt/CrystalDecisions.Shared.resources.dll": {
+            "locale": "pt"
+          },
+          "lib/net40/ru/CrystalDecisions.Shared.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net40/sk/CrystalDecisions.Shared.resources.dll": {
+            "locale": "sk"
+          },
+          "lib/net40/sv/CrystalDecisions.Shared.resources.dll": {
+            "locale": "sv"
+          },
+          "lib/net40/th/CrystalDecisions.Shared.resources.dll": {
+            "locale": "th"
+          },
+          "lib/net40/tr/CrystalDecisions.Shared.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net40/zh-CHS/CrystalDecisions.Shared.resources.dll": {
+            "locale": "zh-CHS"
+          },
+          "lib/net40/zh-CHT/CrystalDecisions.Shared.resources.dll": {
+            "locale": "zh-CHT"
           }
         }
       },
@@ -40,29 +385,36 @@
         "dependencies": {
           "DocumentFormat.OpenXml.Framework": "3.1.1"
         },
+        "frameworkAssemblies": [
+          "System",
+          "System.Xml",
+          "WindowsBase"
+        ],
         "compile": {
-          "lib/netstandard2.0/DocumentFormat.OpenXml.dll": {
+          "lib/net46/DocumentFormat.OpenXml.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/netstandard2.0/DocumentFormat.OpenXml.dll": {
+          "lib/net46/DocumentFormat.OpenXml.dll": {
             "related": ".xml"
           }
         }
       },
       "DocumentFormat.OpenXml.Framework/3.1.1": {
         "type": "package",
-        "dependencies": {
-          "System.IO.Packaging": "8.0.1"
-        },
+        "frameworkAssemblies": [
+          "System",
+          "System.Xml",
+          "WindowsBase"
+        ],
         "compile": {
-          "lib/net6.0/DocumentFormat.OpenXml.Framework.dll": {
+          "lib/net46/DocumentFormat.OpenXml.Framework.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/DocumentFormat.OpenXml.Framework.dll": {
+          "lib/net46/DocumentFormat.OpenXml.Framework.dll": {
             "related": ".xml"
           }
         }
@@ -70,12 +422,44 @@
       "ExcelNumberFormat/1.1.0": {
         "type": "package",
         "compile": {
-          "lib/netstandard2.0/ExcelNumberFormat.dll": {
+          "lib/net20/ExcelNumberFormat.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/netstandard2.0/ExcelNumberFormat.dll": {
+          "lib/net20/ExcelNumberFormat.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "log4net/2.0.12": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Configuration",
+          "System.Web"
+        ],
+        "compile": {
+          "lib/net45/log4net.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net45/log4net.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.Bcl.HashCode/1.1.1": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System",
+          "mscorlib"
+        ],
+        "compile": {
+          "ref/net461/Microsoft.Bcl.HashCode.dll": {}
+        },
+        "runtime": {
+          "lib/net461/Microsoft.Bcl.HashCode.dll": {
             "related": ".xml"
           }
         }
@@ -83,107 +467,145 @@
       "RBush/4.0.0": {
         "type": "package",
         "compile": {
-          "lib/netstandard2.0/RBush.dll": {
+          "lib/net47/RBush.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/netstandard2.0/RBush.dll": {
+          "lib/net47/RBush.dll": {
             "related": ".xml"
-          }
-        }
-      },
-      "runtime.native.System.Data.SqlClient.sni/4.4.0": {
-        "type": "package",
-        "dependencies": {
-          "runtime.win-arm64.runtime.native.System.Data.SqlClient.sni": "4.4.0",
-          "runtime.win-x64.runtime.native.System.Data.SqlClient.sni": "4.4.0",
-          "runtime.win-x86.runtime.native.System.Data.SqlClient.sni": "4.4.0"
-        }
-      },
-      "runtime.win-arm64.runtime.native.System.Data.SqlClient.sni/4.4.0": {
-        "type": "package",
-        "runtimeTargets": {
-          "runtimes/win-arm64/native/sni.dll": {
-            "assetType": "native",
-            "rid": "win-arm64"
-          }
-        }
-      },
-      "runtime.win-x64.runtime.native.System.Data.SqlClient.sni/4.4.0": {
-        "type": "package",
-        "runtimeTargets": {
-          "runtimes/win-x64/native/sni.dll": {
-            "assetType": "native",
-            "rid": "win-x64"
-          }
-        }
-      },
-      "runtime.win-x86.runtime.native.System.Data.SqlClient.sni/4.4.0": {
-        "type": "package",
-        "runtimeTargets": {
-          "runtimes/win-x86/native/sni.dll": {
-            "assetType": "native",
-            "rid": "win-x86"
           }
         }
       },
       "SixLabors.Fonts/1.0.0": {
         "type": "package",
+        "dependencies": {
+          "System.Buffers": "4.5.1",
+          "System.Memory": "4.5.4",
+          "System.Numerics.Vectors": "4.5.0",
+          "System.Runtime.CompilerServices.Unsafe": "4.7.0"
+        },
         "compile": {
-          "lib/netcoreapp3.1/SixLabors.Fonts.dll": {
+          "lib/netstandard2.0/SixLabors.Fonts.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/netcoreapp3.1/SixLabors.Fonts.dll": {
+          "lib/netstandard2.0/SixLabors.Fonts.dll": {
             "related": ".xml"
           }
+        }
+      },
+      "System.Buffers/4.5.1": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "mscorlib"
+        ],
+        "compile": {
+          "ref/net45/System.Buffers.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net461/System.Buffers.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "System.Data.DataSetExtensions/4.5.0": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Data.DataSetExtensions"
+        ],
+        "compile": {
+          "ref/net45/_._": {}
+        },
+        "runtime": {
+          "lib/net45/_._": {}
         }
       },
       "System.Data.SqlClient/4.9.0": {
         "type": "package",
-        "dependencies": {
-          "runtime.native.System.Data.SqlClient.sni": "4.4.0"
-        },
         "compile": {
-          "lib/net6.0/System.Data.SqlClient.dll": {
+          "lib/net462/System.Data.SqlClient.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/System.Data.SqlClient.dll": {
+          "lib/net462/System.Data.SqlClient.dll": {
             "related": ".xml"
           }
         },
         "build": {
-          "buildTransitive/net6.0/_._": {}
+          "buildTransitive/net462/_._": {}
+        }
+      },
+      "System.Drawing.Common/9.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net462/System.Drawing.Common.dll": {
+            "related": ".pdb;.xml"
+          }
         },
-        "runtimeTargets": {
-          "runtimes/unix/lib/net6.0/System.Data.SqlClient.dll": {
-            "assetType": "runtime",
-            "rid": "unix"
-          },
-          "runtimes/win/lib/net6.0/System.Data.SqlClient.dll": {
-            "assetType": "runtime",
-            "rid": "win"
+        "runtime": {
+          "lib/net462/System.Drawing.Common.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net462/_._": {}
+        }
+      },
+      "System.Memory/4.5.4": {
+        "type": "package",
+        "dependencies": {
+          "System.Buffers": "4.5.1",
+          "System.Numerics.Vectors": "4.5.0",
+          "System.Runtime.CompilerServices.Unsafe": "4.5.3"
+        },
+        "frameworkAssemblies": [
+          "System",
+          "mscorlib"
+        ],
+        "compile": {
+          "lib/net461/System.Memory.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net461/System.Memory.dll": {
+            "related": ".xml"
           }
         }
       },
-      "System.IO.Packaging/8.0.1": {
+      "System.Numerics.Vectors/4.5.0": {
         "type": "package",
+        "frameworkAssemblies": [
+          "System.Numerics",
+          "mscorlib"
+        ],
         "compile": {
-          "lib/net6.0/System.IO.Packaging.dll": {
+          "ref/net46/System.Numerics.Vectors.dll": {
             "related": ".xml"
           }
         },
         "runtime": {
-          "lib/net6.0/System.IO.Packaging.dll": {
+          "lib/net46/System.Numerics.Vectors.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "System.Runtime.CompilerServices.Unsafe/4.7.0": {
+        "type": "package",
+        "compile": {
+          "ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll": {
             "related": ".xml"
           }
         },
-        "build": {
-          "buildTransitive/net6.0/_._": {}
+        "runtime": {
+          "lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll": {
+            "related": ".xml"
+          }
         }
       }
     }
@@ -221,6 +643,298 @@
         "lib/netstandard2.0/ClosedXML.Parser.xml",
         "lib/netstandard2.1/ClosedXML.Parser.dll",
         "lib/netstandard2.1/ClosedXML.Parser.xml"
+      ]
+    },
+    "CrystalDecisions.ReportSource/1.0.0": {
+      "sha512": "YO0Ap65qeD1WO66Bcu9ZCb2cN4Zuq/sii8+0/jX6jTEzaO1tPbizDtSSJC0tp+nOnQqeGJNM+4sN5K+tTWDGJQ==",
+      "type": "package",
+      "path": "crystaldecisions.reportsource/1.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "crystaldecisions.reportsource.1.0.0.nupkg.sha512",
+        "crystaldecisions.reportsource.nuspec",
+        "lib/CrystalDecisions.ReportSource.dll"
+      ]
+    },
+    "CrystalDecisions.Shared/1.0.0": {
+      "sha512": "M3T2xrJ/oTrPUu3j0ODVhP981QTPdoHSly47IfrIWy7UUROpfF1p8jRTYzBoy2toQ2B5PKtnnkpAimp2mtnrdg==",
+      "type": "package",
+      "path": "crystaldecisions.shared/1.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "crystaldecisions.shared.1.0.0.nupkg.sha512",
+        "crystaldecisions.shared.nuspec",
+        "lib/CrystalDecisions.Shared.dll"
+      ]
+    },
+    "CrystalReports.Engine/13.0.4003": {
+      "sha512": "B3LM5SQdqaOHa5p0b9pO0+CNhXZOUA24R+wFJKyTwFNVgh1a9luTqdV8Jz8ygrRvB9DX/9UpYbMQwptLxpcYdA==",
+      "type": "package",
+      "path": "crystalreports.engine/13.0.4003",
+      "files": [
+        ".editoricon.png",
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "CHANGELOG.md",
+        "LICENSE",
+        "README.md",
+        "crystalreports.engine.13.0.4003.nupkg.sha512",
+        "crystalreports.engine.nuspec",
+        "lib/net40/CrystalDecisions.CrystalReports.Engine.dll",
+        "lib/net40/cs/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/da/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/de/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/en/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/es/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/fi/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/fr/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/hu/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/it/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/ja/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/ko/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/nb-NO/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/nl/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/pl/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/pt/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/ru/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/sk/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/sv/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/th/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/tr/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/zh-CHS/CrystalDecisions.CrystalReports.Engine.resources.dll",
+        "lib/net40/zh-CHT/CrystalDecisions.CrystalReports.Engine.resources.dll"
+      ]
+    },
+    "CrystalReports.ReportAppServer.ClientDoc/13.0.4003": {
+      "sha512": "NWqCFFTLTuPp2LqcN1HZqBQ7Vvu3dgqoKWESSt+Csbg6FfM1mhtupKWidnGxP02DccoqgOUa44H2fuih9veRbw==",
+      "type": "package",
+      "path": "crystalreports.reportappserver.clientdoc/13.0.4003",
+      "files": [
+        ".editoricon.png",
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "CHANGELOG.md",
+        "LICENSE",
+        "README.md",
+        "crystalreports.reportappserver.clientdoc.13.0.4003.nupkg.sha512",
+        "crystalreports.reportappserver.clientdoc.nuspec",
+        "lib/net40/CrystalDecisions.ReportAppServer.ClientDoc.dll"
+      ]
+    },
+    "CrystalReports.ReportAppServer.CommLayer/13.0.4003": {
+      "sha512": "hBoIi0tS4i8UxM8q+QAP11QdhhR2fRURJb7nvAtPEWT4fSO9+1f9vl8EDkGUp3aletMetR5r+WjAQZRrHcLoyg==",
+      "type": "package",
+      "path": "crystalreports.reportappserver.commlayer/13.0.4003",
+      "files": [
+        ".editoricon.png",
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "CHANGELOG.md",
+        "LICENSE",
+        "README.md",
+        "crystalreports.reportappserver.commlayer.13.0.4003.nupkg.sha512",
+        "crystalreports.reportappserver.commlayer.nuspec",
+        "lib/net40/CrystalDecisions.ReportAppServer.CommLayer.dll"
+      ]
+    },
+    "CrystalReports.ReportAppServer.CommonControls/13.0.4003": {
+      "sha512": "xqeaj6JuxI8TD0WwrP+VcvT/mghBvnEWZii2zlwgqd48E+eebr01MJnI0gRZrhg2LgQpcjBo90Xwc5iI9oH+tg==",
+      "type": "package",
+      "path": "crystalreports.reportappserver.commoncontrols/13.0.4003",
+      "files": [
+        ".editoricon.png",
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "CHANGELOG.md",
+        "LICENSE",
+        "README.md",
+        "crystalreports.reportappserver.commoncontrols.13.0.4003.nupkg.sha512",
+        "crystalreports.reportappserver.commoncontrols.nuspec",
+        "lib/net40/CrystalDecisions.ReportAppServer.CommonControls.dll"
+      ]
+    },
+    "CrystalReports.ReportAppServer.CommonObjectModel/13.0.4003": {
+      "sha512": "dLSfzSNg+OxDTcqUFahhCLvMBxF7bKDxnh1EBKXoLl65SSHP8QBNAeI4CpKXtNimUOUJ/sW1McuGYX4CAgUmAw==",
+      "type": "package",
+      "path": "crystalreports.reportappserver.commonobjectmodel/13.0.4003",
+      "files": [
+        ".editoricon.png",
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "CHANGELOG.md",
+        "LICENSE",
+        "README.md",
+        "crystalreports.reportappserver.commonobjectmodel.13.0.4003.nupkg.sha512",
+        "crystalreports.reportappserver.commonobjectmodel.nuspec",
+        "lib/net40/CrystalDecisions.ReportAppServer.CommonObjectModel.dll"
+      ]
+    },
+    "CrystalReports.ReportAppServer.Controllers/13.0.4003": {
+      "sha512": "60Tg65l9NCFX4u8MFX2QWAL7GmQhtmUXJaNhv9F/vXEmlFXHC76vbkwgBumKQcIPpoOhlZK/dqz6YcNP0sHkgA==",
+      "type": "package",
+      "path": "crystalreports.reportappserver.controllers/13.0.4003",
+      "files": [
+        ".editoricon.png",
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "CHANGELOG.md",
+        "LICENSE",
+        "README.md",
+        "crystalreports.reportappserver.controllers.13.0.4003.nupkg.sha512",
+        "crystalreports.reportappserver.controllers.nuspec",
+        "lib/net40/CrystalDecisions.ReportAppServer.Controllers.dll"
+      ]
+    },
+    "CrystalReports.ReportAppServer.CubeDefModel/13.0.4003": {
+      "sha512": "ZBns1JhhuBrHudpZowKNRlhXY/GW5BWMoqyafM3eHxoZL1K4mSn/UYPEzNFseYio4abUs5Iw4+K8adCOtfinqw==",
+      "type": "package",
+      "path": "crystalreports.reportappserver.cubedefmodel/13.0.4003",
+      "files": [
+        ".editoricon.png",
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "CHANGELOG.md",
+        "LICENSE",
+        "README.md",
+        "crystalreports.reportappserver.cubedefmodel.13.0.4003.nupkg.sha512",
+        "crystalreports.reportappserver.cubedefmodel.nuspec",
+        "lib/net40/CrystalDecisions.ReportAppServer.CubeDefModel.dll"
+      ]
+    },
+    "CrystalReports.ReportAppServer.DataDefModel/13.0.4003": {
+      "sha512": "8sSuETn80yMzW0Edjn6Y3Dyif85QKCf4771Q44Jk/soxTo8FcSG8VEm91M9d+CrFivFqlsH7ENPjjKhQ1kInsg==",
+      "type": "package",
+      "path": "crystalreports.reportappserver.datadefmodel/13.0.4003",
+      "files": [
+        ".editoricon.png",
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "CHANGELOG.md",
+        "LICENSE",
+        "README.md",
+        "crystalreports.reportappserver.datadefmodel.13.0.4003.nupkg.sha512",
+        "crystalreports.reportappserver.datadefmodel.nuspec",
+        "lib/net40/CrystalDecisions.ReportAppServer.DataDefModel.dll"
+      ]
+    },
+    "CrystalReports.ReportAppServer.DataSetConversion/13.0.4003": {
+      "sha512": "daPXUF5uAxD94HTKemUs41exkPSwSPq9cqo5QdqaKslZR5AOZcXfgYmIXwyj9yC/h2LP4g/pC6JTS97c4GOc3w==",
+      "type": "package",
+      "path": "crystalreports.reportappserver.datasetconversion/13.0.4003",
+      "files": [
+        ".editoricon.png",
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "CHANGELOG.md",
+        "LICENSE",
+        "README.md",
+        "crystalreports.reportappserver.datasetconversion.13.0.4003.nupkg.sha512",
+        "crystalreports.reportappserver.datasetconversion.nuspec",
+        "lib/net40/CrystalDecisions.ReportAppServer.DataSetConversion.dll"
+      ]
+    },
+    "CrystalReports.ReportAppServer.ObjectFactory/13.0.4003": {
+      "sha512": "D3/LsgwkMtVW7Utv7Kl0PM2IVhBPtf+yGgxo0KD++NY8RTsxot21ONXkAcZGOH9pB7Ly9YwAedC7wP/OxD1KJg==",
+      "type": "package",
+      "path": "crystalreports.reportappserver.objectfactory/13.0.4003",
+      "files": [
+        ".editoricon.png",
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "CHANGELOG.md",
+        "LICENSE",
+        "README.md",
+        "crystalreports.reportappserver.objectfactory.13.0.4003.nupkg.sha512",
+        "crystalreports.reportappserver.objectfactory.nuspec",
+        "lib/net40/CrystalDecisions.ReportAppServer.ObjectFactory.dll"
+      ]
+    },
+    "CrystalReports.ReportAppServer.Prompting/13.0.4003": {
+      "sha512": "yjIja0uvk9VGxpQqm0Z2pC/KH7Sjp2IAwJpJMrdz2xNUyi2tOq8MO2NsQmMAZRTWgKm5Sep8J5kTvPYkSBfyqg==",
+      "type": "package",
+      "path": "crystalreports.reportappserver.prompting/13.0.4003",
+      "files": [
+        ".editoricon.png",
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "CHANGELOG.md",
+        "LICENSE",
+        "README.md",
+        "crystalreports.reportappserver.prompting.13.0.4003.nupkg.sha512",
+        "crystalreports.reportappserver.prompting.nuspec",
+        "lib/net40/CrystalDecisions.ReportAppServer.Prompting.dll"
+      ]
+    },
+    "CrystalReports.ReportAppServer.ReportDefModel/13.0.4003": {
+      "sha512": "lEXNeJ9x2GVPL/+PmhTJrsY84uGwgj+Uum1CLBnphdpkORBwauETrU1dDSVaQbgYGahfDZgm0PtZEWVbU2MfjQ==",
+      "type": "package",
+      "path": "crystalreports.reportappserver.reportdefmodel/13.0.4003",
+      "files": [
+        ".editoricon.png",
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "CHANGELOG.md",
+        "LICENSE",
+        "README.md",
+        "crystalreports.reportappserver.reportdefmodel.13.0.4003.nupkg.sha512",
+        "crystalreports.reportappserver.reportdefmodel.nuspec",
+        "lib/net40/CrystalDecisions.ReportAppServer.ReportDefModel.dll"
+      ]
+    },
+    "CrystalReports.ReportAppServer.XmlSerialize/13.0.4003": {
+      "sha512": "O00VRtSZDN6rr+RrQ7JWNEDix/wAhf7hja947J2ws3M23rfO69hAD39qp/2nOJig3e5wBJ31wNjYWi80qSsm1g==",
+      "type": "package",
+      "path": "crystalreports.reportappserver.xmlserialize/13.0.4003",
+      "files": [
+        ".editoricon.png",
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "CHANGELOG.md",
+        "LICENSE",
+        "README.md",
+        "crystalreports.reportappserver.xmlserialize.13.0.4003.nupkg.sha512",
+        "crystalreports.reportappserver.xmlserialize.nuspec",
+        "lib/net40/CrystalDecisions.ReportAppServer.XmlSerialize.dll"
+      ]
+    },
+    "CrystalReports.Shared/13.0.4003": {
+      "sha512": "s+7C/lUpICrZNjDxSiPZ4v6XZD30jnF1Uqx4hbTclZ8qxUBG4k5qungapL3Uijy5y8uC1P/ZkTT808fqU89fJw==",
+      "type": "package",
+      "path": "crystalreports.shared/13.0.4003",
+      "files": [
+        ".editoricon.png",
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "CHANGELOG.md",
+        "LICENSE",
+        "README.md",
+        "crystalreports.shared.13.0.4003.nupkg.sha512",
+        "crystalreports.shared.nuspec",
+        "lib/net40/CrystalDecisions.Shared.dll",
+        "lib/net40/cs/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/da/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/de/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/en/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/es/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/fi/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/fr/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/hu/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/it/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/ja/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/ko/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/nb-NO/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/nl/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/pl/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/pt/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/ru/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/sk/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/sv/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/th/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/tr/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/zh-CHS/CrystalDecisions.Shared.resources.dll",
+        "lib/net40/zh-CHT/CrystalDecisions.Shared.resources.dll"
       ]
     },
     "DocumentFormat.OpenXml/3.1.1": {
@@ -289,6 +1003,62 @@
         "lib/netstandard2.0/ExcelNumberFormat.xml"
       ]
     },
+    "log4net/2.0.12": {
+      "sha512": "9P67BCftJ7KG+B7rNOM1A9KczUwyEDed6zbAddy5Cj/73xVkzi+rEAHeOgUnW5wDqy1JFlY8+oTP0m1PgJ03Tg==",
+      "type": "package",
+      "path": "log4net/2.0.12",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net20/log4net.dll",
+        "lib/net20/log4net.xml",
+        "lib/net35-client/log4net.dll",
+        "lib/net35-client/log4net.xml",
+        "lib/net35/log4net.dll",
+        "lib/net35/log4net.xml",
+        "lib/net40-client/log4net.dll",
+        "lib/net40-client/log4net.xml",
+        "lib/net40/log4net.dll",
+        "lib/net40/log4net.xml",
+        "lib/net45/log4net.dll",
+        "lib/net45/log4net.xml",
+        "lib/netstandard1.3/log4net.dll",
+        "lib/netstandard1.3/log4net.xml",
+        "lib/netstandard2.0/log4net.dll",
+        "lib/netstandard2.0/log4net.xml",
+        "log4net.2.0.12.nupkg.sha512",
+        "log4net.nuspec",
+        "package-icon.png"
+      ]
+    },
+    "Microsoft.Bcl.HashCode/1.1.1": {
+      "sha512": "MalY0Y/uM/LjXtHfX/26l2VtN4LDNZ2OE3aumNOHDLsT4fNYy2hiHXI4CXCqKpNUNm7iJ2brrc4J89UdaL56FA==",
+      "type": "package",
+      "path": "microsoft.bcl.hashcode/1.1.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net461/Microsoft.Bcl.HashCode.dll",
+        "lib/net461/Microsoft.Bcl.HashCode.xml",
+        "lib/netcoreapp2.1/Microsoft.Bcl.HashCode.dll",
+        "lib/netcoreapp2.1/Microsoft.Bcl.HashCode.xml",
+        "lib/netstandard2.0/Microsoft.Bcl.HashCode.dll",
+        "lib/netstandard2.0/Microsoft.Bcl.HashCode.xml",
+        "lib/netstandard2.1/Microsoft.Bcl.HashCode.dll",
+        "lib/netstandard2.1/Microsoft.Bcl.HashCode.xml",
+        "microsoft.bcl.hashcode.1.1.1.nupkg.sha512",
+        "microsoft.bcl.hashcode.nuspec",
+        "ref/net461/Microsoft.Bcl.HashCode.dll",
+        "ref/netcoreapp2.1/Microsoft.Bcl.HashCode.dll",
+        "ref/netstandard2.0/Microsoft.Bcl.HashCode.dll",
+        "ref/netstandard2.1/Microsoft.Bcl.HashCode.dll",
+        "useSharedDesignerContext.txt",
+        "version.txt"
+      ]
+    },
     "RBush/4.0.0": {
       "sha512": "j3GeRxxLUQdc+UrZnvythdQxi3bd8ayn87VDjfGXrvfodF550n9wR6SgQvpo+YiAv3GJezsu6lK0l47rRqnbdg==",
       "type": "package",
@@ -307,69 +1077,6 @@
         "readme.md"
       ]
     },
-    "runtime.native.System.Data.SqlClient.sni/4.4.0": {
-      "sha512": "A8v6PGmk+UGbfWo5Ixup0lPM4swuSwOiayJExZwKIOjTlFFQIsu3QnDXECosBEyrWSPryxBVrdqtJyhK3BaupQ==",
-      "type": "package",
-      "path": "runtime.native.system.data.sqlclient.sni/4.4.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE.TXT",
-        "THIRD-PARTY-NOTICES.TXT",
-        "runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
-        "runtime.native.system.data.sqlclient.sni.nuspec",
-        "useSharedDesignerContext.txt",
-        "version.txt"
-      ]
-    },
-    "runtime.win-arm64.runtime.native.System.Data.SqlClient.sni/4.4.0": {
-      "sha512": "LbrynESTp3bm5O/+jGL8v0Qg5SJlTV08lpIpFesXjF6uGNMWqFnUQbYBJwZTeua6E/Y7FIM1C54Ey1btLWupdg==",
-      "type": "package",
-      "path": "runtime.win-arm64.runtime.native.system.data.sqlclient.sni/4.4.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "ThirdPartyNotices.txt",
-        "dotnet_library_license.txt",
-        "runtime.win-arm64.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
-        "runtime.win-arm64.runtime.native.system.data.sqlclient.sni.nuspec",
-        "runtimes/win-arm64/native/sni.dll",
-        "useSharedDesignerContext.txt",
-        "version.txt"
-      ]
-    },
-    "runtime.win-x64.runtime.native.System.Data.SqlClient.sni/4.4.0": {
-      "sha512": "38ugOfkYJqJoX9g6EYRlZB5U2ZJH51UP8ptxZgdpS07FgOEToV+lS11ouNK2PM12Pr6X/PpT5jK82G3DwH/SxQ==",
-      "type": "package",
-      "path": "runtime.win-x64.runtime.native.system.data.sqlclient.sni/4.4.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "ThirdPartyNotices.txt",
-        "dotnet_library_license.txt",
-        "runtime.win-x64.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
-        "runtime.win-x64.runtime.native.system.data.sqlclient.sni.nuspec",
-        "runtimes/win-x64/native/sni.dll",
-        "useSharedDesignerContext.txt",
-        "version.txt"
-      ]
-    },
-    "runtime.win-x86.runtime.native.System.Data.SqlClient.sni/4.4.0": {
-      "sha512": "YhEdSQUsTx+C8m8Bw7ar5/VesXvCFMItyZF7G1AUY+OM0VPZUOeAVpJ4Wl6fydBGUYZxojTDR3I6Bj/+BPkJNA==",
-      "type": "package",
-      "path": "runtime.win-x86.runtime.native.system.data.sqlclient.sni/4.4.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "ThirdPartyNotices.txt",
-        "dotnet_library_license.txt",
-        "runtime.win-x86.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
-        "runtime.win-x86.runtime.native.system.data.sqlclient.sni.nuspec",
-        "runtimes/win-x86/native/sni.dll",
-        "useSharedDesignerContext.txt",
-        "version.txt"
-      ]
-    },
     "SixLabors.Fonts/1.0.0": {
       "sha512": "LFQsCZlV0xlUyXAOMUo5kkSl+8zAQXXbbdwWchtk0B4o7zotZhQsQOcJUELGHdfPfm/xDAsz6hONAuV25bJaAg==",
       "type": "package",
@@ -386,6 +1093,56 @@
         "sixlabors.fonts.1.0.0.nupkg.sha512",
         "sixlabors.fonts.128.png",
         "sixlabors.fonts.nuspec"
+      ]
+    },
+    "System.Buffers/4.5.1": {
+      "sha512": "Rw7ijyl1qqRS0YQD/WycNst8hUUMgrMH4FCn1nNm27M4VxchZ1js3fVjQaANHO5f3sN4isvP4a+Met9Y4YomAg==",
+      "type": "package",
+      "path": "system.buffers/4.5.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net461/System.Buffers.dll",
+        "lib/net461/System.Buffers.xml",
+        "lib/netcoreapp2.0/_._",
+        "lib/netstandard1.1/System.Buffers.dll",
+        "lib/netstandard1.1/System.Buffers.xml",
+        "lib/netstandard2.0/System.Buffers.dll",
+        "lib/netstandard2.0/System.Buffers.xml",
+        "lib/uap10.0.16299/_._",
+        "ref/net45/System.Buffers.dll",
+        "ref/net45/System.Buffers.xml",
+        "ref/netcoreapp2.0/_._",
+        "ref/netstandard1.1/System.Buffers.dll",
+        "ref/netstandard1.1/System.Buffers.xml",
+        "ref/netstandard2.0/System.Buffers.dll",
+        "ref/netstandard2.0/System.Buffers.xml",
+        "ref/uap10.0.16299/_._",
+        "system.buffers.4.5.1.nupkg.sha512",
+        "system.buffers.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
+      ]
+    },
+    "System.Data.DataSetExtensions/4.5.0": {
+      "sha512": "221clPs1445HkTBZPL+K9sDBdJRB8UN8rgjO3ztB0CQ26z//fmJXtlsr6whGatscsKGBrhJl5bwJuKSA8mwFOw==",
+      "type": "package",
+      "path": "system.data.datasetextensions/4.5.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net45/_._",
+        "lib/netstandard2.0/System.Data.DataSetExtensions.dll",
+        "ref/net45/_._",
+        "ref/netstandard2.0/System.Data.DataSetExtensions.dll",
+        "system.data.datasetextensions.4.5.0.nupkg.sha512",
+        "system.data.datasetextensions.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
       ]
     },
     "System.Data.SqlClient/4.9.0": {
@@ -421,68 +1178,189 @@
         "system.data.sqlclient.nuspec"
       ]
     },
-    "System.IO.Packaging/8.0.1": {
-      "sha512": "KYkIOAvPexQOLDxPO2g0BVoWInnQhPpkFzRqvNrNrMhVT6kqhVr0zEb6KCHlptLFukxnZrjuMVAnxK7pOGUYrw==",
+    "System.Drawing.Common/9.0.0": {
+      "sha512": "uoozjI3+dlgKh2onFJcz8aNLh6TRCPlLSh8Dbuljc8CdvqXrxHOVysJlrHvlsOCqceqGBR1wrMPxlnzzhynktw==",
       "type": "package",
-      "path": "system.io.packaging/8.0.1",
+      "path": "system.drawing.common/9.0.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Icon.png",
         "LICENSE.TXT",
+        "PACKAGE.md",
         "THIRD-PARTY-NOTICES.TXT",
-        "buildTransitive/net461/System.IO.Packaging.targets",
+        "buildTransitive/net461/System.Drawing.Common.targets",
         "buildTransitive/net462/_._",
-        "buildTransitive/net6.0/_._",
-        "buildTransitive/netcoreapp2.0/System.IO.Packaging.targets",
-        "lib/net462/System.IO.Packaging.dll",
-        "lib/net462/System.IO.Packaging.xml",
-        "lib/net6.0/System.IO.Packaging.dll",
-        "lib/net6.0/System.IO.Packaging.xml",
-        "lib/net7.0/System.IO.Packaging.dll",
-        "lib/net7.0/System.IO.Packaging.xml",
-        "lib/net8.0/System.IO.Packaging.dll",
-        "lib/net8.0/System.IO.Packaging.xml",
-        "lib/netstandard2.0/System.IO.Packaging.dll",
-        "lib/netstandard2.0/System.IO.Packaging.xml",
-        "system.io.packaging.8.0.1.nupkg.sha512",
-        "system.io.packaging.nuspec",
+        "buildTransitive/net8.0/_._",
+        "buildTransitive/netcoreapp2.0/System.Drawing.Common.targets",
+        "lib/MonoAndroid10/_._",
+        "lib/MonoTouch10/_._",
+        "lib/net462/System.Drawing.Common.dll",
+        "lib/net462/System.Drawing.Common.pdb",
+        "lib/net462/System.Drawing.Common.xml",
+        "lib/net8.0/System.Drawing.Common.dll",
+        "lib/net8.0/System.Drawing.Common.pdb",
+        "lib/net8.0/System.Drawing.Common.xml",
+        "lib/net8.0/System.Private.Windows.Core.dll",
+        "lib/net8.0/System.Private.Windows.Core.xml",
+        "lib/net9.0/System.Drawing.Common.dll",
+        "lib/net9.0/System.Drawing.Common.pdb",
+        "lib/net9.0/System.Drawing.Common.xml",
+        "lib/net9.0/System.Private.Windows.Core.dll",
+        "lib/net9.0/System.Private.Windows.Core.xml",
+        "lib/netstandard2.0/System.Drawing.Common.dll",
+        "lib/netstandard2.0/System.Drawing.Common.pdb",
+        "lib/netstandard2.0/System.Drawing.Common.xml",
+        "lib/xamarinios10/_._",
+        "lib/xamarinmac20/_._",
+        "lib/xamarintvos10/_._",
+        "lib/xamarinwatchos10/_._",
+        "system.drawing.common.9.0.0.nupkg.sha512",
+        "system.drawing.common.nuspec",
         "useSharedDesignerContext.txt"
+      ]
+    },
+    "System.Memory/4.5.4": {
+      "sha512": "1MbJTHS1lZ4bS4FmsJjnuGJOu88ZzTT2rLvrhW7Ygic+pC0NWA+3hgAen0HRdsocuQXCkUTdFn9yHJJhsijDXw==",
+      "type": "package",
+      "path": "system.memory/4.5.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net461/System.Memory.dll",
+        "lib/net461/System.Memory.xml",
+        "lib/netcoreapp2.1/_._",
+        "lib/netstandard1.1/System.Memory.dll",
+        "lib/netstandard1.1/System.Memory.xml",
+        "lib/netstandard2.0/System.Memory.dll",
+        "lib/netstandard2.0/System.Memory.xml",
+        "ref/netcoreapp2.1/_._",
+        "system.memory.4.5.4.nupkg.sha512",
+        "system.memory.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
+      ]
+    },
+    "System.Numerics.Vectors/4.5.0": {
+      "sha512": "QQTlPTl06J/iiDbJCiepZ4H//BVraReU4O4EoRw1U02H5TLUIT7xn3GnDp9AXPSlJUDyFs4uWjWafNX6WrAojQ==",
+      "type": "package",
+      "path": "system.numerics.vectors/4.5.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/MonoAndroid10/_._",
+        "lib/MonoTouch10/_._",
+        "lib/net46/System.Numerics.Vectors.dll",
+        "lib/net46/System.Numerics.Vectors.xml",
+        "lib/netcoreapp2.0/_._",
+        "lib/netstandard1.0/System.Numerics.Vectors.dll",
+        "lib/netstandard1.0/System.Numerics.Vectors.xml",
+        "lib/netstandard2.0/System.Numerics.Vectors.dll",
+        "lib/netstandard2.0/System.Numerics.Vectors.xml",
+        "lib/portable-net45+win8+wp8+wpa81/System.Numerics.Vectors.dll",
+        "lib/portable-net45+win8+wp8+wpa81/System.Numerics.Vectors.xml",
+        "lib/uap10.0.16299/_._",
+        "lib/xamarinios10/_._",
+        "lib/xamarinmac20/_._",
+        "lib/xamarintvos10/_._",
+        "lib/xamarinwatchos10/_._",
+        "ref/MonoAndroid10/_._",
+        "ref/MonoTouch10/_._",
+        "ref/net45/System.Numerics.Vectors.dll",
+        "ref/net45/System.Numerics.Vectors.xml",
+        "ref/net46/System.Numerics.Vectors.dll",
+        "ref/net46/System.Numerics.Vectors.xml",
+        "ref/netcoreapp2.0/_._",
+        "ref/netstandard1.0/System.Numerics.Vectors.dll",
+        "ref/netstandard1.0/System.Numerics.Vectors.xml",
+        "ref/netstandard2.0/System.Numerics.Vectors.dll",
+        "ref/netstandard2.0/System.Numerics.Vectors.xml",
+        "ref/uap10.0.16299/_._",
+        "ref/xamarinios10/_._",
+        "ref/xamarinmac20/_._",
+        "ref/xamarintvos10/_._",
+        "ref/xamarinwatchos10/_._",
+        "system.numerics.vectors.4.5.0.nupkg.sha512",
+        "system.numerics.vectors.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
+      ]
+    },
+    "System.Runtime.CompilerServices.Unsafe/4.7.0": {
+      "sha512": "IpU1lcHz8/09yDr9N+Juc7SCgNUz+RohkCQI+KsWKR67XxpFr8Z6c8t1iENCXZuRuNCc4HBwme/MDHNVCwyAKg==",
+      "type": "package",
+      "path": "system.runtime.compilerservices.unsafe/4.7.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/netcoreapp2.0/System.Runtime.CompilerServices.Unsafe.dll",
+        "lib/netcoreapp2.0/System.Runtime.CompilerServices.Unsafe.xml",
+        "lib/netstandard1.0/System.Runtime.CompilerServices.Unsafe.dll",
+        "lib/netstandard1.0/System.Runtime.CompilerServices.Unsafe.xml",
+        "lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll",
+        "lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.xml",
+        "ref/netstandard1.0/System.Runtime.CompilerServices.Unsafe.dll",
+        "ref/netstandard1.0/System.Runtime.CompilerServices.Unsafe.xml",
+        "ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll",
+        "ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.xml",
+        "system.runtime.compilerservices.unsafe.4.7.0.nupkg.sha512",
+        "system.runtime.compilerservices.unsafe.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
       ]
     }
   },
   "projectFileDependencyGroups": {
-    "net6.0-windows7.0": [
+    ".NETFramework,Version=v4.7.2": [
       "ClosedXML >= 0.104.2",
-      "System.Data.SqlClient >= 4.9.0"
+      "CrystalDecisions.ReportSource >= 1.0.0",
+      "CrystalDecisions.Shared >= 1.0.0",
+      "CrystalReports.Engine >= 13.0.4003",
+      "CrystalReports.ReportAppServer.ClientDoc >= 13.0.4003",
+      "CrystalReports.ReportAppServer.CommLayer >= 13.0.4003",
+      "CrystalReports.ReportAppServer.DataSetConversion >= 13.0.4003",
+      "System.Data.DataSetExtensions >= 4.5.0",
+      "System.Data.SqlClient >= 4.9.0",
+      "System.Drawing.Common >= 9.0.0"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Deep\\.nuget\\packages\\": {}
+    "C:\\Users\\Parth Sabhadiya\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Deep\\Downloads\\winepos.pavitrasoft.in-main (1)\\winepos.pavitrasoft.in-main\\WinePOSAppSolution\\WinePOSFinal\\WinePOSFinal.csproj",
+      "projectUniqueName": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\WinePOSFinal.csproj",
       "projectName": "WinePOSFinal",
-      "projectPath": "C:\\Users\\Deep\\Downloads\\winepos.pavitrasoft.in-main (1)\\winepos.pavitrasoft.in-main\\WinePOSAppSolution\\WinePOSFinal\\WinePOSFinal.csproj",
-      "packagesPath": "C:\\Users\\Deep\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Deep\\Downloads\\winepos.pavitrasoft.in-main (1)\\winepos.pavitrasoft.in-main\\WinePOSAppSolution\\WinePOSFinal\\obj\\",
+      "projectPath": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\WinePOSFinal.csproj",
+      "packagesPath": "C:\\Users\\Parth Sabhadiya\\.nuget\\packages\\",
+      "outputPath": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\Deep\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Parth Sabhadiya\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "net6.0-windows"
+        "net472"
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net6.0-windows7.0": {
-          "targetAlias": "net6.0-windows",
+        "net472": {
+          "targetAlias": "net472",
           "projectReferences": {}
         }
       },
@@ -490,41 +1368,60 @@
         "warnAsError": [
           "NU1605"
         ]
-      }
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "9.0.100"
     },
     "frameworks": {
-      "net6.0-windows7.0": {
-        "targetAlias": "net6.0-windows",
+      "net472": {
+        "targetAlias": "net472",
         "dependencies": {
           "ClosedXML": {
             "target": "Package",
             "version": "[0.104.2, )"
           },
+          "CrystalDecisions.ReportSource": {
+            "target": "Package",
+            "version": "[1.0.0, )"
+          },
+          "CrystalDecisions.Shared": {
+            "target": "Package",
+            "version": "[1.0.0, )"
+          },
+          "CrystalReports.Engine": {
+            "target": "Package",
+            "version": "[13.0.4003, )"
+          },
+          "CrystalReports.ReportAppServer.ClientDoc": {
+            "target": "Package",
+            "version": "[13.0.4003, )"
+          },
+          "CrystalReports.ReportAppServer.CommLayer": {
+            "target": "Package",
+            "version": "[13.0.4003, )"
+          },
+          "CrystalReports.ReportAppServer.DataSetConversion": {
+            "target": "Package",
+            "version": "[13.0.4003, )"
+          },
+          "System.Data.DataSetExtensions": {
+            "target": "Package",
+            "version": "[4.5.0, )"
+          },
           "System.Data.SqlClient": {
             "target": "Package",
             "version": "[4.9.0, )"
-          }
-        },
-        "imports": [
-          "net461",
-          "net462",
-          "net47",
-          "net471",
-          "net472",
-          "net48",
-          "net481"
-        ],
-        "assetTargetFallback": true,
-        "warn": true,
-        "frameworkReferences": {
-          "Microsoft.NETCore.App": {
-            "privateAssets": "all"
           },
-          "Microsoft.WindowsDesktop.App.WPF": {
-            "privateAssets": "none"
+          "System.Drawing.Common": {
+            "target": "Package",
+            "version": "[9.0.0, )"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101\\RuntimeIdentifierGraph.json"
       }
     }
   }

@@ -135,3 +135,42 @@ C:\Users\Deep\Downloads\winepos.pavitrasoft.in-main (1)\winepos.pavitrasoft.in-m
 C:\Users\Deep\Downloads\winepos.pavitrasoft.in-main (1)\winepos.pavitrasoft.in-main\WinePOSAppSolution\WinePOSFinal\obj\Debug\net6.0-windows\WinePOSFinal.genruntimeconfig.cache
 C:\Users\Deep\Downloads\winepos.pavitrasoft.in-main (1)\winepos.pavitrasoft.in-main\WinePOSAppSolution\WinePOSFinal\obj\Debug\net6.0-windows\ref\WinePOSFinal.dll
 C:\Users\Deep\Downloads\winepos.pavitrasoft.in-main (1)\winepos.pavitrasoft.in-main\WinePOSAppSolution\WinePOSFinal\obj\Debug\net6.0-windows\WinePOSFinal.csproj.ResolveComReference.cache
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\obj\Debug\net6.0-windows\WinePOSFinal.csproj.ResolveComReference.cache
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\CrystalDecisions.CrystalReports.Engine.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\CrystalDecisions.ReportSource.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\CrystalDecisions.Shared.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\System.Drawing.Common.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\CrystalDecisions.ReportAppServer.ClientDoc.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\CrystalDecisions.ReportAppServer.CommLayer.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\CrystalDecisions.ReportAppServer.CommonControls.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\CrystalDecisions.ReportAppServer.CommonObjectModel.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\CrystalDecisions.ReportAppServer.Controllers.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\CrystalDecisions.ReportAppServer.CubeDefModel.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\CrystalDecisions.ReportAppServer.DataDefModel.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\CrystalDecisions.ReportAppServer.DataSetConversion.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\CrystalDecisions.ReportAppServer.ObjectFactory.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\CrystalDecisions.ReportAppServer.ReportDefModel.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\CrystalDecisions.ReportAppServer.XmlSerialize.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\log4net.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\cs\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\da\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\de\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\en\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\es\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\fi\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\fr\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\hu\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\it\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\ja\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\ko\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\nb-NO\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\nl\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\pl\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\pt\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\ru\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\sk\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\sv\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\th\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\tr\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\zh-CHS\CrystalDecisions.Shared.resources.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net6.0-windows\zh-CHT\CrystalDecisions.Shared.resources.dll

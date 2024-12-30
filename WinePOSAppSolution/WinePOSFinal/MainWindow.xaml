@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="700" Width="1300">
     <Grid>
-        <TabControl Margin="10" Name="MainTabControl">
+        <TabControl Margin="10" Name="MainTabControl" SelectionChanged="MainTabControl_SelectionChanged">
             <TabItem Name="Billing" Header="Billing" IsSelected="True" >
                 <local:Billing></local:Billing>
             </TabItem>

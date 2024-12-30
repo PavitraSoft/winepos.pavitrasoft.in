@@ -18,6 +18,14 @@ using System.ComponentModel;
 using WinePOSFinal.Classes;
 using System.Collections.ObjectModel;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using System.Diagnostics;
+using System.Net.Mail;
+using System.Net;
+using CrystalDecisions.CrystalReports.Engine;
+using CrystalDecisions.Shared;
+using System.Configuration;
+using System.Data.SqlClient;
+using WinePOSFinal.UserControls;
 
 namespace WinePOSFinal
 {
@@ -36,6 +44,12 @@ namespace WinePOSFinal
         private decimal _subTotal;
         private decimal _tax;
         private decimal _grandTotal;
+
+
+        private Stopwatch stopwatch = new Stopwatch();
+        private string inputBuffer = string.Empty;
+        private bool isScanning = false;
+        private int invoiceNumber = 0;
 
         public decimal SubTotal
         {
@@ -70,17 +84,41 @@ namespace WinePOSFinal
         public Billing()
         {
             InitializeComponent();
-            txtQuantity.Text = "1"; 
+            ReloadBillingData();
+
+        }
+
+        public void ReloadBillingData()
+        {
+            txtQuantity.Text = "1";
             objBillingItems.CollectionChanged += (s, e) => CalculateTotals();
 
             DataContext = this;
 
             FetchAndPopulateDataTable();
+
+            string currentRole = AccessRightsManager.GetUserRole();
+
+            if (currentRole.ToUpper() != "ADMIN")
+            {
+                // Toggle visibility of the header textbox
+                textDiscount.Visibility = Visibility.Collapsed;
+                txtDiscountValue.Visibility = Visibility.Collapsed;
+                btnApplyDiscount.Visibility = Visibility.Collapsed;
+
+                // Toggle visibility of the Discount column
+                var discountColumn = dgBilling.Columns.FirstOrDefault(c => c.Header.ToString() == "Discount (%)");
+                if (discountColumn != null)
+                {
+                    discountColumn.Visibility = Visibility.Collapsed;
+                }
+            }
+
         }
 
         private void FetchAndPopulateDataTable()
         {
-            dtAllItems = objService.GetInventoryData(string.Empty);
+            dtAllItems = objService.GetInventoryData(string.Empty, string.Empty);
             if (dtAllItems.Rows.Count > 0)
             {
                 DataRow[] dr = dtAllItems.Select(" QuickADD = 1");
@@ -139,13 +177,6 @@ namespace WinePOSFinal
             return int.TryParse(input, out int result) && result > 0;
         }
 
-        private void txtUPC_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            string strItemName = GetMatchedItem(txtUPC.Text);
-
-            txtName.Text = strItemName;
-        }
-
         private string GetMatchedItem(string UPC)
         {
             string strItemName = string.Empty;
@@ -169,7 +200,9 @@ namespace WinePOSFinal
             string strName = string.Empty;
             string strPrice = string.Empty;
             string strQuantity = string.Empty;
+            int CurrentQuantity = 0;
             string strTotalPrice = string.Empty;
+            string strDiscount = string.Empty;
 
             DataRow[] dr = dtAllItems.Select(" UPC = '" + strUPC + "'");
 
@@ -178,42 +211,79 @@ namespace WinePOSFinal
             {
                 strName = Convert.ToString(dr[0]["Description"]);
                 strPrice = Convert.ToString(dr[0]["ChargedCost"]);
+                CurrentQuantity = Convert.ToInt32(dr[0]["Stock"]);
                 strQuantity = txtQuantity.Text;
 
                 // Calculate total price (for this example, assuming price and quantity are numeric)
                 if (decimal.TryParse(strPrice, out decimal parsedPrice) && int.TryParse(strQuantity, out int parsedQuantity))
                 {
-                    decimal tax = CalculatePriceAfterTax(Convert.ToDecimal(strPrice), dr[0], dtTax);
-                    decimal taxedPrice = parsedPrice + tax;
-                    decimal totalPrice = (taxedPrice * parsedQuantity);
-
-                    // Create a new BillingItem
-                    BillingItem newItem = new BillingItem
+                    // Check if the item already exists in the ObservableCollection
+                    var existingItem = objBillingItems.FirstOrDefault(item => item.UPC == strUPC);
+                    if (existingItem != null)
                     {
-                        UPC = strUPC,
-                        Name = strName,
-                        Price = strPrice,
-                        Quantity = strQuantity,
-                        Tax = tax.ToString("F2"), // Format total price as a string with 2 decimals
-                        TotalPrice = totalPrice.ToString("F2"), // Format total price as a string with 2 decimals
-                        UserName = AccessRightsManager.GetUserName()
-                    };
+                        // Update the quantity of the existing item
+                        int newQuantity = Convert.ToInt32(existingItem.Quantity) + parsedQuantity;
 
-                    // Add the new item to the ObservableCollection
-                    objBillingItems.Add(newItem);
+                        if (CurrentQuantity >= newQuantity)
+                        {
+                            decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
+                            decimal taxedPrice = parsedPrice + tax;
+                            existingItem.Quantity = Convert.ToString(newQuantity);
+                            existingItem.TotalPrice = (taxedPrice * newQuantity).ToString("F2");
 
-                    // Clear the TextBox controls for new input
-                    txtUPC.Clear();
-                    txtName.Clear();
-                    txtQuantity.Text = "1";
+                            // Clear the TextBox controls for new input
+                            txtUPC.Clear();
+                            txtName.Clear();
+                            txtQuantity.Text = "1";
+                        }
+                        else
+                        {
+                            MessageBox.Show($"Asked Quantity: {newQuantity} Current Quantity: {CurrentQuantity}.");
+                        }
+                    }
+                    else
+                    {
+                        if (CurrentQuantity >= parsedQuantity)
+                        {
+                            decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
+                            decimal taxedPrice = parsedPrice + tax;
+                            decimal totalPrice = taxedPrice * parsedQuantity;
+
+                            // Create a new BillingItem
+                            BillingItem newItem = new BillingItem
+                            {
+                                UPC = strUPC,
+                                Name = strName,
+                                Price = strPrice,
+                                Quantity = Convert.ToString(parsedQuantity),
+                                Tax = tax.ToString("F2"), // Format total price as a string with 2 decimals
+                                Discount = "0",
+                                TotalPrice = totalPrice.ToString("F2"), // Format total price as a string with 2 decimals
+                                UserName = AccessRightsManager.GetUserName()
+                            };
+
+                            // Add the new item to the ObservableCollection
+                            objBillingItems.Add(newItem);
+
+                            // Clear the TextBox controls for new input
+                            txtUPC.Clear();
+                            txtName.Clear();
+                            txtQuantity.Text = "1";
+                        }
+                        else
+                        {
+                            MessageBox.Show($"Asked Quantity: {parsedQuantity} Current Quantity: {CurrentQuantity}.");
+                        }
+                    }
+
                 }
+                else
+                {
+                    MessageBox.Show("Please enter valid UPC and quantity.");
+                }
+                dgBilling.ItemsSource = null;
+                dgBilling.ItemsSource = objBillingItems;
             }
-            else
-            {
-                MessageBox.Show("Please enter valid UPC and quantity.");
-            }
-
-            dgBilling.ItemsSource = objBillingItems;
         }
 
         private void btnSearch_Click(object sender, RoutedEventArgs e)
@@ -242,7 +312,7 @@ namespace WinePOSFinal
             // Handle user response
             if (result == MessageBoxResult.Yes)
             {
-                if (SaveInvoice(objBillingItems, false))
+                if (SaveInvoice(objBillingItems, false, "PALMPAY"))
                 {
                     MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     // Optionally, clear the DataGrid after payment
@@ -257,6 +327,7 @@ namespace WinePOSFinal
             {
                 MessageBox.Show("Payment canceled.", "Payment Canceled", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+
         }
 
         private void btnCash_Click(object sender, RoutedEventArgs e)
@@ -270,7 +341,7 @@ namespace WinePOSFinal
             // Handle user response
             if (result == MessageBoxResult.Yes)
             {
-                if (SaveInvoice(objBillingItems, true))
+                if (SaveInvoice(objBillingItems, true, "CASH"))
                 {
                     MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     // Optionally, clear the DataGrid after payment
@@ -285,6 +356,7 @@ namespace WinePOSFinal
             {
                 MessageBox.Show("Payment canceled.", "Payment Canceled", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+
         }
 
         private void btnVoidInvoice_Click(object sender, RoutedEventArgs e)
@@ -307,27 +379,107 @@ namespace WinePOSFinal
             {
                 MessageBox.Show("Payment canceled.", "Payment Canceled", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+
         }
 
         private void btnPrintInvoice_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show(
-               $"The total payment amount is . Do you want to proceed?",
-               "Confirm Payment",
-               MessageBoxButton.YesNo,
-               MessageBoxImage.Question);
-
-            // Handle user response
-            if (result == MessageBoxResult.Yes)
+            if (invoiceNumber != 0)
             {
-                MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                try
+                {
+                    // Create a new report document
+                    ReportDocument report = new ReportDocument();
 
-                // Optionally, clear the DataGrid after payment
-                objBillingItems.Clear();
+                    // Load the report (winebill.rpt)
+                    //string reportPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Reports\winebill.rpt");
+                    string reportPath = System.IO.Path.Combine(@"D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\winebill.rpt");
+                    report.Load(reportPath);
+
+                    // Create and populate the DataTable
+                    //DataTable dt = objService.GetInventoryData(string.Empty, string.Empty);
+
+                    // Set the DataTable as the data source for the report
+                    //report.SetDataSource(dt);
+
+                    // Set database logon credentials (if required)
+                    SetDatabaseLogin(report);
+
+                    // Dynamically set the InvoiceCode parameter for the report
+                    report.SetParameterValue("InvoiceCode", invoiceNumber);
+
+                    // Export the report to a PDF file
+                    string exportPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "WineBill.pdf");
+                    report.ExportToDisk(ExportFormatType.PortableDocFormat, exportPath);
+
+                    // Display the PDF in the WebBrowser control
+                    //pdfWebViewer.Navigate(exportPath); // Navigate to the generated PDF file
+
+
+                    // Optionally, open the generated report in a PDF viewer
+                    System.Diagnostics.Process.Start(exportPath);
+
+                    //MessageBox.Show("Report generated and displayed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    //MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             else
             {
-                MessageBox.Show("Payment canceled.", "Payment Canceled", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Please make payment first to print invoice.", "Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+        }
+
+
+        private void SetDatabaseLogin(ReportDocument report)
+        {
+            // Set the database login credentials
+            try
+            {
+                // Retrieve the connection string from the app.config file
+                string connectionString = ConfigurationManager.ConnectionStrings["DatabaseConnection"].ConnectionString;
+
+                // Create an instance of SqlConnectionStringBuilder to parse the connection string
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(connectionString);
+
+                // Extract the individual components from the connection string
+                string server = builder.DataSource;
+                string database = builder.InitialCatalog;
+                string username = builder.UserID;
+                string password = builder.Password;
+
+                // Get the database logon info from the report's database
+                ConnectionInfo connectionInfo = new ConnectionInfo
+                {
+                    ServerName = server,
+                    DatabaseName = database,
+                    UserID = username,
+                    Password = password
+                };
+
+                // Apply the connection info to the report
+                ApplyLogonToSubreports(report, connectionInfo);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error setting database logon: {ex.Message}");
+            }
+        }
+
+        private void ApplyLogonToSubreports(ReportDocument report, ConnectionInfo connectionInfo)
+        {
+            // Set the connection information for the main report
+            report.DataSourceConnections[0].SetConnection(connectionInfo.ServerName, connectionInfo.DatabaseName, false);
+            report.DataSourceConnections[0].SetLogon(connectionInfo.UserID, connectionInfo.Password);
+
+            // Apply the connection info to any subreports as well
+            foreach (ReportDocument subReport in report.Subreports)
+            {
+                subReport.DataSourceConnections[0].SetConnection(connectionInfo.ServerName, connectionInfo.DatabaseName, false);
+                subReport.DataSourceConnections[0].SetLogon(connectionInfo.UserID, connectionInfo.Password);
             }
         }
 
@@ -371,20 +523,70 @@ namespace WinePOSFinal
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private bool SaveInvoice(ObservableCollection<BillingItem> objBilling, bool IsVoidInvoice)
+        private bool SaveInvoice(ObservableCollection<BillingItem> objBilling, bool IsVoidInvoice, string PaymentType)
         {
             try
             {
+                invoiceNumber = 0;
                 foreach (BillingItem bi in objBilling)
                 {
-                    objService.SaveInvoice(bi, IsVoidInvoice);
+                    objService.SaveInvoice(bi, IsVoidInvoice, PaymentType, ref invoiceNumber);
                 }
+
+                SendLowQuantityMail();
+
+                dtAllItems = objService.GetInventoryData(string.Empty, string.Empty);
+
+
                 return true;
             }
             catch
             {
                 return false;
             }
+
+        }
+
+        private void SendLowQuantityMail()
+        {
+            try
+            {
+                DataTable dtEmailDetails = objService.GetLowQuentityEmailDetails();
+
+                if (dtEmailDetails != null && dtEmailDetails.Rows.Count > 0)
+                {
+                    foreach (DataRow dr in dtEmailDetails.Rows)
+                    {
+                        SendEmail(Convert.ToString(dr["smtpUser"]), Convert.ToString(dr["smtpPassword"]), Convert.ToString(dr["ToMail"]), Convert.ToString(dr["Subject"]), Convert.ToString(dr["Body"]));
+
+                        objService.UpdateSentEmailDetail(Convert.ToInt32(dr["ID"]));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error while sending low quantity email: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void SendEmail(string smtpUser, string smtpPassword, string toEmail, string subject, string body)
+        {
+            string smtpHost = "smtp.gmail.com"; // e.g., "smtp.gmail.com"
+            int smtpPort = 587; // Usually 587 for TLS or 465 for SSL
+
+            // Create the email
+            MailMessage mailMessage = new MailMessage(smtpUser, toEmail, subject, body);
+            mailMessage.IsBodyHtml = false; // Set to true if you include HTML in the email body
+
+            // Configure the SMTP client
+            SmtpClient smtpClient = new SmtpClient(smtpHost, smtpPort)
+            {
+                Credentials = new NetworkCredential(smtpUser, smtpPassword),
+                EnableSsl = true // Use SSL/TLS encryption
+            };
+
+            // Send the email
+            smtpClient.Send(mailMessage);
         }
 
         public static decimal CalculatePriceAfterTax(decimal amount, DataRow taxColumns, DataTable taxRates)
@@ -434,7 +636,7 @@ namespace WinePOSFinal
             // Handle user response
             if (result == MessageBoxResult.Yes)
             {
-                if (SaveInvoice(objBillingItems, true))
+                if (SaveInvoice(objBillingItems, true, "CHECK"))
                 {
                     MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     // Optionally, clear the DataGrid after payment
@@ -462,7 +664,7 @@ namespace WinePOSFinal
             // Handle user response
             if (result == MessageBoxResult.Yes)
             {
-                if (SaveInvoice(objBillingItems, true))
+                if (SaveInvoice(objBillingItems, true, "CREDIT"))
                 {
                     MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     // Optionally, clear the DataGrid after payment
@@ -476,6 +678,241 @@ namespace WinePOSFinal
             else
             {
                 MessageBox.Show("Payment canceled.", "Payment Canceled", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+
+        private void txtUPC_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string text = txtUPC.Text;
+
+            // Check if scanner prefix or suffix exists
+            if (text.StartsWith("@") && text.EndsWith("\r"))
+            {
+                isScanning = true;
+                text = text.Trim('@', '\r', '\n');
+                HandleScannedInput(text);
+                return;
+            }
+
+            // Use a timer to detect bulk input
+            if (isScanning && stopwatch.ElapsedMilliseconds < 500) // Adjust bulk input threshold
+            {
+                HandleScannedInput(text);
+            }
+            else
+            {
+                HandleManualInput(text);
+            }
+        }
+
+        private void HandleScannedInput(string barcode)
+        {
+            string strItemName = GetMatchedItem(txtUPC.Text);
+
+            txtName.Text = strItemName;
+
+
+            btnAdd_Click(null, null);
+        }
+
+        private void HandleManualInput(string text)
+        {
+            // Logic for manual input
+
+            string strItemName = GetMatchedItem(txtUPC.Text);
+
+            txtName.Text = strItemName;
+        }
+
+        private void txtUPC_KeyDown(object sender, KeyEventArgs e)
+        {
+            string text = txtUPC.Text;
+
+            // Check if scanner prefix or suffix exists
+            if (text.StartsWith("@") && text.EndsWith("\r"))
+            {
+                isScanning = true;
+                text = text.Trim('@', '\r', '\n');
+                HandleScannedInput(text);
+                return;
+            }
+
+            // Use a timer to detect bulk input
+            if (isScanning && stopwatch.ElapsedMilliseconds < 500) // Adjust bulk input threshold
+            {
+                HandleScannedInput(text);
+            }
+            else
+            {
+                HandleManualInput(text);
+            }
+        }
+
+        private void txtName_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string query = txtName.Text;
+
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                var filteredSuggestions = dtAllItems.AsEnumerable()
+                    .Where(row => row.Field<string>("Description").StartsWith(query, StringComparison.OrdinalIgnoreCase))
+                    .Select(row => $"{row.Field<string>("Description")} - {row.Field<string>("UPC")}")
+                    .ToList();
+
+                if (filteredSuggestions.Any())
+                {
+                    lstNameSuggestions.ItemsSource = filteredSuggestions;
+                    NameSuggestionsPopup.IsOpen = true;
+                }
+                else
+                {
+                    NameSuggestionsPopup.IsOpen = false;
+                }
+            }
+            else
+            {
+                NameSuggestionsPopup.IsOpen = false;
+            }
+        }
+
+        private void lstNameSuggestions_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (lstNameSuggestions.SelectedItem is string selectedItem)
+            {
+                // Extract only the Name part
+                var namePart = selectedItem.Split('-')[0].Trim();
+                var upcPart = selectedItem.Split('-')[1].Trim();
+                txtName.Text = namePart;
+                txtUPC.Text = upcPart;
+
+                // Close Popup and clear selection
+                NameSuggestionsPopup.IsOpen = false;
+                lstNameSuggestions.SelectedItem = null;
+            }
+        }
+
+        private void txtName_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (NameSuggestionsPopup.IsOpen)
+            {
+                if (e.Key == Key.Down)
+                {
+                    lstNameSuggestions.Focus();
+                    lstNameSuggestions.SelectedIndex = 0;
+                }
+                else if (e.Key == Key.Escape)
+                {
+                    NameSuggestionsPopup.IsOpen = false;
+                }
+            }
+        }
+
+        private void btnApplyDiscount_Click(object sender, RoutedEventArgs e)
+        {
+            if (decimal.TryParse(txtDiscountValue.Text, out decimal discount))
+            {
+                if (discount < 0 || discount >= 100)
+                {
+                    MessageBox.Show("Discount must be a number less than 100.", "Invalid Discount", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    txtDiscountValue.Text = "0"; // Reset to 0
+                    return;
+                }
+
+                foreach (BillingItem billingItem in objBillingItems)
+                {
+                    if (Convert.ToDecimal(billingItem.Discount) <= 0)
+                    {
+                        billingItem.Discount = Convert.ToString(discount);
+
+                        // Recalculate the Total Price
+                        billingItem.TotalPrice = Convert.ToString(Convert.ToDecimal(billingItem.Price) * Convert.ToInt32(billingItem.Quantity) * (1 - Convert.ToDecimal(billingItem.Discount) / 100));
+                    }
+                }
+
+                // Refresh the DataGrid to reflect changes
+                CalculateTotals();
+                dgBilling.ItemsSource = null;
+                dgBilling.ItemsSource = objBillingItems;
+                //dgBilling.Items.Refresh();
+            }
+        }
+
+        private void txtDiscountValue_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            // Allow only numeric input
+            e.Handled = !IsTextNumeric(e.Text);
+        }
+
+        private bool IsTextNumeric(string text)
+        {
+            // Check if the input text is numeric
+            return int.TryParse(text, out _);
+        }
+
+        private void dgBilling_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            // Check if the edited item is of type BillingItem
+            if (e.Row.Item is BillingItem editedItem)
+            {
+                // Check if the edited column is the Discount column
+                if (e.Column.Header.ToString() == "Discount (%)")
+                {
+                    // Extract the editing value from the TextBox
+                    var editingElement = e.EditingElement as TextBox;
+                    if (editingElement != null && decimal.TryParse(editingElement.Text, out decimal discount))
+                    {
+                        if (discount < 0 || discount >= 100)
+                        {
+                            // Show a validation message and reset the discount
+                            //MessageBox.Show("Discount must be a number less than 100.", "Invalid Discount", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            editingElement.Text = editedItem.Discount.ToString(); // Reset to the original value
+                            return;
+                        }
+
+                        // Update the item's Discount and recalculate TotalPrice
+                        editedItem.Discount = Convert.ToString(discount);
+                        decimal originalPrice = Convert.ToDecimal(editedItem.Price) * Convert.ToInt32(editedItem.Quantity);
+                        editedItem.TotalPrice = Convert.ToString(originalPrice * (1 - discount / 100));
+
+                        // Refresh the grid (not strictly necessary if binding is set up correctly
+                        CalculateTotals();
+                        dgBilling.ItemsSource = null;
+                        dgBilling.ItemsSource = objBillingItems;
+                    }
+                }
+            }
+
+            //// Get the edited row's data
+            //var editedItem = e.Row.Item as BillingItem;
+            //if (editedItem == null) return;
+
+            //// Get the new value from the editor
+            //var editingElement = e.EditingElement as TextBox;
+            //if (editingElement != null && decimal.TryParse(editingElement.Text, out decimal discount))
+            //{
+            //    if (discount < 0 || discount >= 100)
+            //    {
+            //        MessageBox.Show("Discount must be a number less than 100.", "Invalid Discount", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //        editingElement.Text = "0"; // Reset to default value
+            //        return;
+            //    }
+
+            //    // Update TotalPrice based on discount
+            //    decimal originalPrice = Convert.ToDecimal(editedItem.Price) * Convert.ToInt32(editedItem.Quantity);
+            //    editedItem.TotalPrice = Convert.ToString(originalPrice - (originalPrice * discount / 100));
+
+            //    // Refresh the DataGrid to display the updated value
+            //    dgBilling.Items.Refresh();
+            //}
+        }
+
+        private void dgBilling_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            // Allow only numbers and control keys
+            if (!int.TryParse(e.Text, out _))
+            {
+                e.Handled = true;
             }
         }
     }
