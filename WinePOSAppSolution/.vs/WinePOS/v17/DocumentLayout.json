@@ -137,7 +137,7 @@
               "RelativeDocumentMoniker": "WinePOSFinal\\App.config",
               "ToolTip": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\App.config",
               "RelativeToolTip": "WinePOSFinal\\App.config",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAQAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAABQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
               "WhenOpened": "2024-12-29T11:01:13.58Z",
               "EditorCaption": ""
@@ -213,7 +213,7 @@
               "RelativeDocumentMoniker": "WinePOSFinal\\MainWindow.xaml.cs",
               "ToolTip": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\MainWindow.xaml.cs",
               "RelativeToolTip": "WinePOSFinal\\MainWindow.xaml.cs",
-              "ViewState": "AgIAABYAAAAAAAAAAIA9wDEAAAATAAAAAAAAAA==",
+              "ViewState": "AgIAABcAAAAAAAAAAAApwDEAAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-12-29T14:43:30.413Z",
               "EditorCaption": ""
@@ -302,7 +302,8 @@
               "RelativeToolTip": "WinePOSFinal\\Classes\\BillingItem.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAuwBEAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-29T13:40:39.762Z"
+              "WhenOpened": "2024-12-29T13:40:39.762Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -312,7 +313,7 @@
               "RelativeDocumentMoniker": "WinePOSFinal\\Reports\\winebill.cs",
               "ToolTip": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\Reports\\winebill.cs",
               "RelativeToolTip": "WinePOSFinal\\Reports\\winebill.cs",
-              "ViewState": "AgIAAHYAAAAAAAAAAAA3wIEAAAAqAAAAAAAAAA==",
+              "ViewState": "AgIAAHcAAAAAAAAAAAAYwIEAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-12-29T12:26:03.326Z",
               "EditorCaption": ""
@@ -323,9 +324,10 @@
               "Title": "Component.cs",
               "DocumentMoniker": "C:\\Users\\Parth Sabhadiya\\AppData\\Local\\Temp\\.vsdbgsrc\\450476832e066127cf614b7da96204a14d23780c234fa1d45898528afcfb5502\\Component.cs",
               "ToolTip": "C:\\Users\\Parth Sabhadiya\\AppData\\Local\\Temp\\.vsdbgsrc\\450476832e066127cf614b7da96204a14d23780c234fa1d45898528afcfb5502\\Component.cs",
-              "ViewState": "AgIAACMAAAAAAAAAAIBJwC4AAAAEAAAAAAAAAA==",
+              "ViewState": "AgIAACAAAAAAAAAAAIBZwC4AAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-29T10:18:26.905Z"
+              "WhenOpened": "2024-12-29T10:18:26.905Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
