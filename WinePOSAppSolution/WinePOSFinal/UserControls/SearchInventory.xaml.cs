@@ -412,5 +412,24 @@ namespace WinePOSFinal
             txtDescription.Text = string.Empty;
             txtUPC.Text = string.Empty;
         }
+
+        private void txtUPC_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+
+            string text = txtUPC.Text;
+
+            if (text.Length == 10 || text.Length == 9 || text.Length == 6)
+            {
+                HandleScannedInput(text);
+                return;
+            }
+        }
+
+
+        private void HandleScannedInput(string barcode)
+        {
+            btnSearch_Click(null,null);
+        }
     }
 }
