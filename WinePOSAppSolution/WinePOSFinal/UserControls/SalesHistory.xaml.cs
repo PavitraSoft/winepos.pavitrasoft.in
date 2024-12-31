@@ -10,6 +10,7 @@ using CrystalDecisions.Shared;
 using System.Configuration;
 using System.Linq;
 using System.Data.SqlClient;
+using System.IO;
 
 namespace WinePOSFinal.UserControls
 {
@@ -90,7 +91,52 @@ namespace WinePOSFinal.UserControls
         private void PrintInvoice(string invoiceCode)
         {
             // Implement your actual print logic here
-            MessageBox.Show($"Invoice {invoiceCode} sent to the printer!");
+            try
+            {
+                // Create a new report document
+                ReportDocument report = new ReportDocument();
+
+                // Load the report (winebill.rpt)
+                //string reportPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Reports\winebill.rpt");
+                //string reportPath = System.IO.Path.Combine(@"D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\winebill.rpt");
+
+                string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                // Target file
+                string targetFile = Path.Combine("Reports", "winebill.rpt");
+
+                // Combine base directory with the relative path
+                string reportPath = Path.Combine(baseDirectory, targetFile);
+                report.Load(reportPath);
+
+                // Create and populate the DataTable
+                //DataTable dt = objService.GetInventoryData(string.Empty, string.Empty);
+
+                // Set the DataTable as the data source for the report
+                //report.SetDataSource(dt);
+
+                // Set database logon credentials (if required)
+                SetDatabaseLogin(report);
+
+                // Dynamically set the InvoiceCode parameter for the report
+                report.SetParameterValue("InvoiceCode", invoiceCode);
+
+                // Export the report to a PDF file
+                string exportPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "WineBill.pdf");
+                report.ExportToDisk(ExportFormatType.PortableDocFormat, exportPath);
+
+                // Display the PDF in the WebBrowser control
+                //pdfWebViewer.Navigate(exportPath); // Navigate to the generated PDF file
+
+
+                // Optionally, open the generated report in a PDF viewer
+                System.Diagnostics.Process.Start(exportPath);
+
+                //MessageBox.Show("Report generated and displayed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                //MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void FlashReportButton_Click(object sender, RoutedEventArgs e)
@@ -104,7 +150,20 @@ namespace WinePOSFinal.UserControls
 
                     // Load the report (winebill.rpt)
                     //string reportPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Reports\winebill.rpt");
-                    string reportPath = System.IO.Path.Combine(@"D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\flashReport.rpt");
+                    //string reportPath = System.IO.Path.Combine(@"D:\Projects\GitHub\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\flashReport.rpt");
+                    //string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                    //string projectRoot = Path.GetFullPath(Path.Combine(baseDirectory, @"..\..\..\"));
+
+                    //// Construct the path to the report
+                    //string targetFile = Path.Combine("Reports", "flashReport.rpt");
+                    //string reportPath = Path.Combine(projectRoot, targetFile);
+                    string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                    // Target file
+                    string targetFile = Path.Combine("Reports", "flashReport.rpt");
+
+                    // Combine base directory with the relative path
+                    string reportPath = Path.Combine(baseDirectory, targetFile);
+
                     report.Load(reportPath);
 
 

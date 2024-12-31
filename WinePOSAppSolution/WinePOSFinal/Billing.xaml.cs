@@ -26,6 +26,8 @@ using CrystalDecisions.Shared;
 using System.Configuration;
 using System.Data.SqlClient;
 using WinePOSFinal.UserControls;
+using System.IO;
+using Path = System.IO.Path;
 
 namespace WinePOSFinal
 {
@@ -393,7 +395,14 @@ namespace WinePOSFinal
 
                     // Load the report (winebill.rpt)
                     //string reportPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Reports\winebill.rpt");
-                    string reportPath = System.IO.Path.Combine(@"D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\winebill.rpt");
+                    //string reportPath = System.IO.Path.Combine(@"D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\winebill.rpt");
+
+                    string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                    // Target file
+                    string targetFile = Path.Combine("Reports", "winebill.rpt");
+
+                    // Combine base directory with the relative path
+                    string reportPath = Path.Combine(baseDirectory, targetFile);
                     report.Load(reportPath);
 
                     // Create and populate the DataTable
