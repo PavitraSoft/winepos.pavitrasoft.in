@@ -226,10 +226,12 @@ namespace WinePOSFinal
                         // Update the quantity of the existing item
                         int newQuantity = Convert.ToInt32(existingItem.Quantity) + parsedQuantity;
 
-                        if (CurrentQuantity >= newQuantity)
+                        // if (CurrentQuantity >= newQuantity)
+                        if (true)
                         {
                             decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
-                            decimal taxedPrice = parsedPrice + tax;
+                            //decimal taxedPrice = parsedPrice + tax;
+                            decimal taxedPrice = tax;
                             existingItem.Quantity = Convert.ToString(newQuantity);
                             existingItem.TotalPrice = (taxedPrice * newQuantity).ToString("F2");
 
@@ -245,10 +247,12 @@ namespace WinePOSFinal
                     }
                     else
                     {
-                        if (CurrentQuantity >= parsedQuantity)
+                        //if (CurrentQuantity >= parsedQuantity)
+                        if (true)
                         {
                             decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
-                            decimal taxedPrice = parsedPrice + tax;
+                            //decimal taxedPrice = parsedPrice + tax;
+                            decimal taxedPrice = tax;
                             decimal totalPrice = taxedPrice * parsedQuantity;
 
                             // Create a new BillingItem

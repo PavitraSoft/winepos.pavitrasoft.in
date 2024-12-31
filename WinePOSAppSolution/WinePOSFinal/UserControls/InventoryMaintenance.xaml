@@ -76,12 +76,6 @@
                         <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Margin="0,5">
                             <TextBox Name="txtADescription" Width="150" Height="25"/>
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="4" Grid.Column="0" Margin="0,5">
-                            <TextBlock Text="Vendor Part No.: " Margin="0,5" FontWeight="Bold"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="0,5">
-                            <TextBox Name="txtVendorPartNo" Width="150" Height="25" Text="COKE 2 L T"/>
-                        </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="5" Grid.Column="0" Margin="0,5">
                             <TextBlock Text="Vendor Name: " Margin="0,5" FontWeight="Bold"/>
                         </StackPanel>
@@ -146,12 +140,6 @@
 
                 <StackPanel Grid.Row="0" Grid.Column="2">
                     <CheckBox Name="txtchkST" Content="Sales Tax" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
-                    <CheckBox Name="txtchkST2" Content="Sales Tax 2" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
-                    <CheckBox Name="txtchkST3" Content="Sales Tax 3" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
-                    <CheckBox Name="txtchkST4" Content="Sales Tax 4" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
-                    <CheckBox Name="txtchkST5" Content="Sales Tax 5" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
-                    <CheckBox Name="txtchkST6" Content="Sales Tax 6" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
-                    <CheckBox Name="txtchkBT" Content="Bar Tax" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
                     <CheckBox Name="txtQuickAdd" Content="QuickAdd"/>
                 </StackPanel>
             </Grid>

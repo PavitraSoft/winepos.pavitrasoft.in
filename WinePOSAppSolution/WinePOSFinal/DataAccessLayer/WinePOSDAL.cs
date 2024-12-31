@@ -67,14 +67,7 @@ namespace WinePOSFinal.DataAccessLayer
                     cmd.Parameters.AddWithValue("ItemCost", objItem.ItemCost);
                     cmd.Parameters.AddWithValue("ChargedCost", objItem.ChargedCost);
                     cmd.Parameters.AddWithValue("Sales_Tax", objItem.Sales_Tax);
-                    cmd.Parameters.AddWithValue("Sales_Tax_2", objItem.Sales_Tax_2);
-                    cmd.Parameters.AddWithValue("Sales_Tax_3", objItem.Sales_Tax_3);
-                    cmd.Parameters.AddWithValue("Sales_Tax_4", objItem.Sales_Tax_4);
-                    cmd.Parameters.AddWithValue("Sales_Tax_5", objItem.Sales_Tax_5);
-                    cmd.Parameters.AddWithValue("Sales_Tax_6", objItem.Sales_Tax_6);
-                    cmd.Parameters.AddWithValue("Bar_Tax", objItem.Bar_Tax);
                     cmd.Parameters.AddWithValue("InStock", objItem.InStock);
-                    cmd.Parameters.AddWithValue("VendorPartNo", objItem.VendorPartNo);
                     cmd.Parameters.AddWithValue("VendorName", objItem.VendorName);
                     cmd.Parameters.AddWithValue("CaseCost", objItem.CaseCost);
                     cmd.Parameters.AddWithValue("InCase", objItem.InCase);
@@ -157,15 +150,8 @@ namespace WinePOSFinal.DataAccessLayer
                         items.ItemCost = dt.Rows[0]["ItemCost"] != DBNull.Value ? Convert.ToDecimal(dt.Rows[0]["ItemCost"]) : 0;
                         items.ChargedCost = dt.Rows[0]["ChargedCost"] != DBNull.Value ? Convert.ToDecimal(dt.Rows[0]["ChargedCost"]) : 0;
                         items.Sales_Tax = dt.Rows[0]["Sales_Tax"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["Sales_Tax"]) : false;
-                        items.Sales_Tax_2 = dt.Rows[0]["Sales_Tax_2"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["Sales_Tax_2"]) : false;
-                        items.Sales_Tax_3 = dt.Rows[0]["Sales_Tax_3"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["Sales_Tax_3"]) : false;
-                        items.Sales_Tax_4 = dt.Rows[0]["Sales_Tax_4"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["Sales_Tax_4"]) : false;
-                        items.Sales_Tax_5 = dt.Rows[0]["Sales_Tax_5"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["Sales_Tax_5"]) : false;
-                        items.Sales_Tax_6 = dt.Rows[0]["Sales_Tax_6"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["Sales_Tax_6"]) : false;
-                        items.Bar_Tax = dt.Rows[0]["Bar_Tax"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["Bar_Tax"]) : false;
                         items.InStock = dt.Rows[0]["InStock"] != DBNull.Value ? Convert.ToInt32(dt.Rows[0]["InStock"]) : 0;
                         items.VendorName = dt.Rows[0]["VendorName"] != DBNull.Value ? Convert.ToString(dt.Rows[0]["VendorName"]) : string.Empty;
-                        items.VendorPartNo = dt.Rows[0]["VendorPartNum"] != DBNull.Value ? Convert.ToString(dt.Rows[0]["VendorPartNum"]) : string.Empty;
                         items.SalesTaxAmt = dt.Rows[0]["SalesTax"] != DBNull.Value ? Convert.ToInt32(dt.Rows[0]["SalesTax"]) : 0;
                         items.CaseCost = dt.Rows[0]["CaseCost"] != DBNull.Value ? Convert.ToDecimal(dt.Rows[0]["CaseCost"]) : 0;
                         items.InCase = dt.Rows[0]["NumberInCase"] != DBNull.Value ? Convert.ToInt32(dt.Rows[0]["NumberInCase"]) : 0;
@@ -400,7 +386,7 @@ namespace WinePOSFinal.DataAccessLayer
 
 
                 // Sample query to retrieve data
-                string query = "SELECT InvoiceCode, UPC, Name ,Price,Quantity,Tax,TotalPrice,UserName,CreatedDateTime,PaymentType FROM Invoice WITH (NOLOCK) WHERE 1 = 1 " + where + " ORDER BY CreatedDateTime DESC"; // Replace with your actual query
+                string query = "SELECT InvoiceCode, UPC, Name ,Price,Quantity,Tax,TotalPrice,UserName,CreatedDateTime,PaymentType FROM Invoice WITH (NOLOCK) WHERE PaymentType!= 'CASH' AND 1 = 1 " + where + " ORDER BY CreatedDateTime DESC"; // Replace with your actual query
 
                 using (SqlCommand command = new SqlCommand(query, conn))
                 {

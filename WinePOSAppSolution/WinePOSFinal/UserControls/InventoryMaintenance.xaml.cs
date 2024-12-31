@@ -77,23 +77,16 @@ namespace WinePOSFinal
             txtDescription.Text = string.Empty;
             txtADescription.Text = string.Empty;
 
-            txtItemCost.Text = "0";
-            txtChargePrice.Text = "0";
-            txtPriceWithTax.Text = "0";
-            txtStock.Text = "0";
+            txtItemCost.Text = "";
+            txtChargePrice.Text = "";
+            txtPriceWithTax.Text = "";
+            txtStock.Text = "";
 
-            txtVendorPartNo.Text = "0";
             txtVendorName.Text = "";
             txtCase.Text = "0";
-            txtCaseCost.Text = "0";
+            txtCaseCost.Text = "";
 
             txtchkST.IsChecked = false;
-            txtchkST2.IsChecked = false;
-            txtchkST3.IsChecked = false;
-            txtchkST4.IsChecked = false;
-            txtchkST5.IsChecked = false;
-            txtchkST6.IsChecked = false;
-            txtchkBT.IsChecked = false;
             txtQuickAdd.IsChecked = false;
             intItemID = 0;
 
@@ -117,19 +110,12 @@ namespace WinePOSFinal
             txtChargePrice.Text = Convert.ToString(objItem.ChargedCost);
             txtStock.Text = Convert.ToString(objItem.InStock);
 
-            txtVendorPartNo.Text = Convert.ToString(objItem.VendorPartNo);
             txtVendorName.Text = Convert.ToString(objItem.VendorName);
             txtCase.Text = Convert.ToString(objItem.CaseCost);
             txtCaseCost.Text = Convert.ToString(objItem.InCase);
             txtPriceWithTax.Text = Convert.ToString(objItem.SalesTaxAmt);
 
             txtchkST.IsChecked = objItem.Sales_Tax;
-            txtchkST2.IsChecked = objItem.Sales_Tax_2;
-            txtchkST3.IsChecked = objItem.Sales_Tax_3;
-            txtchkST4.IsChecked = objItem.Sales_Tax_4;
-            txtchkST5.IsChecked = objItem.Sales_Tax_5;
-            txtchkST6.IsChecked = objItem.Sales_Tax_6;
-            txtchkBT.IsChecked = objItem.Bar_Tax;
             txtQuickAdd.IsChecked = objItem.QuickADD;
         }
 
@@ -161,7 +147,7 @@ namespace WinePOSFinal
             else
             {
                 // Handle invalid input (e.g., show an error message or revert to previous value)
-                txtChargePrice.Text = "0.00";  // Example default value if input is invalid
+                txtChargePrice.Text = "";  // Example default value if input is invalid
             }
 
             objItem.ItemID = intItemID;
@@ -176,7 +162,6 @@ namespace WinePOSFinal
             objItem.ChargedCost = Convert.ToDecimal(txtChargePrice.Text);
             objItem.InStock = Convert.ToInt32(Convert.ToDecimal(txtStock.Text));
 
-            objItem.VendorPartNo = txtVendorPartNo.Text;
             objItem.VendorName = txtVendorName.Text;
 
             objItem.InCase = Convert.ToInt32(Convert.ToDecimal(txtCase.Text));
@@ -184,12 +169,6 @@ namespace WinePOSFinal
             objItem.SalesTaxAmt = Convert.ToDecimal(txtPriceWithTax.Text);
 
             objItem.Sales_Tax = txtchkST.IsChecked == true;
-            objItem.Sales_Tax_2 = txtchkST2.IsChecked == true;
-            objItem.Sales_Tax_3 = txtchkST3.IsChecked == true;
-            objItem.Sales_Tax_4 = txtchkST4.IsChecked == true;
-            objItem.Sales_Tax_5 = txtchkST5.IsChecked == true;
-            objItem.Sales_Tax_6 = txtchkST6.IsChecked == true;
-            objItem.Bar_Tax = txtchkBT.IsChecked == true;
             objItem.QuickADD = txtQuickAdd.IsChecked == true;
 
             if (objService.SaveItem(objItem))
@@ -222,36 +201,6 @@ namespace WinePOSFinal
             if (txtchkST.IsChecked == true)
             {
                 totalTax += GetTaxRate("Sales_Tax", dtTax);
-            }
-
-            if (txtchkST2.IsChecked == true)
-            {
-                totalTax += GetTaxRate("Sales_Tax_2", dtTax);
-            }
-
-            if (txtchkST3.IsChecked == true)
-            {
-                totalTax += GetTaxRate("S3les_Tax_3", dtTax);
-            }
-
-            if (txtchkST4.IsChecked == true)
-            {
-                totalTax += GetTaxRate("Sales_Tax_4", dtTax);
-            }
-
-            if (txtchkST5.IsChecked == true)
-            {
-                totalTax += GetTaxRate("Sales_Tax_5", dtTax);
-            }
-
-            if (txtchkST6.IsChecked == true)
-            {
-                totalTax += GetTaxRate("Sales_Tax_6", dtTax);
-            }
-
-            if (txtchkBT.IsChecked == true)
-            {
-                totalTax += GetTaxRate("Bar_Tax", dtTax);
             }
 
 
@@ -298,7 +247,7 @@ namespace WinePOSFinal
             else
             {
                 // Handle invalid input (e.g., show an error message or revert to previous value)
-                txtChargePrice.Text = "0.00";  // Example default value if input is invalid
+                txtChargePrice.Text = "";  // Example default value if input is invalid
             }
         }
     }
