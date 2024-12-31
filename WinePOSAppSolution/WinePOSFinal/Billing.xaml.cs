@@ -696,10 +696,8 @@ namespace WinePOSFinal
             string text = txtUPC.Text;
 
             // Check if scanner prefix or suffix exists
-            if (text.StartsWith("@") && text.EndsWith("\r"))
+            if (text.Length == 10 || text.Length == 9 || text.Length == 6)
             {
-                isScanning = true;
-                text = text.Trim('@', '\r', '\n');
                 HandleScannedInput(text);
                 return;
             }
@@ -739,10 +737,8 @@ namespace WinePOSFinal
             string text = txtUPC.Text;
 
             // Check if scanner prefix or suffix exists
-            if (text.StartsWith("@") && text.EndsWith("\r"))
+            if (text.Length == 10 || text.Length == 9 || text.Length == 6)
             {
-                isScanning = true;
-                text = text.Trim('@', '\r', '\n');
                 HandleScannedInput(text);
                 return;
             }

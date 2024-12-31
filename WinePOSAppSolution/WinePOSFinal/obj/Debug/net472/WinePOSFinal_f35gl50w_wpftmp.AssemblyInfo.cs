@@ -14,11 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WinePOSFinal")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-<<<<<<< HEAD
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
-=======
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5bf703cb71655cfa82e038d546c52d4da4b6ea06")]
->>>>>>> 85fcd1f88eab12d28eb2ab074543282dff1f9afa
 [assembly: System.Reflection.AssemblyProductAttribute("WinePOSFinal")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WinePOSFinal")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

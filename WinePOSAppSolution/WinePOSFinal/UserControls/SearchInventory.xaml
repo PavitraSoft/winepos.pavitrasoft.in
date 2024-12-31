@@ -88,7 +88,7 @@
                 <StackPanel Grid.Row="0" Grid.Column="1">
                     <!-- Search Section -->
                     <TextBlock Text="UPC:" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-                    <TextBox Name="txtUPC" Width="200" Height="25" VerticalAlignment="Top"/>
+                    <TextBox Name="txtUPC" Width="200" Height="25" VerticalAlignment="Top" TextChanged="txtUPC_TextChanged"/>
                     <TextBlock Text="Name:" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                     <TextBox Name="txtDescription" Width="200" Height="25" VerticalAlignment="Top"/>
                     <Button Name="btnSearch" Content="🔍 Search" Width="75" Height="25" VerticalAlignment="Top" Margin="2" Click="btnSearch_Click"/>
