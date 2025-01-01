@@ -151,20 +151,20 @@ namespace WinePOSFinal.UserControls
                     // Load the report (winebill.rpt)
                     //string reportPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Reports\winebill.rpt");
                     //string reportPath = System.IO.Path.Combine(@"D:\Projects\GitHub\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\flashReport.rpt");
-                    string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                    string projectRoot = Path.GetFullPath(Path.Combine(baseDirectory, @"..\..\..\"));
+                    //string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                    //string projectRoot = Path.GetFullPath(Path.Combine(baseDirectory, @"..\..\..\"));
 
-                    // Construct the path to the report
+                    //// Construct the path to the report
+                    //string targetFile = Path.Combine("Reports", "flashReport.rpt");
+                    //string reportPath = Path.Combine(projectRoot, targetFile);
+
+
+                    string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                    // Target file Combine base directory with the relative path
                     string targetFile = Path.Combine("Reports", "flashReport.rpt");
-                    string reportPath = Path.Combine(projectRoot, targetFile);
 
                     
-                    //string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                    //// Target file
-                    //string targetFile = Path.Combine("Reports", "flashReport.rpt");
-
-                    // Combine base directory with the relative path
-                    //string reportPath = Path.Combine(baseDirectory, targetFile);
+                    string reportPath = Path.Combine(baseDirectory, targetFile);
 
                     report.Load(reportPath);
 
