@@ -120,16 +120,20 @@ namespace WinePOSFinal.UserControls
                 // Dynamically set the InvoiceCode parameter for the report
                 report.SetParameterValue("InvoiceCode", invoiceCode);
 
+                ReportViewerWindow viewer = new ReportViewerWindow();
+                viewer.SetReport(report);
+                viewer.Show();
+
                 // Export the report to a PDF file
-                string exportPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "WineBill.pdf");
-                report.ExportToDisk(ExportFormatType.PortableDocFormat, exportPath);
+                //string exportPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "WineBill.pdf");
+                //report.ExportToDisk(ExportFormatType.PortableDocFormat, exportPath);
 
                 // Display the PDF in the WebBrowser control
                 //pdfWebViewer.Navigate(exportPath); // Navigate to the generated PDF file
 
 
                 // Optionally, open the generated report in a PDF viewer
-                System.Diagnostics.Process.Start(exportPath);
+                //System.Diagnostics.Process.Start(exportPath);
 
                 //MessageBox.Show("Report generated and displayed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -148,22 +152,23 @@ namespace WinePOSFinal.UserControls
                     // Create a new report document
                     ReportDocument report = new ReportDocument();
 
-                    // Load the report (winebill.rpt)
-                    //string reportPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Reports\winebill.rpt");
-                    //string reportPath = System.IO.Path.Combine(@"D:\Projects\GitHub\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\flashReport.rpt");
+
+                    // path for development
                     //string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
                     //string projectRoot = Path.GetFullPath(Path.Combine(baseDirectory, @"..\..\..\"));
-
-                    //// Construct the path to the report
                     //string targetFile = Path.Combine("Reports", "flashReport.rpt");
                     //string reportPath = Path.Combine(projectRoot, targetFile);
 
+                    //path for static file
+                    //string reportPath = System.IO.Path.Combine(@"H:\SOFTWARES\winepos.pavitrasoft.in-main\winepos.pavitrasoft.in-main\WinePOSAppSolution\WinePOSFinal\Reports\flashReport.rpt");
+                    //report.Load(reportPath);
 
+                    // path fo live report
                     string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                    // Target file Combine base directory with the relative path
+
                     string targetFile = Path.Combine("Reports", "flashReport.rpt");
 
-                    
+
                     string reportPath = Path.Combine(baseDirectory, targetFile);
 
                     report.Load(reportPath);
@@ -198,7 +203,11 @@ namespace WinePOSFinal.UserControls
                                                     .Count());
 
 
+                    DateTime? fromDate = FromDatePicker.SelectedDate;
+                    DateTime? toDate = ToDatePicker.SelectedDate;
 
+                    DateTime dateFrom = fromDate ?? DateTime.Now;
+                    DateTime dateTo = toDate ?? DateTime.Now;
 
                     // Set database logon credentials (if required)
                     SetDatabaseLogin(report);
@@ -213,19 +222,23 @@ namespace WinePOSFinal.UserControls
                     report.SetParameterValue("Credit", "$" + Convert.ToString(Credit));
                     report.SetParameterValue("PalmPay", "$" + Convert.ToString(PalmPay));
                     report.SetParameterValue("Transactions", Convert.ToString(Transactions));
-                    report.SetParameterValue("DateFrom", DateTime.Now);
-                    report.SetParameterValue("DateTo", DateTime.Now);
+                    report.SetParameterValue("DateFrom", dateFrom);
+                    report.SetParameterValue("DateTo", dateTo);
+
+                    ReportViewerWindow viewer = new ReportViewerWindow();
+                    viewer.SetReport(report);
+                    viewer.Show();
 
                     // Export the report to a PDF file
-                    string exportPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "flashReport.pdf");
-                    report.ExportToDisk(ExportFormatType.PortableDocFormat, exportPath);
+                    //string exportPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "flashReport.pdf");
+                    //report.ExportToDisk(ExportFormatType.PortableDocFormat, exportPath);
 
                     // Display the PDF in the WebBrowser control
                     //pdfWebViewer.Navigate(exportPath); // Navigate to the generated PDF file
 
 
                     // Optionally, open the generated report in a PDF viewer
-                    System.Diagnostics.Process.Start(exportPath);
+                    //System.Diagnostics.Process.Start(exportPath);
 
                     //MessageBox.Show("Report generated and displayed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
