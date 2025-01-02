@@ -185,7 +185,7 @@ namespace WinePOSFinal
             }
         }
 
-        private void btnClear_Click(object sender, RoutedEventArgs e)
+        public void btnClear_Click(object sender, RoutedEventArgs e)
         {
             ClearFields();
         }

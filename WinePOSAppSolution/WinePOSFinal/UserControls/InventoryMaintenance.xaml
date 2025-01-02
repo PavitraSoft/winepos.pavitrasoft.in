@@ -295,7 +295,7 @@
                     <Button Name="btnSave" Content="Save Button" Background="LightGreen" Width="120" Height="35" Margin="5" Click="btnSave_Click"/>
                     <!--<Button Content="Help" Width="100" Height="35" Margin="5"/>
                     <Button Content="Copy Item" Background="LightGreen" Width="120" Height="35" Margin="5"/>-->
-                    <Button Content="Delete" Background="LightCoral" Width="100" Height="35" Margin="5"/>
+                    <!--<Button Content="Delete" Background="LightCoral" Width="100" Height="35" Margin="5"/>-->
                     <Button Name="btnClear" Content="Clear" Background="LightCoral" Width="100" Height="35" Margin="5" Click="btnClear_Click"/>
                     <!--<Button Content="Edit Stock" Background="LightGray" Width="120" Height="35" Margin="5"/>-->
                 </WrapPanel>

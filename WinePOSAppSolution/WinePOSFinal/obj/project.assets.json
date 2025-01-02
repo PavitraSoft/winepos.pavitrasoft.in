@@ -1439,23 +1439,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\91635\\.nuget\\packages\\": {},
+    "C:\\Users\\Parth Sabhadiya\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "H:\\SOFTWARES\\winepos.pavitrasoft.in-main\\winepos.pavitrasoft.in-main\\WinePOSAppSolution\\WinePOSFinal\\WinePOSFinal.csproj",
+      "projectUniqueName": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\WinePOSFinal.csproj",
       "projectName": "WinePOSFinal",
-      "projectPath": "H:\\SOFTWARES\\winepos.pavitrasoft.in-main\\winepos.pavitrasoft.in-main\\WinePOSAppSolution\\WinePOSFinal\\WinePOSFinal.csproj",
-      "packagesPath": "C:\\Users\\91635\\.nuget\\packages\\",
-      "outputPath": "H:\\SOFTWARES\\winepos.pavitrasoft.in-main\\winepos.pavitrasoft.in-main\\WinePOSAppSolution\\WinePOSFinal\\obj\\",
+      "projectPath": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\WinePOSFinal.csproj",
+      "packagesPath": "C:\\Users\\Parth Sabhadiya\\.nuget\\packages\\",
+      "outputPath": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\91635\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Parth Sabhadiya\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -1476,7 +1476,13 @@
         "warnAsError": [
           "NU1605"
         ]
-      }
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "9.0.100"
     },
     "frameworks": {
       "net472": {
@@ -1527,7 +1533,7 @@
             "version": "[4.3.1, )"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101\\RuntimeIdentifierGraph.json"
       }
     }
   }

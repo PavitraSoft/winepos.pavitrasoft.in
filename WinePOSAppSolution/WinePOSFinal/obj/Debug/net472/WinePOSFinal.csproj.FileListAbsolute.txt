@@ -323,3 +323,6 @@ H:\SOFTWARES\winepos.pavitrasoft.in-main\winepos.pavitrasoft.in-main\WinePOSAppS
 H:\SOFTWARES\winepos.pavitrasoft.in-main\winepos.pavitrasoft.in-main\WinePOSAppSolution\WinePOSFinal\obj\Debug\net472\WinePOSFinal.csproj.CopyComplete
 H:\SOFTWARES\winepos.pavitrasoft.in-main\winepos.pavitrasoft.in-main\WinePOSAppSolution\WinePOSFinal\obj\Debug\net472\WinePOSFinal.exe
 H:\SOFTWARES\winepos.pavitrasoft.in-main\winepos.pavitrasoft.in-main\WinePOSAppSolution\WinePOSFinal\obj\Debug\net472\WinePOSFinal.pdb
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Debug\net472\CrystalDecisions.Windows.Forms.dll
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\obj\Debug\net472\ReportViewerWindow.baml
+D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\obj\Debug\net472\ReportViewerWindow.g.cs

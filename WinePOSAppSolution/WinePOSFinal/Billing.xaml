@@ -117,14 +117,14 @@
                 <UniformGrid Grid.Row="1" Rows="4" Columns="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" >
                     <Button Content="PAY TO PALM PAY" Background="Green" Foreground="White" Name="btnPalmPay" Click="btnPalmPay_Click"/>
                     <Button Content="CASH" Name="btnCash" Click="btnCash_Click"/>
-                    <Button Content="VOID INVOICE" Background="Red" Foreground="White" Name="btnVoidInvoice" Click="btnVoidInvoice_Click"/>
-                    <Button Content="PRINT INVOICE" Background="Yellow" Name="btnPrintInvoice" Click="btnPrintInvoice_Click"/>
-                    <!--<WebBrowser Name="pdfWebViewer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>-->
-                    <Button Content="REMOVE ITEM" Background="Red" Name="btnRemoveItem" Click="btnRemoveItem_Click"/>
                     <!--<Button Content="FETCH ON HOLD" Background="Orange"/>-->
                     <!--<Button Content="PAY THROUGH PALM PAY"/>-->
                     <Button Content="CHECK" Name="btnCheck"  Click="btnCheck_Click"/>
                     <Button Content="CREDIT/DEBIT" Name="btnCredit" Click="btnCredit_Click"/>
+                    <Button Content="CLEAR INVOICE" Background="Red" Foreground="White" Name="btnVoidInvoice" Click="btnVoidInvoice_Click"/>
+                    <!--<WebBrowser Name="pdfWebViewer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>-->
+                    <Button Content="REMOVE ITEM" Background="Red" Name="btnRemoveItem" Click="btnRemoveItem_Click"/>
+                    <Button Content="PRINT INVOICE" Background="Yellow" Name="btnPrintInvoice" Click="btnPrintInvoice_Click"/>
                     <!--<Button Content="ACCOUNT"/>
                     <Button Content="CLOSE SHIFT"/>
                     <Button Content="INVENTORY ADJUST/RECEIVE"/>-->

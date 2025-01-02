@@ -82,7 +82,16 @@ namespace WinePOSFinal
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
+            var mainWindow = (MainWindow)System.Windows.Application.Current.MainWindow;
+            mainWindow.MainTabControl.SelectedIndex = 2; // Select Tab 2
 
+            // Call the method to populate data in UserControl2
+            InventoryMaintenance InventoryMaintenance = mainWindow.InventoryMaintenance as InventoryMaintenance;
+            if (InventoryMaintenance != null)
+            {
+                // Fetch data based on the selected ID and populate the fields in UserControl2
+                InventoryMaintenance.btnClear_Click(null, null);
+            }
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)

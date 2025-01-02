@@ -3,32 +3,40 @@
   "WorkspaceRootPath": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\usercontrols\\searchinventory.xaml.cs||{8B382828-6202-11D1-8870-0000F87579D2}|",
-      "RelativeMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|solutionrelative:wineposfinal\\usercontrols\\searchinventory.xaml.cs||{8B382828-6202-11D1-8870-0000F87579D2}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\usercontrols\\searchinventory.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|solutionrelative:wineposfinal\\usercontrols\\searchinventory.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\billing.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|solutionrelative:wineposfinal\\billing.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\usercontrols\\saleshistory.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|solutionrelative:wineposfinal\\usercontrols\\saleshistory.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\usercontrols\\searchinventory.xaml.cs||{8B382828-6202-11D1-8870-0000F87579D2}|",
+      "RelativeMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|solutionrelative:wineposfinal\\usercontrols\\searchinventory.xaml.cs||{8B382828-6202-11D1-8870-0000F87579D2}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\dataaccesslayer\\wineposdal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|solutionrelative:wineposfinal\\dataaccesslayer\\wineposdal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
-      "RelativeMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|solutionrelative:wineposfinal\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+      "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\usercontrols\\inventorymaintenance.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|solutionrelative:wineposfinal\\usercontrols\\inventorymaintenance.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\usercontrols\\inventorymaintenance.xaml.cs||{8B382828-6202-11D1-8870-0000F87579D2}|",
       "RelativeMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|solutionrelative:wineposfinal\\usercontrols\\inventorymaintenance.xaml.cs||{8B382828-6202-11D1-8870-0000F87579D2}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\usercontrols\\searchinventory.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|solutionrelative:wineposfinal\\usercontrols\\searchinventory.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\billing.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|solutionrelative:wineposfinal\\billing.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|solutionrelative:wineposfinal\\app.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\usercontrols\\saleshistory.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|solutionrelative:wineposfinal\\usercontrols\\saleshistory.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
@@ -37,10 +45,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|solutionrelative:wineposfinal\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\billing.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|solutionrelative:wineposfinal\\billing.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\usercontrols\\saleshistory.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
@@ -53,10 +57,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\serviceslayer\\wineposservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|solutionrelative:wineposfinal\\serviceslayer\\wineposservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\usercontrols\\inventorymaintenance.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|solutionrelative:wineposfinal\\usercontrols\\inventorymaintenance.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{73DFD102-A3CA-4D2F-8B64-BEB436F73C0C}|WinePOSFinal\\WinePOSFinal.csproj|d:\\study\\dotnet\\wineposgit\\winepos.pavitrasoft.in\\wineposappsolution\\wineposfinal\\reports\\flashreport.rpt||{C0EF7560-990E-4D61-B970-65A6096B6866}",
@@ -88,85 +88,64 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
               "Title": "WinePOSDAL.cs",
               "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\DataAccessLayer\\WinePOSDAL.cs",
               "RelativeDocumentMoniker": "WinePOSFinal\\DataAccessLayer\\WinePOSDAL.cs",
               "ToolTip": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\DataAccessLayer\\WinePOSDAL.cs",
               "RelativeToolTip": "WinePOSFinal\\DataAccessLayer\\WinePOSDAL.cs",
-              "ViewState": "AgIAADcAAAAAAAAAAAD4v04AAABBAAAAAAAAAA==",
+              "ViewState": "AgIAAMIAAAAAAAAAAAAMwMkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-12-29T12:17:42.594Z",
-              "IsPinned": true
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "winebill.rpt",
-              "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\Reports\\winebill.rpt",
-              "RelativeDocumentMoniker": "WinePOSFinal\\Reports\\winebill.rpt",
-              "ToolTip": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\Reports\\winebill.rpt",
-              "RelativeToolTip": "WinePOSFinal\\Reports\\winebill.rpt",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2024-12-29T17:42:02.316Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "SalesHistory.xaml.cs",
-              "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\UserControls\\SalesHistory.xaml.cs",
-              "RelativeDocumentMoniker": "WinePOSFinal\\UserControls\\SalesHistory.xaml.cs",
-              "ToolTip": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\UserControls\\SalesHistory.xaml.cs",
-              "RelativeToolTip": "WinePOSFinal\\UserControls\\SalesHistory.xaml.cs",
-              "ViewState": "AgIAAHYAAAAAAAAAAAAIwIYAAABQAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-29T14:50:24.446Z",
+              "IsPinned": true,
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "App.config",
-              "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\App.config",
-              "RelativeDocumentMoniker": "WinePOSFinal\\App.config",
-              "ToolTip": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\App.config",
-              "RelativeToolTip": "WinePOSFinal\\App.config",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
-              "WhenOpened": "2024-12-29T11:01:13.58Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "SearchInventory.xaml.cs",
               "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\UserControls\\SearchInventory.xaml.cs",
               "RelativeDocumentMoniker": "WinePOSFinal\\UserControls\\SearchInventory.xaml.cs",
               "ToolTip": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\UserControls\\SearchInventory.xaml.cs",
               "RelativeToolTip": "WinePOSFinal\\UserControls\\SearchInventory.xaml.cs",
-              "ViewState": "AgIAAIwBAAAAAAAAAAAQwK0BAAA3AAAAAAAAAA==",
+              "ViewState": "AgIAAEAAAAAAAAAAAADwv1wAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-12-29T14:12:45.266Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 4,
               "Title": "InventoryMaintenance.xaml.cs",
               "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\UserControls\\InventoryMaintenance.xaml.cs",
               "RelativeDocumentMoniker": "WinePOSFinal\\UserControls\\InventoryMaintenance.xaml.cs",
               "ToolTip": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\UserControls\\InventoryMaintenance.xaml.cs",
               "RelativeToolTip": "WinePOSFinal\\UserControls\\InventoryMaintenance.xaml.cs",
-              "ViewState": "AgIAAKkAAAAAAAAAAAAIwM8AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAK8AAAAAAAAAAAAIwNEAAAA9AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-29T16:51:19.121Z"
+              "WhenOpened": "2024-12-29T16:51:19.121Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 0,
+              "Title": "Billing.xaml.cs",
+              "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\Billing.xaml.cs",
+              "RelativeDocumentMoniker": "WinePOSFinal\\Billing.xaml.cs",
+              "ToolTip": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\Billing.xaml.cs",
+              "RelativeToolTip": "WinePOSFinal\\Billing.xaml.cs",
+              "ViewState": "AgIAAKUBAAAAAAAAAAD4v7EBAABQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-29T10:46:27.432Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\MainWindow.xaml",
               "RelativeDocumentMoniker": "WinePOSFinal\\MainWindow.xaml",
@@ -177,20 +156,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Billing.xaml.cs",
-              "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\Billing.xaml.cs",
-              "RelativeDocumentMoniker": "WinePOSFinal\\Billing.xaml.cs",
-              "ToolTip": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\Billing.xaml.cs",
-              "RelativeToolTip": "WinePOSFinal\\Billing.xaml.cs",
-              "ViewState": "AgIAAKYCAAAAAAAAAAAtwK0CAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-29T10:46:27.432Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 5,
               "Title": "SearchInventory.xaml",
               "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\UserControls\\SearchInventory.xaml",
               "RelativeDocumentMoniker": "WinePOSFinal\\UserControls\\SearchInventory.xaml",
@@ -202,7 +168,68 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Billing.xaml",
+              "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\Billing.xaml",
+              "RelativeDocumentMoniker": "WinePOSFinal\\Billing.xaml",
+              "ToolTip": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\Billing.xaml",
+              "RelativeToolTip": "WinePOSFinal\\Billing.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-12-29T12:58:51.322Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "App.config",
+              "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\App.config",
+              "RelativeDocumentMoniker": "WinePOSFinal\\App.config",
+              "ToolTip": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\App.config",
+              "RelativeToolTip": "WinePOSFinal\\App.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2024-12-29T11:01:13.58Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "InventoryMaintenance.xaml",
+              "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\UserControls\\InventoryMaintenance.xaml",
+              "RelativeDocumentMoniker": "WinePOSFinal\\UserControls\\InventoryMaintenance.xaml",
+              "ToolTip": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\UserControls\\InventoryMaintenance.xaml",
+              "RelativeToolTip": "WinePOSFinal\\UserControls\\InventoryMaintenance.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2024-12-29T16:51:16.887Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 8,
+              "Title": "SalesHistory.xaml.cs",
+              "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\UserControls\\SalesHistory.xaml.cs",
+              "RelativeDocumentMoniker": "WinePOSFinal\\UserControls\\SalesHistory.xaml.cs",
+              "ToolTip": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\UserControls\\SalesHistory.xaml.cs",
+              "RelativeToolTip": "WinePOSFinal\\UserControls\\SalesHistory.xaml.cs",
+              "ViewState": "AgIAAGoAAAAAAAAAAAAIwH4AAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-29T14:50:24.446Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "winebill.rpt",
+              "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\Reports\\winebill.rpt",
+              "RelativeDocumentMoniker": "WinePOSFinal\\Reports\\winebill.rpt",
+              "ToolTip": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\Reports\\winebill.rpt",
+              "RelativeToolTip": "WinePOSFinal\\Reports\\winebill.rpt",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2024-12-29T17:42:02.316Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "WinePOSFinal\\MainWindow.xaml.cs",
@@ -214,7 +241,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "SalesHistory.xaml",
               "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\UserControls\\SalesHistory.xaml",
               "RelativeDocumentMoniker": "WinePOSFinal\\UserControls\\SalesHistory.xaml",
@@ -225,18 +252,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "Billing.xaml",
-              "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\Billing.xaml",
-              "RelativeDocumentMoniker": "WinePOSFinal\\Billing.xaml",
-              "ToolTip": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\Billing.xaml",
-              "RelativeToolTip": "WinePOSFinal\\Billing.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2024-12-29T12:58:51.322Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "WinePOSService.cs",
               "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\ServicesLayer\\WinePOSService.cs",
               "RelativeDocumentMoniker": "WinePOSFinal\\ServicesLayer\\WinePOSService.cs",
@@ -248,17 +264,6 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "InventoryMaintenance.xaml",
-              "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\UserControls\\InventoryMaintenance.xaml",
-              "RelativeDocumentMoniker": "WinePOSFinal\\UserControls\\InventoryMaintenance.xaml",
-              "ToolTip": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\UserControls\\InventoryMaintenance.xaml",
-              "RelativeToolTip": "WinePOSFinal\\UserControls\\InventoryMaintenance.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2024-12-29T16:51:16.887Z"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 17,
               "Title": "WinePOSFinal.csproj",
               "DocumentMoniker": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\WinePOSFinal.csproj",
@@ -267,7 +272,8 @@
               "RelativeToolTip": "WinePOSFinal\\WinePOSFinal.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2024-12-29T10:46:23.084Z"
+              "WhenOpened": "2024-12-29T10:46:23.084Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",

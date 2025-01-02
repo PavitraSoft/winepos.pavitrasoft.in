@@ -28,6 +28,7 @@ using System.Data.SqlClient;
 using WinePOSFinal.UserControls;
 using System.IO;
 using Path = System.IO.Path;
+using System.IO.Ports;
 
 namespace WinePOSFinal
 {
@@ -282,6 +283,8 @@ namespace WinePOSFinal
                         }
                     }
 
+                    CalculateTotals();
+
                 }
                 else
                 {
@@ -323,6 +326,8 @@ namespace WinePOSFinal
                     MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     // Optionally, clear the DataGrid after payment
                     objBillingItems.Clear();
+
+                    btnPrintInvoice_Click(null, null);
                 }
                 else
                 {
@@ -338,37 +343,62 @@ namespace WinePOSFinal
 
         private void btnCash_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show(
+
+            try
+            {
+                // Adjust these settings according to your device's specifications
+                string portName = "COM1"; // Change to your device's port
+                int baudRate = 9600;     // Change as required by your device
+                byte[] openDrawerCommand = { 0x1B, 0x70, 0x00, 0x19, 0xFA }; // Example command for Epson printers
+
+                using (SerialPort serialPort = new SerialPort(portName, baudRate))
+                {
+                    serialPort.Open();
+                    serialPort.Write(openDrawerCommand, 0, openDrawerCommand.Length);
+                    //MessageBox.Show("Cash Drawer Opened!");
+                }
+
+               MessageBoxResult result = MessageBox.Show(
                $"Are you sure you want to Cash the Current Billing Invoice?",
                "Confirm Payment",
                MessageBoxButton.YesNo,
                MessageBoxImage.Question);
 
-            // Handle user response
-            if (result == MessageBoxResult.Yes)
-            {
-                if (SaveInvoice(objBillingItems, true, "CASH"))
+                // Handle user response
+                if (result == MessageBoxResult.Yes)
                 {
-                    MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    // Optionally, clear the DataGrid after payment
-                    objBillingItems.Clear();
+                    if (SaveInvoice(objBillingItems, true, "CASH"))
+                    {
+                        MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        // Optionally, clear the  after paymentDataGrid
+                        objBillingItems.Clear();
+
+
+                        btnPrintInvoice_Click(null, null);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error while saving the current Invoice.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Error while saving the current Invoice.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Payment canceled.", "Payment Canceled", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Payment canceled.", "Payment Canceled", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"Error: {ex.Message}");
             }
+
+            
 
         }
 
         private void btnVoidInvoice_Click(object sender, RoutedEventArgs e)
         {
             MessageBoxResult result = MessageBox.Show(
-               $"Are you sure you want to void current Billing Invoice?",
+               $"Are you sure you want to clear current Billing Invoice?",
                "Confirm Payment",
                MessageBoxButton.YesNo,
                MessageBoxImage.Question);
@@ -376,14 +406,12 @@ namespace WinePOSFinal
             // Handle user response
             if (result == MessageBoxResult.Yes)
             {
-                MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Invoice has been cleared. Thank you!", "Clear", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 // Optionally, clear the DataGrid after payment
                 objBillingItems.Clear();
-            }
-            else
-            {
-                MessageBox.Show("Payment canceled.", "Payment Canceled", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                btnPrintInvoice_Click(null, null);
             }
 
         }
@@ -399,14 +427,14 @@ namespace WinePOSFinal
 
                     // Load the report (winebill.rpt)
                     //string reportPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Reports\winebill.rpt");
-                    //string reportPath = System.IO.Path.Combine(@"D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\winebill.rpt");
+                    string reportPath = System.IO.Path.Combine(@"D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\winebill.rpt");
 
                     string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
                     // Target file
                     string targetFile = Path.Combine("Reports", "winebill.rpt");
 
                     // Combine base directory with the relative path
-                    string reportPath = Path.Combine(baseDirectory, targetFile);
+                    //string reportPath = Path.Combine(baseDirectory, targetFile);
                     report.Load(reportPath);
 
                     // Create and populate the DataTable
@@ -654,6 +682,8 @@ namespace WinePOSFinal
                     MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     // Optionally, clear the DataGrid after payment
                     objBillingItems.Clear();
+
+                    btnPrintInvoice_Click(null, null);
                 }
                 else
                 {
@@ -682,6 +712,8 @@ namespace WinePOSFinal
                     MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     // Optionally, clear the DataGrid after payment
                     objBillingItems.Clear();
+
+                    btnPrintInvoice_Click(null, null);
                 }
                 else
                 {
