@@ -125,6 +125,7 @@
                     <!--<WebBrowser Name="pdfWebViewer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>-->
                     <Button Content="REMOVE ITEM" Background="Red" Name="btnRemoveItem" Click="btnRemoveItem_Click"/>
                     <Button Content="PRINT INVOICE" Background="Yellow" Name="btnPrintInvoice" Click="btnPrintInvoice_Click"/>
+                    <Button Content="TENDER WINDOW" Background="Yellow" Name="btnTenderWindow" Click="btnTenderWindow_Click"/>
                     <!--<Button Content="ACCOUNT"/>
                     <Button Content="CLOSE SHIFT"/>
                     <Button Content="INVENTORY ADJUST/RECEIVE"/>-->

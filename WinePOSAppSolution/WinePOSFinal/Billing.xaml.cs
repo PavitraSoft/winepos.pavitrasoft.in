@@ -956,6 +956,13 @@ namespace WinePOSFinal
                 e.Handled = true;
             }
         }
+
+        private void btnTenderWindow_Click(object sender, RoutedEventArgs e)
+        {
+            // Pass the value to the TenderWindow
+            TenderWindow tenderWindow = new TenderWindow(GrandTotal); // Pass 100 as the initial value
+            tenderWindow.ShowDialog(); // Open the window modally
+        }
     }
 
     //public class ComboBoxItem

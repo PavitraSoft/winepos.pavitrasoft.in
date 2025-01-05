@@ -249,7 +249,41 @@ namespace WinePOSFinal
                 // Handle invalid input (e.g., show an error message or revert to previous value)
                 txtChargePrice.Text = "";  // Example default value if input is invalid
             }
+
+            CalculateProfitAndMargin();
         }
+
+        private void btnCopyItem_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Item Copied.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            intItemID = 0;
+        }
+
+        private void UpdateProfitAndMargin(decimal profitPercentage, decimal grossMarginPercentage)
+        {
+            lblProfit.Content = $"{profitPercentage:F2}%";
+            lblGrossMargin.Content = $"{grossMarginPercentage:F2}%";
+        }
+
+        // Example usage:
+        private void CalculateProfitAndMargin()
+        {
+            decimal costPrice = decimal.TryParse(txtItemCost.Text, out decimal cost) ? cost : 0;
+            decimal sellingPrice = decimal.TryParse(txtChargePrice.Text, out decimal price) ? price : 0;
+
+            if (costPrice > 0)
+            {
+                decimal profitPercentage = ((sellingPrice - costPrice) / costPrice) * 100;
+                decimal grossMarginPercentage = ((sellingPrice - costPrice) / sellingPrice) * 100;
+
+                UpdateProfitAndMargin(profitPercentage, grossMarginPercentage);
+            }
+            else
+            {
+                UpdateProfitAndMargin(0, 0);
+            }
+        }
+
     }
     public class ComboBoxItem
     {

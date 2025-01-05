@@ -47,6 +47,9 @@
     <Page Update="ReportViewerWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="TenderWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="UserControls\InventoryMaintenance.xaml">
       <SubType>Designer</SubType>
     </Page>

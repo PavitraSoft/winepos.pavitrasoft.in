@@ -37,7 +37,7 @@
                     <!-- DataGrid -->
                     <DataGrid Name="InventoryDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="False" SelectionMode="Single" SelectionUnit="FullRow"  Background="LightGray" SelectionChanged="InventoryDataGrid_SelectionChanged" CellEditEnding="InventoryDataGrid_CellEditEnding" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Height="500" Width="800" >
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="UPC" Width="*" Binding="{Binding UPC}">
+                            <DataGridTextColumn Header="UPC" Width="*" Binding="{Binding UPC}" IsReadOnly="True">
                                 <DataGridTextColumn.EditingElementStyle>
                                     <Style TargetType="TextBox">
                                         <EventSetter Event="PreviewTextInput" Handler="IntegerOnly_PreviewTextInput"/>
@@ -59,10 +59,10 @@
                                     </Style>
                                 </DataGridTextColumn.EditingElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Sales Tax" Width="*" Binding="{Binding SalesTax}">
+                            <DataGridTextColumn Header="Sales Tax" Width="*" Binding="{Binding SalesTax}" IsReadOnly="True">
                                 <DataGridTextColumn.EditingElementStyle>
                                     <Style TargetType="TextBox">
-                                        <EventSetter Event="PreviewTextInput" Handler="DecimalOnly_PreviewTextInput"/>
+                                        <!--<EventSetter Event="PreviewTextInput" Handler="DecimalOnly_PreviewTextInput"/>-->
                                     </Style>
                                 </DataGridTextColumn.EditingElementStyle>
                             </DataGridTextColumn>

@@ -13,6 +13,7 @@
             <RowDefinition Height="4*"></RowDefinition>
             <RowDefinition Height="2*"></RowDefinition>
             <RowDefinition Height="3*"></RowDefinition>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -115,7 +116,7 @@
                             <TextBlock Text="Price With Sales Tax($): " Margin="0,5" FontWeight="Bold" IsEnabled="False"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="0,5">
-                            <TextBox Name="txtPriceWithTax" Width="150" Height="25" Text="COKE 2 L T"/>
+                            <TextBox Name="txtPriceWithTax" Width="150" Height="25" Text="COKE 2 L T" IsEnabled="False"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="3" Grid.Column="0" Margin="0,5">
                             <TextBlock Text="# In Stock: " Margin="0,5" FontWeight="Bold"/>
@@ -297,9 +298,18 @@
                     <Button Content="Copy Item" Background="LightGreen" Width="120" Height="35" Margin="5"/>-->
                     <!--<Button Content="Delete" Background="LightCoral" Width="100" Height="35" Margin="5"/>-->
                     <Button Name="btnClear" Content="Clear" Background="LightCoral" Width="100" Height="35" Margin="5" Click="btnClear_Click"/>
+                    <Button Name="btnCopyItem" Content="Copy Item" Background="LightGreen" Width="120" Height="35" Margin="5" Click="btnCopyItem_Click"/>
                     <!--<Button Content="Edit Stock" Background="LightGray" Width="120" Height="35" Margin="5"/>-->
                 </WrapPanel>
             </Grid>
+        </StackPanel>
+
+        <!-- Bottom Section for Profit% and Gross Margin -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+            <Label Content="Profit: " FontWeight="Bold" FontSize="14" Foreground="DarkGreen" />
+            <Label x:Name="lblProfit" Content="0%" FontWeight="Bold" FontSize="14" Foreground="DarkGreen" Margin="10,0"/>
+            <Label Content="Gross Margin: " FontWeight="Bold" FontSize="14" Foreground="DarkBlue" />
+            <Label x:Name="lblGrossMargin" Content="0%" FontWeight="Bold" FontSize="14" Foreground="DarkBlue" Margin="10,0"/>
         </StackPanel>
     </Grid>
 </UserControl>

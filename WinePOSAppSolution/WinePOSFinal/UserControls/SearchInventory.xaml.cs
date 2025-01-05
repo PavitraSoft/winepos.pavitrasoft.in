@@ -124,6 +124,7 @@ namespace WinePOSFinal
 
                 string headerName = e.Column.Header.ToString();
                 string columnName = string.Empty;
+                string dataColumnName = string.Empty;
                 string newValue = string.Empty;
                 string oldValue = string.Empty;
 
@@ -136,30 +137,39 @@ namespace WinePOSFinal
                     {
                         case "UPC":
                             columnName = "UPC";
+                            dataColumnName = "UPC";
                             break;
                         case "Description":
                             columnName = "Name";
+                            dataColumnName = "Name";
                             break;
                         case "Item Cost":
                             columnName = "ItemCost";
+                            dataColumnName = "ItemCost";
                             break;
                         case "Price Cost":
                             columnName = "ChargedCost";
+                            dataColumnName = "ChargedCost";
                             break;
                         case "Sales Tax":
                             columnName = "SalesTax";
+                            dataColumnName = "SalesTax";
                             break;
                         case "Stock":
                             columnName = "InStock";
+                            dataColumnName = "InStock";
                             break;
                         case "Additional Description":
                             columnName = "Additional_Description";
+                            dataColumnName = "Additional_Description";
                             break;
                         case "Vendor Part Num.":
                             columnName = "VendorPartNum";
+                            dataColumnName = "VendorPartNum";
                             break;
                         case "Vendor Name.":
                             columnName = "VendorName";
+                            dataColumnName = "VendorName";
                             break;
                     }
 
