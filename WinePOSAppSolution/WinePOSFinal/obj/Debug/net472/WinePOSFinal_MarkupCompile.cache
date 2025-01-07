@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\obj\Debug\net472\
+D:\Projects\GitHub\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\obj\Debug\net472\
 WinePOSFinal
 none
 false
 TRACE;DEBUG;NETFRAMEWORK;NET472;
-D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\App.xaml
+D:\Projects\GitHub\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\App.xaml
 9-969873959
 
 17-40946899
-1601688781820
+1601392746579
 Billing.xaml;LoadingWindow.xaml;Login.xaml;MainWindow.xaml;ReportViewerWindow.xaml;TenderWindow.xaml;UserControls\InventoryMaintenance.xaml;UserControls\SalesHistory.xaml;UserControls\SearchInventory.xaml;
 
 False

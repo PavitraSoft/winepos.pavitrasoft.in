@@ -326,3 +326,8 @@ H:\SOFTWARES\winepos.pavitrasoft.in-main\winepos.pavitrasoft.in-main\WinePOSAppS
 D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Release\net472\CrystalDecisions.Windows.Forms.dll
 D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\obj\Release\net472\ReportViewerWindow.baml
 D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\obj\Release\net472\ReportViewerWindow.g.cs
+D:\Projects\GitHub\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\bin\Release\net472\CrystalDecisions.Windows.Forms.dll
+D:\Projects\GitHub\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\obj\Release\net472\ReportViewerWindow.baml
+D:\Projects\GitHub\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\obj\Release\net472\ReportViewerWindow.g.cs
+D:\Projects\GitHub\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\obj\Release\net472\TenderWindow.g.cs
+D:\Projects\GitHub\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\obj\Release\net472\TenderWindow.baml

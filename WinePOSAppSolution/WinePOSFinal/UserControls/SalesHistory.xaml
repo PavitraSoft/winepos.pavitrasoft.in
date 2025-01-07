@@ -86,6 +86,7 @@
                     <DataGridTextColumn Header="Total Price" Width="*" Binding="{Binding TotalPrice}"/>
                     <DataGridTextColumn Header="Username" Width="*" Binding="{Binding UserName}"/>
                     <DataGridTextColumn Header="Date Time" Width="*" Binding="{Binding CreatedDateTime}"/>
+                    <DataGridTextColumn Header="Payment Type" Width="*" Binding="{Binding PaymentType}"/>
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>

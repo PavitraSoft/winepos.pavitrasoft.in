@@ -12,6 +12,7 @@ namespace WinePOSFinal.Classes
         public string name;
         public string category;
         public string upc;
+        public string DroppedItem;
         public string additional_description;
         public decimal itemcost;
         public decimal chargedcost;

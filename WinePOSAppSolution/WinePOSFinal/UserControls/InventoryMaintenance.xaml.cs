@@ -86,6 +86,8 @@ namespace WinePOSFinal
             txtCase.Text = "0";
             txtCaseCost.Text = "";
 
+            txtDroppedItem.Text = string.Empty;
+            txtDroppedItem.IsEnabled = false;
             txtchkST.IsChecked = false;
             txtQuickAdd.IsChecked = false;
             intItemID = 0;
@@ -101,6 +103,9 @@ namespace WinePOSFinal
             
             cbCategory.SelectedItem = selectedItem;
             txtUPC.Text = !string.IsNullOrWhiteSpace(objItem.UPC) ? objItem.UPC : string.Empty;
+
+            txtDroppedItem.Text = !string.IsNullOrWhiteSpace(objItem.DroppedItem) ? objItem.DroppedItem : string.Empty;
+
 
 
             txtDescription.Text = !string.IsNullOrWhiteSpace(objItem.Name) ? objItem.Name : string.Empty;

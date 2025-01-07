@@ -156,6 +156,7 @@ namespace WinePOSFinal.DataAccessLayer
                         items.CaseCost = dt.Rows[0]["CaseCost"] != DBNull.Value ? Convert.ToDecimal(dt.Rows[0]["CaseCost"]) : 0;
                         items.InCase = dt.Rows[0]["NumberInCase"] != DBNull.Value ? Convert.ToInt32(dt.Rows[0]["NumberInCase"]) : 0;
                         items.QuickADD = dt.Rows[0]["QuickADD"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["QuickADD"]) : false;
+                        items.DroppedItem = dt.Rows[0]["DroppedItem"] != DBNull.Value ? Convert.ToString(dt.Rows[0]["DroppedItem"]) : string.Empty;
                     }
                 }
             }
@@ -362,11 +363,11 @@ namespace WinePOSFinal.DataAccessLayer
             {
                 conn.Open();
 
-                string where = " AND IsVoided = 0 ";
+                string where = " AND 1 = 1 ";
 
                 if (IsAdmin)
                 {
-                    where = " AND IsVoided = 1 ";
+                    where = " AND 1 = 1 ";
                 }
 
                 if (fromDate.HasValue)
@@ -386,7 +387,7 @@ namespace WinePOSFinal.DataAccessLayer
 
 
                 // Sample query to retrieve data
-                string query = "SELECT InvoiceCode, UPC, Name ,Price,Quantity,Tax,TotalPrice,UserName,CreatedDateTime,PaymentType FROM Invoice WITH (NOLOCK) WHERE PaymentType!= 'CASH' AND 1 = 1 " + where + " ORDER BY CreatedDateTime DESC"; // Replace with your actual query
+                string query = "SELECT InvoiceCode, UPC, Name ,Price,Quantity,Tax,TotalPrice,UserName,CreatedDateTime,PaymentType FROM Invoice WITH (NOLOCK) WHERE 1 = 1 " + where + " ORDER BY CreatedDateTime DESC"; // Replace with your actual query
 
                 using (SqlCommand command = new SqlCommand(query, conn))
                 {
