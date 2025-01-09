@@ -968,6 +968,12 @@ namespace WinePOSFinal
             TenderWindow tenderWindow = new TenderWindow(GrandTotal, Remaining, txtAmtRemaining, Change, txtAmtChange); // Pass 100 as the initial value
             tenderWindow.ShowDialog(); // Open the window modally
         }
+
+        private void btnTaxConfig_Click(object sender, RoutedEventArgs e)
+        {
+            TaxWindow taxWindow = new TaxWindow();
+            taxWindow.ShowDialog();
+        }
     }
 
     //public class ComboBoxItem

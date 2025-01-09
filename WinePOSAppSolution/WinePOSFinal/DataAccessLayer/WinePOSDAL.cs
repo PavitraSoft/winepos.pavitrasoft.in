@@ -490,5 +490,40 @@ namespace WinePOSFinal.DataAccessLayer
 
             return bIsSuccess;
         }
+
+        public bool SaveTaxData(int TaxID, Decimal Percentage)
+        {
+            bool bIsSuccess = false;
+            StringBuilder sb = new StringBuilder();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    sb.Append("UPDATE SalesTax SET ");
+                    sb.Append(" Percentage =  " + Convert.ToString(Percentage));
+                    sb.Append(" WHERE ID = " + Convert.ToString(TaxID));
+
+                    // Sample query to retrieve data
+                    string query = sb.ToString(); // Replace with your actual query
+
+                    using (SqlCommand command = new SqlCommand(query, conn))
+                    {
+                        int rowsAffected = command.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            bIsSuccess = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during the execution
+                MessageBox.Show($"Error: {ex.Message}");
+            }
+
+            return bIsSuccess;
+        }
     }
 }

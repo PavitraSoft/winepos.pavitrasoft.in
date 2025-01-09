@@ -84,5 +84,11 @@ namespace WinePOSFinal.ServicesLayer
         {
             return objDAL.VoidInvoice(invoiceCode);
         }
+
+
+        public bool SaveTaxData(int TaxID, Decimal Percentage)
+        {
+            return objDAL.SaveTaxData(TaxID, Percentage);
+        }
     }
 }

@@ -1,0 +1,24 @@
+﻿<Window x:Class="WinePOSFinal.TaxWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WinePOSFinal"
+        mc:Ignorable="d"
+        Title="TaxWindow" Height="350" Width="400">
+    <Grid>
+        <TextBlock Text="Tax" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="20" Margin="0,10,0,0"/>
+
+        <DataGrid x:Name="TaxDataGrid" AutoGenerateColumns="False" HorizontalAlignment="Stretch" VerticalAlignment="Top" 
+                  Margin="10,50,10,80" Height="300" CanUserAddRows="False" 
+                  CellEditEnding="TaxDataGrid_CellEditEnding">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Type" Width="*" Binding="{Binding Type}" />
+                <DataGridTextColumn Header="Percentage of Tax" Width="*" Binding="{Binding Percentage}" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Button Content="Save" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="80" Height="30"
+                Margin="0,0,10,10" Click="SaveButton_Click"/>
+    </Grid>
+</Window>
