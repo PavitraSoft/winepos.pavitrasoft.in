@@ -546,7 +546,7 @@ namespace WinePOSFinal
             if (objBillingItems.Count > 0)
             {
                 SubTotal = objBillingItems.Sum(item => decimal.TryParse(item.TotalPrice, out var totalPrice) ? totalPrice : 0);
-                Tax = SubTotal * 0.10m; // Assuming 10% tax
+                Tax = SubTotal * 0.06625m; // Assuming 10% tax
                 GrandTotal = SubTotal + Tax;
             }
             else
