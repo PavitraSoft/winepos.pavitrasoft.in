@@ -22,10 +22,21 @@ namespace WinePOSFinal
         private decimal TotalAmount = 0m; // Total amount passed from MainWindow
         private decimal RemainingAmount = 0m; // Remaining amount after payments
         private List<Payment> Payments = new List<Payment>();
+        private TextBlock _lblRemaining;
+        private TextBlock _lblAmtRemaining;
+        private TextBlock _lblChange;
+        private TextBlock _lblAmtChange;
 
-        public TenderWindow(decimal initialAmount)
+
+        public TenderWindow(decimal initialAmount, TextBlock lblRemaining, TextBlock lblAmtRemaining, TextBlock lblChange, TextBlock lblAmtChange)
         {
             InitializeComponent();
+
+            _lblRemaining = lblRemaining;
+            _lblAmtRemaining = lblAmtRemaining;
+            _lblChange = lblChange;
+            _lblAmtChange = lblAmtChange;
+
             TotalAmount = initialAmount; // Set the initial amount passed from MainWindow
             RemainingAmount = TotalAmount; // Initialize remaining amount
             AmountTextBox.Text = TotalAmount.ToString("F2"); // Populate the amount text box
@@ -78,17 +89,17 @@ namespace WinePOSFinal
         // Add Payment Logic
         private void AddPayment(string type, decimal amount)
         {
-            if (RemainingAmount >= amount)
-            {
+            //if (RemainingAmount >= amount)
+            //{
                 Payments.Add(new Payment { Type = type, Amount = amount });
                 RemainingAmount -= amount;
                 UpdateRemainingAmount();
                 PaymentGrid.Items.Refresh();
-            }
-            else
-            {
-                MessageBox.Show("Amount exceeds the remaining balance!");
-            }
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Amount exceeds the remaining balance!");
+            //}
         }
 
         // Update Remaining Amount
@@ -100,6 +111,31 @@ namespace WinePOSFinal
         // Done Button Click Handler
         private void DoneButton_Click(object sender, RoutedEventArgs e)
         {
+            if (RemainingAmount > 0)
+            {
+                _lblRemaining.Visibility = Visibility.Visible;
+                _lblAmtRemaining.Visibility = Visibility.Visible;
+                _lblAmtRemaining.Text = Convert.ToString(RemainingAmount);
+                _lblChange.Visibility = Visibility.Collapsed;
+                _lblAmtChange.Visibility = Visibility.Collapsed;
+            }
+            else if (RemainingAmount < 0)
+            {
+                _lblRemaining.Visibility = Visibility.Collapsed;
+                _lblAmtRemaining.Visibility = Visibility.Collapsed;
+                _lblChange.Visibility = Visibility.Visible;
+                _lblAmtChange.Visibility = Visibility.Visible;
+                _lblAmtChange.Text = Convert.ToString(RemainingAmount * -1);
+            }
+            else
+            {
+                _lblRemaining.Visibility = Visibility.Collapsed;
+                _lblAmtRemaining.Visibility = Visibility.Collapsed;
+                _lblChange.Visibility = Visibility.Collapsed;
+                _lblAmtChange.Visibility = Visibility.Collapsed;
+            }
+
+
             this.Close(); // Close the TenderWindow
         }
 

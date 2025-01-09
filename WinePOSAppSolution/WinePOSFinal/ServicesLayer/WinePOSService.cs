@@ -43,7 +43,7 @@ namespace WinePOSFinal.ServicesLayer
             return objDAL.DeleteItemDataByID(intItemID);
         }
 
-        public int ValidateLogin(string strUserName, string strPassWord)
+        public string ValidateLogin(string strUserName, string strPassWord)
         {
             return objDAL.ValidateLogin(strUserName, strPassWord);
         }
@@ -78,6 +78,11 @@ namespace WinePOSFinal.ServicesLayer
         public DataTable GetLowQuentityEmailDetails()
         {
             return objDAL.GetLowQuentityEmailDetails();
+        }
+
+        public bool VoidInvoice(int invoiceCode)
+        {
+            return objDAL.VoidInvoice(invoiceCode);
         }
     }
 }

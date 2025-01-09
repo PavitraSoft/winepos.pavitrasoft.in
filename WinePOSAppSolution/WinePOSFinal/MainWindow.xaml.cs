@@ -29,12 +29,10 @@ namespace WinePOSFinal
             string currentRole = AccessRightsManager.GetUserRole();
 
             Inventorymaintenance.Visibility = Visibility.Collapsed;
-            SalesHistory.Visibility = Visibility.Collapsed;
 
             if (currentRole.ToUpper() == "ADMIN")
             {
                 Inventorymaintenance.Visibility = Visibility.Visible;
-                SalesHistory.Visibility = Visibility.Visible;
             }
         }
 

@@ -110,6 +110,10 @@
                     <TextBlock FontSize="20" FontWeight="Bold" Name="txtDiscount" Text="{Binding Discount, StringFormat=C}"  Visibility="Collapsed"/>
                     <TextBlock Text="Grand Total" FontSize="16"/>
                     <TextBlock FontSize="20" FontWeight="Bold" Name="txtGrandTotal" Text="{Binding GrandTotal, StringFormat=C}" />
+                    <TextBlock Text="Remaining Amount" FontSize="16" Name="Remaining" Visibility="Collapsed"/>
+                    <TextBlock FontSize="20" FontWeight="Bold" Name="txtAmtRemaining" Visibility="Collapsed"/>
+                    <TextBlock Text="Change" FontSize="16" Name="Change" Visibility="Collapsed"/>
+                    <TextBlock FontSize="20" FontWeight="Bold" Name="txtAmtChange" Visibility="Collapsed"/>
                     <!--<TextBlock Text="Invoice Number" FontSize="16" Visibility="Collapsed" Text="0"/>-->
                 </StackPanel>
 

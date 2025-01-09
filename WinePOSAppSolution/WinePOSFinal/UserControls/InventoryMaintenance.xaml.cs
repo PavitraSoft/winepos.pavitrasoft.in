@@ -163,15 +163,15 @@ namespace WinePOSFinal
             objItem.Name = txtDescription.Text;
             objItem.Additional_Description = txtADescription.Text;
 
-            objItem.ItemCost = Convert.ToDecimal(txtItemCost.Text);
-            objItem.ChargedCost = Convert.ToDecimal(txtChargePrice.Text);
-            objItem.InStock = Convert.ToInt32(Convert.ToDecimal(txtStock.Text));
+            objItem.ItemCost = !string.IsNullOrWhiteSpace(txtItemCost.Text) ? Convert.ToDecimal(txtItemCost.Text) : 0;
+            objItem.ChargedCost = !string.IsNullOrWhiteSpace(txtChargePrice.Text) ? Convert.ToDecimal(txtChargePrice.Text) : 0;
+            objItem.InStock = !string.IsNullOrWhiteSpace(txtStock.Text) ? Convert.ToInt32(txtStock.Text) : 0;
 
             objItem.VendorName = txtVendorName.Text;
 
-            objItem.InCase = Convert.ToInt32(Convert.ToDecimal(txtCase.Text));
-            objItem.CaseCost = Convert.ToDecimal(txtCaseCost.Text);
-            objItem.SalesTaxAmt = Convert.ToDecimal(txtPriceWithTax.Text);
+            objItem.InCase = !string.IsNullOrWhiteSpace(txtCase.Text) ? Convert.ToInt32(txtCase.Text) : 0;
+            objItem.CaseCost = !string.IsNullOrWhiteSpace(txtCaseCost.Text) ? Convert.ToDecimal(txtCaseCost.Text) : 0;
+            objItem.SalesTaxAmt = !string.IsNullOrWhiteSpace(txtPriceWithTax.Text) ? Convert.ToDecimal(txtPriceWithTax.Text) : 0;
 
             objItem.Sales_Tax = txtchkST.IsChecked == true;
             objItem.QuickADD = txtQuickAdd.IsChecked == true;

@@ -36,6 +36,13 @@
                             Margin="5,0" 
                             VerticalAlignment="Center" 
                             Click="FlashReportButton_Click"/>
+                    <Button Name="VoidInvoice" 
+                            Content="Void Invoice" 
+                            Width="120" 
+                            Height="30" 
+                            Margin="5,0" 
+                            VerticalAlignment="Center" 
+                            Click="VoidInvoice_Click"/>
                 </StackPanel>
             </Border>
         </StackPanel>
@@ -58,7 +65,7 @@
                     Margin="5,0" 
                     VerticalAlignment="Center" 
                     Click="SearchButton_Click"/>
-            
+
             <Button Name="ClearButton" 
                     Content="Clear" 
                     Width="100" 
@@ -66,15 +73,17 @@
                     Margin="5,0" 
                     VerticalAlignment="Center" 
                     Click="ClearButton_Click"/>
+            <!-- Label to Display Total Price -->
+            <Label Name="TotalPriceLabel" Content="Total Price: $0.00" HorizontalAlignment="Center"  FontSize="16" FontWeight="Bold"/>
         </StackPanel>
 
         <!-- DataGrid Section -->
         <StackPanel Grid.Row="2" Orientation="Vertical">
             <DataGrid Name="SalesInventoryDataGrid" AutoGenerateColumns="False" 
-                      CanUserAddRows="False" IsReadOnly="True" 
-                      SelectionMode="Single" SelectionUnit="FullRow"  
-                      Background="LightGray" VerticalScrollBarVisibility="Auto" 
-                      HorizontalScrollBarVisibility="Auto" Height="500" Width="1200" 
+              CanUserAddRows="False" IsReadOnly="True" 
+              SelectionMode="Extended" SelectionUnit="FullRow"  
+              Background="LightGray" VerticalScrollBarVisibility="Auto" 
+              HorizontalScrollBarVisibility="Auto" Height="500" Width="1200"
                       SelectionChanged="SalesInventoryDataGrid_SelectionChanged">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="InvoiceCode" Width="*" Binding="{Binding InvoiceCode}"/>
@@ -87,6 +96,7 @@
                     <DataGridTextColumn Header="Username" Width="*" Binding="{Binding UserName}"/>
                     <DataGridTextColumn Header="Date Time" Width="*" Binding="{Binding CreatedDateTime}"/>
                     <DataGridTextColumn Header="Payment Type" Width="*" Binding="{Binding PaymentType}"/>
+                    <DataGridTextColumn Header="Voided" Width="*" Binding="{Binding IsVoided}" Visibility="Collapsed"/>
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>

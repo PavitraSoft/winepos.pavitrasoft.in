@@ -201,9 +201,9 @@ namespace WinePOSFinal.DataAccessLayer
         }
 
 
-        public int ValidateLogin(string strUserName, string strPassWord)
+        public string ValidateLogin(string strUserName, string strPassWord)
         {
-            int iIsAdmin = -1;
+            string role = string.Empty;
             DataTable dt = new DataTable();
 
             try
@@ -213,7 +213,7 @@ namespace WinePOSFinal.DataAccessLayer
                     conn.Open();
 
                     // Sample query to retrieve data
-                    string query = "SELECT TOP 1 IsAdmin FROM Users WHERE UserName = '" + strUserName.Replace(",", "''") + "' AND Password = '" + strPassWord.Replace(",", "''") + "'"; // Replace with your actual query
+                    string query = "SELECT TOP 1 UserRole FROM Users WHERE UserName = '" + strUserName.Replace(",", "''") + "' AND Password = '" + strPassWord.Replace(",", "''") + "'"; // Replace with your actual query
 
                     using (SqlCommand command = new SqlCommand(query, conn))
                     {
@@ -222,7 +222,7 @@ namespace WinePOSFinal.DataAccessLayer
 
                         if (dt != null && dt.Rows.Count > 0)
                         {
-                            iIsAdmin = Convert.ToString(dt.Rows[0]["IsAdmin"]) == "True" ? 1 : 0;
+                            role = Convert.ToString(dt.Rows[0]["UserRole"]);
                         }
                     }
                 }
@@ -234,7 +234,7 @@ namespace WinePOSFinal.DataAccessLayer
                 MessageBox.Show($"Error: {ex.Message}");
             }
 
-            return iIsAdmin;
+            return role;
         }
 
         public bool SaveInlineItemData(int ItemID, string columnName, string value)
@@ -375,9 +375,9 @@ namespace WinePOSFinal.DataAccessLayer
                     where += " AND CreatedDateTime >= CONVERT(DATETIME, '" + fromDate.Value.Date.ToString("yyyy-MM-dd") + "') ";
                 }
 
-                if (fromDate.HasValue)
+                if (toDate.HasValue)
                 {
-                    where += " AND CreatedDateTime <= CONVERT(DATETIME, '" + toDate.Value.Date.ToString("yyyy-MM-dd") + "') ";
+                    where += " AND CreatedDateTime <= DATEADD(DAY,1,CONVERT(DATETIME, '" + toDate.Value.Date.ToString("yyyy-MM-dd") + "')) ";
                 }
 
                 if (!string.IsNullOrWhiteSpace(InvoiceNumber))
@@ -387,7 +387,7 @@ namespace WinePOSFinal.DataAccessLayer
 
 
                 // Sample query to retrieve data
-                string query = "SELECT InvoiceCode, UPC, Name ,Price,Quantity,Tax,TotalPrice,UserName,CreatedDateTime,PaymentType FROM Invoice WITH (NOLOCK) WHERE 1 = 1 " + where + " ORDER BY CreatedDateTime DESC"; // Replace with your actual query
+                string query = "SELECT InvoiceCode, UPC, Name ,Price,Quantity,Tax,TotalPrice,UserName,CreatedDateTime,PaymentType, CASE WHEN IsVoided = 1 THEN 'Yes' ELSE 'No' END AS IsVoided FROM Invoice WITH (NOLOCK) WHERE 1 = 1 " + where + " ORDER BY CreatedDateTime DESC"; // Replace with your actual query
 
                 using (SqlCommand command = new SqlCommand(query, conn))
                 {
@@ -453,6 +453,42 @@ namespace WinePOSFinal.DataAccessLayer
                 }
             }
             return dt;
+        }
+
+
+        public bool VoidInvoice(int invoiceCode)
+        {
+            bool bIsSuccess = false;
+            StringBuilder sb = new StringBuilder();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    sb.Append("UPDATE Invoice SET ");
+                    sb.Append(" IsVoided = 1 ");
+                    sb.Append(" WHERE InvoiceCode = " + Convert.ToString(invoiceCode));
+
+                    // Sample query to retrieve data
+                    string query = sb.ToString(); // Replace with your actual query
+
+                    using (SqlCommand command = new SqlCommand(query, conn))
+                    {
+                        int rowsAffected = command.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            bIsSuccess = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during the execution
+                MessageBox.Show($"Error: {ex.Message}");
+            }
+
+            return bIsSuccess;
         }
     }
 }

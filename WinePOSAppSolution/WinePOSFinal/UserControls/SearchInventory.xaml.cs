@@ -156,7 +156,7 @@ namespace WinePOSFinal
                             dataColumnName = "SalesTax";
                             break;
                         case "Stock":
-                            columnName = "InStock";
+                            columnName = "Stock";
                             dataColumnName = "InStock";
                             break;
                         case "Additional Description":

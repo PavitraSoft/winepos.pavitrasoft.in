@@ -406,12 +406,17 @@ namespace WinePOSFinal
             // Handle user response
             if (result == MessageBoxResult.Yes)
             {
-                MessageBox.Show("Invoice has been cleared. Thank you!", "Clear", MessageBoxButton.OK, MessageBoxImage.Information);
+                Remaining.Visibility = Visibility.Collapsed;
+                txtAmtRemaining.Visibility = Visibility.Collapsed;
+                Change.Visibility = Visibility.Collapsed;
+                txtAmtChange.Visibility = Visibility.Collapsed;
 
                 // Optionally, clear the DataGrid after payment
                 objBillingItems.Clear();
 
                 btnPrintInvoice_Click(null, null);
+
+                MessageBox.Show("Invoice has been cleared. Thank you!", "Clear", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
         }
@@ -960,7 +965,7 @@ namespace WinePOSFinal
         private void btnTenderWindow_Click(object sender, RoutedEventArgs e)
         {
             // Pass the value to the TenderWindow
-            TenderWindow tenderWindow = new TenderWindow(GrandTotal); // Pass 100 as the initial value
+            TenderWindow tenderWindow = new TenderWindow(GrandTotal, Remaining, txtAmtRemaining, Change, txtAmtChange); // Pass 100 as the initial value
             tenderWindow.ShowDialog(); // Open the window modally
         }
     }

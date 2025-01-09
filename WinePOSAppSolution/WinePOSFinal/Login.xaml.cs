@@ -55,20 +55,19 @@ namespace WinePOSFinal
 
         private bool IsValidLogin(string username, string password)
         {
-            int iIsAdmin = objService.ValidateLogin(username, password);
+            string role = objService.ValidateLogin(username, password);
 
-            if (iIsAdmin == 1)
+            if (!string.IsNullOrWhiteSpace(role))
             {
-                AccessRightsManager.SetUserRole("Admin");
+                AccessRightsManager.SetUserRole(role);
                 AccessRightsManager.SetUserName(username);
+                return true;
             }
             else
             {
-                AccessRightsManager.SetUserRole("Non-Admin");
-                AccessRightsManager.SetUserName(username);
+                return false;
             }
 
-            return iIsAdmin != -1;
         }
     }
 }

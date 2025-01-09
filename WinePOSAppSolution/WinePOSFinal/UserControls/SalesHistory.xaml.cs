@@ -49,6 +49,28 @@ namespace WinePOSFinal.UserControls
 
                 // Bind to DataGrid
                 SalesInventoryDataGrid.ItemsSource = dtInvoice.DefaultView;
+
+
+                string userRole = AccessRightsManager.GetUserRole(); // This is a placeholder method. Replace it with your actual role-fetching logic.
+
+                if (userRole.ToLower() != "admin")
+                {
+                    // Hide the IsVoided column for non-admin users
+                    var isVoidedColumn = SalesInventoryDataGrid.Columns.FirstOrDefault(col => col.Header.ToString() == "Voided");
+                    if (isVoidedColumn != null)
+                    {
+                        isVoidedColumn.Visibility = Visibility.Collapsed;
+                    }
+                }
+                else
+                {
+                    // Show the IsVoided column for admin users
+                    var isVoidedColumn = SalesInventoryDataGrid.Columns.FirstOrDefault(col => col.Header.ToString() == "Voided");
+                    if (isVoidedColumn != null)
+                    {
+                        isVoidedColumn.Visibility = Visibility.Visible;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -57,21 +79,21 @@ namespace WinePOSFinal.UserControls
         }
 
         // Handle Row Selection
-        private void SalesInventoryDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (SalesInventoryDataGrid.SelectedItem is DataRowView selectedRow)
-            {
-                try
-                {
-                    selectedInvoiceCode = selectedRow["InvoiceCode"]?.ToString();
-                }
-                catch
-                {
-                    MessageBox.Show("Error retrieving the InvoiceCode from the selected row. Ensure the data context is correct.");
-                    selectedInvoiceCode = null;
-                }
-            }
-        }
+        //private void SalesInventoryDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    if (SalesInventoryDataGrid.SelectedItem is DataRowView selectedRow)
+        //    {
+        //        try
+        //        {
+        //            selectedInvoiceCode = selectedRow["InvoiceCode"]?.ToString();
+        //        }
+        //        catch
+        //        {
+        //            MessageBox.Show("Error retrieving the InvoiceCode from the selected row. Ensure the data context is correct.");
+        //            selectedInvoiceCode = null;
+        //        }
+        //    }
+        //}
 
         // Handle Print Invoice Button Click
         private void PrintInvoiceButton_Click(object sender, RoutedEventArgs e)
@@ -316,9 +338,55 @@ namespace WinePOSFinal.UserControls
 
         private void ClearButton_Click(object sender, RoutedEventArgs e)
         {
+            // Clear filters (if applicable)
             FromDatePicker.SelectedDate = null;
             ToDatePicker.SelectedDate = null;
             InvoiceNumberTextBox.Text = string.Empty;
+
+            // Clear DataGrid selection
+            SalesInventoryDataGrid.SelectedItems.Clear();
+
+            // Reset total price label
+            TotalPriceLabel.Content = "Total Price: $0.00";
+        }
+
+        private void SalesInventoryDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Format the total price information
+            // Get selected rows
+            var selectedRows = SalesInventoryDataGrid.SelectedItems.Cast<DataRowView>().ToList();
+            if (!selectedRows.Any())
+            {
+                TotalPriceLabel.Content = "Total Price: $0.00";
+                return;
+            }
+
+            // Calculate total price for all selected rows
+            decimal totalPrice = selectedRows.Where(row => row["IsVoided"].ToString().ToLower() == "no").Sum(row => (decimal)row["TotalPrice"]);
+
+            // Update the label to show the total price
+            TotalPriceLabel.Content = $"Total Price: ${totalPrice:0.00}";
+        }
+
+        private void VoidInvoice_Click(object sender, RoutedEventArgs e)
+        {
+            if (SalesInventoryDataGrid.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("No entries selected. Please select rows to void.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            // Collect all selected rows
+            var selectedRows = SalesInventoryDataGrid.SelectedItems.Cast<DataRowView>().ToList();
+            var invoiceCodes = selectedRows.Select(row => row["InvoiceCode"].ToString()).Distinct();
+
+            foreach (var invoiceCode in invoiceCodes)
+            {
+                //MessageBox.Show($"Voiding all entries with InvoiceCode: {invoiceCode}");
+                objService.VoidInvoice(Convert.ToInt32(invoiceCode));
+            }
+
+            FetchAndPopulateInvoice();
         }
     }
 }
