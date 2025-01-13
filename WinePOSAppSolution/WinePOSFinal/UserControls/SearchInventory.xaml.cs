@@ -140,7 +140,7 @@ namespace WinePOSFinal
                             dataColumnName = "UPC";
                             break;
                         case "Description":
-                            columnName = "Name";
+                            columnName = "Description";
                             dataColumnName = "Name";
                             break;
                         case "Item Cost":
@@ -160,7 +160,7 @@ namespace WinePOSFinal
                             dataColumnName = "InStock";
                             break;
                         case "Additional Description":
-                            columnName = "Additional_Description";
+                            columnName = "AdditionalDescription";
                             dataColumnName = "Additional_Description";
                             break;
                         case "Vendor Part Num.":
@@ -202,7 +202,7 @@ namespace WinePOSFinal
                         int itemID = Convert.ToInt32(selectedEditRow["ItemID"]);
 
                         // Save the changes
-                        objService.SaveInlineItemData(itemID, columnName, newValue);
+                        objService.SaveInlineItemData(itemID, dataColumnName, newValue);
                     }
                     else
                     {

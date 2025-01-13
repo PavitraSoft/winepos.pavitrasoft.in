@@ -9,6 +9,8 @@ using System.Data.SqlClient;
 using WinePOSFinal.Classes;
 using System.Windows;
 using System.ComponentModel;
+using System.Xml.Serialization;
+using System.IO;
 
 namespace WinePOSFinal.DataAccessLayer
 {
@@ -74,6 +76,12 @@ namespace WinePOSFinal.DataAccessLayer
                     cmd.Parameters.AddWithValue("SalesTaxAmt", objItem.SalesTaxAmt);
                     cmd.Parameters.AddWithValue("QuickADD", objItem.QuickADD);
 
+                    if (objItem.BulkPricingItems != null && objItem.BulkPricingItems.Count > 0)
+                    {
+                        string xmlData = SerializeToXml(objItem.BulkPricingItems);
+                        cmd.Parameters.AddWithValue("BulkPricing", xmlData);
+                    }
+
                     // Execute the stored procedure (this will not return anything)
                     int rowsAffected = cmd.ExecuteNonQuery();
 
@@ -87,6 +95,25 @@ namespace WinePOSFinal.DataAccessLayer
             }
 
             return bIsSuccess;
+        }
+
+        // Helper method to serialize the list to XML
+        private string SerializeToXml(List<BulkPricingItem> list)
+        {
+            try
+            {
+                var serializer = new XmlSerializer(typeof(List<BulkPricingItem>));
+                using (var stringWriter = new StringWriter())
+                {
+                    serializer.Serialize(stringWriter, list);
+                    return stringWriter.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred during serialization: {ex.Message}", "Serialization Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
         }
 
         public DataTable GetInventoryData(string strUPC, string strDescription)
@@ -114,7 +141,7 @@ namespace WinePOSFinal.DataAccessLayer
             catch (Exception ex)
             {
                 // Handle any errors that occur during the execution
-                MessageBox.Show($"Error: {ex.Message}");
+                MessageBox.Show($"Error2: {ex.Message}");
             }
 
             return dt;
@@ -122,7 +149,8 @@ namespace WinePOSFinal.DataAccessLayer
         public Items FetchItemDataByID(int intItemID)
         {
             Items items = new Items();
-            DataTable dt = new DataTable();
+            BulkPricingItem bulkPricing = new BulkPricingItem();
+            DataSet ds = new DataSet();
 
             try
             {
@@ -138,10 +166,12 @@ namespace WinePOSFinal.DataAccessLayer
                     cmd.Parameters.AddWithValue("ItemID", intItemID);
 
                     SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
-                    dataAdapter.Fill(dt); // Fill the DataTable with data from the database
+                    dataAdapter.Fill(ds); // Fill the DataTable with data from the database
 
-                    if (dt != null && dt.Rows.Count > 0)
+                    if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
+                        DataTable dt = ds.Tables[0];
+
                         items.ItemID = dt.Rows[0]["ItemID"] != DBNull.Value ? Convert.ToInt32(dt.Rows[0]["ItemID"]) : 0;
                         items.Name = dt.Rows[0]["Name"] != DBNull.Value ? Convert.ToString(dt.Rows[0]["Name"]) : string.Empty;
                         items.Category = dt.Rows[0]["Category"] != DBNull.Value ? Convert.ToString(dt.Rows[0]["Category"]) : string.Empty;
@@ -157,13 +187,32 @@ namespace WinePOSFinal.DataAccessLayer
                         items.InCase = dt.Rows[0]["NumberInCase"] != DBNull.Value ? Convert.ToInt32(dt.Rows[0]["NumberInCase"]) : 0;
                         items.QuickADD = dt.Rows[0]["QuickADD"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["QuickADD"]) : false;
                         items.DroppedItem = dt.Rows[0]["DroppedItem"] != DBNull.Value ? Convert.ToString(dt.Rows[0]["DroppedItem"]) : string.Empty;
+
+                        items.BulkPricingItems = new List<BulkPricingItem>();
+
+                        if (ds.Tables.Count > 1 && ds.Tables[1].Rows.Count > 0)
+                        {
+                            DataTable dtBulk = ds.Tables[1];
+
+                            foreach (DataRow dr in ds.Tables[1].Rows)
+                            {
+                                BulkPricingItem bItem = new BulkPricingItem();
+                                bItem.BuilkPricingID = Convert.ToInt32(dr["BuilkPricingID"]);
+                                bItem.ItemID = Convert.ToInt32(dr["ItemID"]);
+                                bItem.Quantity = Convert.ToInt32(dr["Quantity"]);
+                                bItem.Price = Convert.ToInt32(dr["Pricing"]);
+
+                                items.BulkPricingItems.Add(bItem);
+
+                            }
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
                 // Handle any errors that occur during the execution
-                MessageBox.Show($"Error: {ex.Message}");
+                MessageBox.Show($"Error3: {ex.Message}");
             }
 
             return items;
@@ -194,7 +243,7 @@ namespace WinePOSFinal.DataAccessLayer
             catch (Exception ex)
             {
                 // Handle any errors that occur during the execution
-                MessageBox.Show($"Error: {ex.Message}");
+                MessageBox.Show($"Error4: {ex.Message}");
             }
 
             return bIsSuccess;
@@ -231,7 +280,7 @@ namespace WinePOSFinal.DataAccessLayer
             catch (Exception ex)
             {
                 // Handle any errors that occur during the execution
-                MessageBox.Show($"Error: {ex.Message}");
+                MessageBox.Show($"Error5: {ex.Message}");
             }
 
             return role;
@@ -266,7 +315,7 @@ namespace WinePOSFinal.DataAccessLayer
             catch (Exception ex)
             {
                 // Handle any errors that occur during the execution
-                MessageBox.Show($"Error: {ex.Message}");
+                MessageBox.Show($"Error6: {ex.Message}");
             }
 
             return bIsSuccess;
@@ -324,7 +373,7 @@ namespace WinePOSFinal.DataAccessLayer
                 catch (Exception ex)
                 {
                     // Handle any errors that occur during the execution
-                    MessageBox.Show($"Error: {ex.Message}");
+                    MessageBox.Show($"Error8: {ex.Message}");
                 }
             }
 
@@ -341,6 +390,28 @@ namespace WinePOSFinal.DataAccessLayer
 
                 // Sample query to retrieve data
                 string query = "SELECT * FROM SalesTax WITH (NOLOCK)"; // Replace with your actual query
+
+                using (SqlCommand command = new SqlCommand(query, conn))
+                {
+                    // Create a DataAdapter to fill the DataTable
+                    SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
+                    dataAdapter.Fill(dt); // Fill the DataTable with data from the database
+                }
+            }
+
+            return dt;
+
+        }
+        public DataTable FetchBulkPricingData(int ItemID)
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                // Sample query to retrieve data
+                string query = "SELECT * FROM BulkPricing WITH (NOLOCK) WHERE ItemID = " + Convert.ToString(ItemID); // Replace with your actual query
 
                 using (SqlCommand command = new SqlCommand(query, conn))
                 {
@@ -427,7 +498,7 @@ namespace WinePOSFinal.DataAccessLayer
             catch (Exception ex)
             {
                 // Handle any errors that occur during the execution
-                MessageBox.Show($"Error: {ex.Message}");
+                MessageBox.Show($"Error9: {ex.Message}");
             }
 
             return bIsSuccess;
@@ -485,7 +556,7 @@ namespace WinePOSFinal.DataAccessLayer
             catch (Exception ex)
             {
                 // Handle any errors that occur during the execution
-                MessageBox.Show($"Error: {ex.Message}");
+                MessageBox.Show($"Error10: {ex.Message}");
             }
 
             return bIsSuccess;
@@ -520,10 +591,67 @@ namespace WinePOSFinal.DataAccessLayer
             catch (Exception ex)
             {
                 // Handle any errors that occur during the execution
-                MessageBox.Show($"Error: {ex.Message}");
+                MessageBox.Show($"Error11: {ex.Message}");
             }
 
             return bIsSuccess;
+        }
+
+        public bool SaveBulkPricing(int itemID, int quantity, Decimal price)
+        {
+            bool bIsSuccess = false;
+            StringBuilder sb = new StringBuilder();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    sb.Append(" INSERT INTO BulkPricing (ItemID, Quantity, Pricing) VALUES (" + Convert.ToString(itemID) + "," + Convert.ToString(quantity) + "," + Convert.ToString(price) + ") ");
+
+                    // Sample query to retrieve data
+                    string query = sb.ToString(); // Replace with your actual query
+
+                    using (SqlCommand command = new SqlCommand(query, conn))
+                    {
+                        int rowsAffected = command.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            bIsSuccess = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during the execution
+                MessageBox.Show($"Error12: {ex.Message}");
+            }
+
+            return bIsSuccess;
+        }
+
+
+        public DataTable GetBulkPricingData()
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                // Sample query to retrieve data
+                string query = "SELECT I.UPC, B.BuilkPricingID,B.ItemID,B.Quantity,B.Pricing FROM BulkPricing B WITH (NOLOCK) INNER JOIN Items I WITH (NOLOCK) ON B.ItemID = I.ItemID"; // Replace with your actual query
+
+                using (SqlCommand command = new SqlCommand(query, conn))
+                {
+                    // Create a DataAdapter to fill the DataTable
+                    SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
+                    dataAdapter.Fill(dt); // Fill the DataTable with data from the database
+                }
+            }
+
+            return dt;
+
         }
     }
 }

@@ -12,10 +12,16 @@
     <Compile Update="Billing.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="BulkPricing.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="LoadingWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Login.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="QuickAdd.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Reports\winebill.cs">
@@ -41,10 +47,16 @@
     <Page Update="Billing.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="BulkPricing.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="LoadingWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Login.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="QuickAdd.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="ReportViewerWindow.xaml">

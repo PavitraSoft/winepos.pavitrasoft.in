@@ -44,32 +44,65 @@
             <Button Grid.Column="4" Grid.Row="1" Width="100" Height="40" Margin="5,-25,5,5" Content="Add" Name="btnAdd" Click="btnAdd_Click"/>
         </Grid>
 
-        <Grid Grid.Row="1">
+        <StackPanel Grid.Row="1" Orientation="Vertical" Margin="5">
+            <Border Background="#FFFCF2" BorderBrush="Gray" BorderThickness="1" Margin="0,0,0,10">
+                <StackPanel Orientation="Horizontal" Margin="5" VerticalAlignment="Center">
+                    <TextBlock Text="Quick Add" FontSize="16" FontWeight="Bold" Foreground="Black" VerticalAlignment="Center"/>
+                    <Button Name="NonScanNoTax" 
+                    Content="Non Scan No Tax" 
+                    Width="120" 
+                    Height="30" 
+                    HorizontalAlignment="Right" 
+                    VerticalAlignment="Center" 
+                    Margin="10,0,0,0" 
+                    Click="NonScanNoTax_Click"/>
+                    <Button Name="IceBag" 
+                    Content="ICE BAG" 
+                    Width="120" 
+                    Height="30" 
+                    Margin="5,0" 
+                    VerticalAlignment="Center" 
+                    Click="IceBag_Click"/>
+                    <Button Name="Nuts" 
+                    Content="NUTS" 
+                    Width="120" 
+                    Height="30" 
+                    Margin="5,0" 
+                    VerticalAlignment="Center" 
+                    Click="Nuts_Click"/>
+                    <TextBlock Text="Discount:" Grid.Column="3" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5" Name="textDiscount" />
+                    <TextBox Name="txtDiscountValue" Grid.Column="4" Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" PreviewTextInput="txtDiscountValue_PreviewTextInput" />
+                    <Button Grid.Column="5" Width="100" Height="30" Margin="0" Content="Apply" Name="btnApplyDiscount" Click="btnApplyDiscount_Click" HorizontalAlignment="Left"  />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!--<Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*" />
-                <!-- Label for Quick ADD -->
+                --><!-- Label for Quick ADD --><!--
                 <ColumnDefinition Width="1*" />
-                <!-- Dropdown for Quick ADD -->
+                --><!-- Dropdown for Quick ADD --><!--
                 <ColumnDefinition Width="1*" />
-                <!-- Button for Quick ADD -->
+                --><!-- Button for Quick ADD --><!--
                 <ColumnDefinition Width="1*" />
-                <!-- Label for Discount -->
+                --><!-- Label for Discount --><!--
                 <ColumnDefinition Width="1*" />
-                <!-- TextBox for Discount -->
+                --><!-- TextBox for Discount --><!--
                 <ColumnDefinition Width="1*" />
-                <!-- Button for Apply -->
+                --><!-- Button for Apply --><!--
             </Grid.ColumnDefinitions>
 
-            <!-- Quick ADD Section -->
+            --><!-- Quick ADD Section --><!--
             <TextBlock Text="Quick ADD:" Grid.Column="0" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5" />
             <ComboBox Name="cbQuickADD" Grid.Column="1" Width="200" Height="30" HorizontalAlignment="Left" Margin="0" />
             <Button Grid.Column="2" Width="100" Height="30" Margin="0" Content="Add" Name="btnQuickAdd" Click="btnQuickAdd_Click" HorizontalAlignment="Left"/>
 
-            <!-- Discount Section -->
+            --><!-- Discount Section --><!--
             <TextBlock Text="Discount:" Grid.Column="3" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5" Name="textDiscount" />
             <TextBox Name="txtDiscountValue" Grid.Column="4" Width="200" Height="30" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0" PreviewTextInput="txtDiscountValue_PreviewTextInput" />
             <Button Grid.Column="5" Width="100" Height="30" Margin="0" Content="Apply" Name="btnApplyDiscount" Click="btnApplyDiscount_Click" HorizontalAlignment="Left"  />
-        </Grid>
+        </Grid>-->
 
 
 
@@ -81,15 +114,16 @@
             </Grid.ColumnDefinitions>
 
             <!-- Item List -->
-            <DataGrid Grid.Column="0" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserAddRows="False" Name="dgBilling" SelectionMode="Single" SelectionUnit="FullRow" CellEditEnding="dgBilling_CellEditEnding" PreviewTextInput="dgBilling_PreviewTextInput">
+            <DataGrid Grid.Column="0" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserAddRows="False" Name="dgBilling" SelectionMode="Single" SelectionUnit="FullRow" CellEditEnding="dgBilling_CellEditEnding" PreviewTextInput="dgBilling_PreviewTextInput" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="UPC" Width="*" Binding="{Binding UPC}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Price" Width="*" Binding="{Binding Price}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Price" Width="*" Binding="{Binding Price}" IsReadOnly="False"/>
                     <DataGridTextColumn Header="Quantity" Width="*" Binding="{Binding Quantity}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Tax" Width="*" Binding="{Binding Tax}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Total Price" Width="*" Binding="{Binding TotalPrice}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Discount (%)" Width="*" Binding="{Binding Discount, Mode=TwoWay}" />
+                    <DataGridTextColumn Header="Note" Width="*" Binding="{Binding Note, Mode=TwoWay}" />
                 </DataGrid.Columns>
             </DataGrid>
 

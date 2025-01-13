@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using WinePOSFinal.ServicesLayer;
 using System.Data;
 using WinePOSFinal.Classes;
+using System.Text.RegularExpressions;
 
 namespace WinePOSFinal
 {
@@ -26,9 +27,11 @@ namespace WinePOSFinal
         WinePOSService objService = new WinePOSService();
         int intItemID = 0;
         DataTable dtTax = new DataTable();
+        public List<BulkPricingItem> BulkPricingItems { get; set; }
         public InventoryMaintenance()
         {
             InitializeComponent();
+            BulkPricingItems = new List<BulkPricingItem>();
 
             ReloadInventoryMaintenanceData();
 
@@ -39,6 +42,7 @@ namespace WinePOSFinal
         public void ReloadInventoryMaintenanceData()
         {
             dtTax = objService.GetTaxData();
+            // Bind the DataGrid to the list
 
             ClearFields();
         }
@@ -92,6 +96,8 @@ namespace WinePOSFinal
             txtQuickAdd.IsChecked = false;
             intItemID = 0;
 
+            dgBulkPricing.ItemsSource = null;
+
         }
 
         private void FetchAndPopulateItemData()
@@ -121,7 +127,18 @@ namespace WinePOSFinal
             txtPriceWithTax.Text = Convert.ToString(objItem.SalesTaxAmt);
 
             txtchkST.IsChecked = objItem.Sales_Tax;
+            txtchkST2.IsChecked = objItem.Sales_Tax_2;
+            txtchkST3.IsChecked = objItem.Sales_Tax_3;
+            txtchkST4.IsChecked = objItem.Sales_Tax_4;
+            txtchkST5.IsChecked = objItem.Sales_Tax_5;
+            txtchkST6.IsChecked = objItem.Sales_Tax_6;
+            txtchkBT.IsChecked = objItem.Bar_Tax;
+
             txtQuickAdd.IsChecked = objItem.QuickADD;
+
+            BulkPricingItems = objItem.BulkPricingItems;
+            dgBulkPricing.ItemsSource = null;
+            dgBulkPricing.ItemsSource = BulkPricingItems;
         }
 
         List<ComboBoxItem> ConvertDataTableToComboBoxItems(DataTable dt)
@@ -169,12 +186,20 @@ namespace WinePOSFinal
 
             objItem.VendorName = txtVendorName.Text;
 
-            objItem.InCase = !string.IsNullOrWhiteSpace(txtCase.Text) ? Convert.ToInt32(txtCase.Text) : 0;
+            objItem.InCase = !string.IsNullOrWhiteSpace(txtCase.Text) ? Convert.ToInt32(Convert.ToDecimal(txtCase.Text)) : 0;
             objItem.CaseCost = !string.IsNullOrWhiteSpace(txtCaseCost.Text) ? Convert.ToDecimal(txtCaseCost.Text) : 0;
             objItem.SalesTaxAmt = !string.IsNullOrWhiteSpace(txtPriceWithTax.Text) ? Convert.ToDecimal(txtPriceWithTax.Text) : 0;
 
             objItem.Sales_Tax = txtchkST.IsChecked == true;
+            objItem.Sales_Tax_2 = txtchkST2.IsChecked == true;
+            objItem.Sales_Tax_3 = txtchkST3.IsChecked == true;
+            objItem.Sales_Tax_4 = txtchkST4.IsChecked == true;
+            objItem.Sales_Tax_5 = txtchkST5.IsChecked == true;
+            objItem.Sales_Tax_6 = txtchkST5.IsChecked == true;
+            objItem.Bar_Tax = txtchkBT.IsChecked == true;
             objItem.QuickADD = txtQuickAdd.IsChecked == true;
+
+            objItem.BulkPricingItems = BulkPricingItems;
 
             if (objService.SaveItem(objItem))
             {
@@ -207,7 +232,36 @@ namespace WinePOSFinal
             {
                 totalTax += GetTaxRate("Sales_Tax", dtTax);
             }
-
+            // Check each checkbox and add or subtract the corresponding tax
+            if (txtchkST2.IsChecked == true)
+            {
+                totalTax += GetTaxRate("Sales_Tax_2", dtTax);
+            }
+            // Check each checkbox and add or subtract the corresponding tax
+            if (txtchkST3.IsChecked == true)
+            {
+                totalTax += GetTaxRate("Sales_Tax_3", dtTax);
+            }
+            // Check each checkbox and add or subtract the corresponding tax
+            if (txtchkST4.IsChecked == true)
+            {
+                totalTax += GetTaxRate("Sales_Tax_4", dtTax);
+            }
+            // Check each checkbox and add or subtract the corresponding tax
+            if (txtchkST5.IsChecked == true)
+            {
+                totalTax += GetTaxRate("Sales_Tax_5", dtTax);
+            }
+            // Check each checkbox and add or subtract the corresponding tax
+            if (txtchkST6.IsChecked == true)
+            {
+                totalTax += GetTaxRate("Sales_Tax_6", dtTax);
+            }
+            // Check each checkbox and add or subtract the corresponding tax
+            if (txtchkBT.IsChecked == true)
+            {
+                totalTax += GetTaxRate("Bar_Tax", dtTax);
+            }
 
             // Calculate final price after adding or subtracting tax
             finalPrice = baseAmount + (baseAmount * totalTax / 100);
@@ -251,7 +305,7 @@ namespace WinePOSFinal
             }
             else
             {
-                // Handle invalid input (e.g., show an error message or revert to previous value)
+                // Handle invalid input (e.g., show an error message or revert to previous value)save
                 txtChargePrice.Text = "";  // Example default value if input is invalid
             }
 
@@ -276,7 +330,7 @@ namespace WinePOSFinal
             decimal costPrice = decimal.TryParse(txtItemCost.Text, out decimal cost) ? cost : 0;
             decimal sellingPrice = decimal.TryParse(txtChargePrice.Text, out decimal price) ? price : 0;
 
-            if (costPrice > 0)
+            if (costPrice > 0 && sellingPrice > 0)
             {
                 decimal profitPercentage = ((sellingPrice - costPrice) / costPrice) * 100;
                 decimal grossMarginPercentage = ((sellingPrice - costPrice) / sellingPrice) * 100;
@@ -289,6 +343,49 @@ namespace WinePOSFinal
             }
         }
 
+        private void btnAddBulk_Click(object sender, RoutedEventArgs e)
+        {
+            var addWindow = new BulkPricing(BulkPricingItems, intItemID);
+            if (addWindow.ShowDialog() == true)
+            {
+                dgBulkPricing.ItemsSource = null;
+                dgBulkPricing.ItemsSource = BulkPricingItems;
+            }
+        }
+
+        private void btnRemoveBulk_Click(object sender, RoutedEventArgs e)
+        {
+            // Remove the selected item from the list
+            if (dgBulkPricing.SelectedItem is BulkPricingItem selectedItem)
+            {
+                BulkPricingItems.Remove(selectedItem);
+
+                dgBulkPricing.ItemsSource = null;
+                dgBulkPricing.ItemsSource = BulkPricingItems;
+            }
+        }
+
+        private void btnSaveBulk_Click(object sender, RoutedEventArgs e)
+        {
+            // Save the bulk pricing data
+        }
+
+        // Quantity: Allow only whole numbers
+        private void Quantity_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !Regex.IsMatch(e.Text, "^[0-9]+$");
+        }
+
+        private void Price_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            var textBox = sender as TextBox;
+
+            // Simulate the resulting text if the input is added
+            string fullText = textBox.Text.Insert(textBox.SelectionStart, e.Text);
+
+            // Regex to match decimals up to 12 digits before and 3 digits after the decimal point
+            e.Handled = !Regex.IsMatch(fullText, @"^\d{0,12}(\.\d{0,3})?$");
+        }
     }
     public class ComboBoxItem
     {

@@ -11,6 +11,7 @@ using System.Configuration;
 using System.Linq;
 using System.Data.SqlClient;
 using System.IO;
+using DocumentFormat.OpenXml.Vml.Office;
 
 namespace WinePOSFinal.UserControls
 {
@@ -161,7 +162,7 @@ namespace WinePOSFinal.UserControls
             }
             catch (Exception ex)
             {
-                //MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -366,6 +367,20 @@ namespace WinePOSFinal.UserControls
 
             // Update the label to show the total price
             TotalPriceLabel.Content = $"Total Price: ${totalPrice:0.00}";
+
+
+            if (SalesInventoryDataGrid.SelectedItem is DataRowView selectedRow)
+            {
+                try
+                {
+                    selectedInvoiceCode = selectedRow["InvoiceCode"]?.ToString();
+                }
+                catch
+                {
+                    MessageBox.Show("Error retrieving the InvoiceCode from the selected row. Ensure the data context is correct.");
+                    selectedInvoiceCode = null;
+                }
+            }
         }
 
         private void VoidInvoice_Click(object sender, RoutedEventArgs e)
@@ -380,11 +395,21 @@ namespace WinePOSFinal.UserControls
             var selectedRows = SalesInventoryDataGrid.SelectedItems.Cast<DataRowView>().ToList();
             var invoiceCodes = selectedRows.Select(row => row["InvoiceCode"].ToString()).Distinct();
 
-            foreach (var invoiceCode in invoiceCodes)
+            var result = MessageBox.Show($"Are you sure you want to void selected invoices?", "Confirm Change", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
             {
-                //MessageBox.Show($"Voiding all entries with InvoiceCode: {invoiceCode}");
-                objService.VoidInvoice(Convert.ToInt32(invoiceCode));
+                foreach (var invoiceCode in invoiceCodes)
+                {
+                    //MessageBox.Show($"Voiding all entries with InvoiceCode: {invoiceCode}");
+                    objService.VoidInvoice(Convert.ToInt32(invoiceCode));
+                }
             }
+            else
+            {
+                // Cancel the edit
+            }
+
 
             FetchAndPopulateInvoice();
         }

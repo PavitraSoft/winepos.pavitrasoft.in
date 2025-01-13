@@ -11,8 +11,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"></RowDefinition>
             <RowDefinition Height="4*"></RowDefinition>
-            <RowDefinition Height="2*"></RowDefinition>
             <RowDefinition Height="3*"></RowDefinition>
+            <RowDefinition Height="1.5*"></RowDefinition>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -151,7 +151,13 @@
 
                 <StackPanel Grid.Row="0" Grid.Column="2">
                     <CheckBox Name="txtchkST" Content="Sales Tax" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
-                    <CheckBox Name="txtQuickAdd" Content="QuickAdd"/>
+                    <CheckBox Name="txtchkST2" Content="Sales Tax 2" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
+                    <CheckBox Name="txtchkST3" Content="Sales Tax 3" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
+                    <CheckBox Name="txtchkST4" Content="Sales Tax 4" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
+                    <CheckBox Name="txtchkST5" Content="Sales Tax 5" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
+                    <CheckBox Name="txtchkST6" Content="Sales Tax 6" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
+                    <CheckBox Name="txtchkBT" Content="Bar Tax" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
+                    <CheckBox Name="txtQuickAdd" Content="QuickAdd" Visibility="Collapsed"/>
                 </StackPanel>
             </Grid>
         </StackPanel>
@@ -287,6 +293,58 @@
 
 
         </StackPanel>-->
+
+        <!-- Bulk Pricing Section -->
+        <StackPanel Grid.Row="2" Grid.Column="0" Margin="10">
+            <TextBlock Text="Bulk Pricing" FontSize="16" FontWeight="Bold" Foreground="DarkOrange" Margin="0,0,0,10"/>
+
+            <!-- Grid for DataGrid and Buttons Side by Side -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <!-- DataGrid -->
+                    <ColumnDefinition Width="Auto"/>
+                    <!-- Buttons -->
+                </Grid.ColumnDefinitions>
+
+                <!-- DataGrid for Bulk Pricing -->
+                <DataGrid Name="dgBulkPricing" Grid.Column="0" AutoGenerateColumns="False" HeadersVisibility="Column" 
+          IsReadOnly="False" CanUserAddRows="True" CanUserDeleteRows="True" 
+          Height="100" Width="1000" Margin="0,0,10,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <DataGrid.Columns>
+                        <!-- Quantity Column: Restrict to Numbers -->
+                        <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" Width="200" >
+                            <DataGridTextColumn.EditingElementStyle>
+                                <Style TargetType="TextBox">
+                                    <EventSetter Event="PreviewTextInput" Handler="Quantity_PreviewTextInput"/>
+                                </Style>
+                            </DataGridTextColumn.EditingElementStyle>
+                        </DataGridTextColumn>
+
+                        <!-- Price Column: Restrict to Decimals (12,3) -->
+                        <DataGridTextColumn Header="Price" Binding="{Binding Price, UpdateSourceTrigger=PropertyChanged}" Width="200" >
+                            <DataGridTextColumn.EditingElementStyle>
+                                <Style TargetType="TextBox">
+                                    <EventSetter Event="PreviewTextInput" Handler="Price_PreviewTextInput"/>
+                                </Style>
+                            </DataGridTextColumn.EditingElementStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Height" Value="30"/>
+                        </Style>
+                    </DataGrid.RowStyle>
+                </DataGrid>
+
+                <!-- Buttons for Bulk Pricing Actions -->
+                <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <Button Name="btnAddBulk" Content="Add" Background="LightGreen" Width="80" Height="30" Margin="0,5" Click="btnAddBulk_Click"/>
+                    <Button Name="btnRemoveBulk" Content="Remove" Background="LightCoral" Width="80" Height="30" Margin="0,5" Click="btnRemoveBulk_Click"/>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
 
         <StackPanel Grid.Row="3" Grid.Column="0">
             <Grid Margin="10">

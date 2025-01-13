@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WinePOSFinal.Classes;
 
 namespace WinePOSFinal.Classes
 {
@@ -30,6 +31,7 @@ namespace WinePOSFinal.Classes
         public int inCase;
         public decimal salesTaxAmt;
         public bool quickADD;
+        public List<BulkPricingItem> bulkPricingItems;
 
         public int ItemID
         { set { itemid = value; } get { return itemid; } }
@@ -94,5 +96,8 @@ namespace WinePOSFinal.Classes
 
         public bool QuickADD
         { get { return quickADD; } set { quickADD = value; } }
+
+        public List<BulkPricingItem> BulkPricingItems
+        { get { return bulkPricingItems; } set { bulkPricingItems = value; } }
     }
 }

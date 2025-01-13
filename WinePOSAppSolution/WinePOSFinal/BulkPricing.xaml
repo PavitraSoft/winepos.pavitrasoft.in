@@ -1,0 +1,33 @@
+﻿<Window x:Class="WinePOSFinal.BulkPricing"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WinePOSFinal"
+        mc:Ignorable="d"
+        Title="BulkPricing" Height="200" Width="300">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Quantity Field -->
+        <TextBlock Text="Quantity:" VerticalAlignment="Center" Margin="5"/>
+        <TextBox Name="txtQuantity" Grid.Column="1" Margin="5" Width="150" 
+                 PreviewTextInput="txtQuantity_PreviewTextInput"/>
+
+        <!-- Price Field -->
+        <TextBlock Text="Price:" VerticalAlignment="Center" Grid.Row="1" Margin="5"/>
+        <TextBox Name="txtPrice" Grid.Column="1" Grid.Row="1" Margin="5" Width="150" 
+                 PreviewTextInput="txtPrice_PreviewTextInput"/>
+
+        <!-- Add Button -->
+        <Button Content="Add" Grid.Row="2" Grid.ColumnSpan="2" Width="80" HorizontalAlignment="Center" Margin="5" Click="btnAdd_Click"/>
+    </Grid>
+</Window>

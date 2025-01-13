@@ -65,6 +65,11 @@ namespace WinePOSFinal.ServicesLayer
             return objDAL.GetTaxData();
         }
 
+        public DataTable GetBulkPricingData()
+        {
+            return objDAL.GetBulkPricingData();
+        }
+
         public DataTable FetchAndPopulateInvoice(bool IsAdmin, DateTime? fromDate, DateTime? toDate, string InvoiceNumber)
         {
             return objDAL.FetchAndPopulateInvoice(IsAdmin, fromDate, toDate, InvoiceNumber);
@@ -79,6 +84,7 @@ namespace WinePOSFinal.ServicesLayer
         {
             return objDAL.GetLowQuentityEmailDetails();
         }
+        
 
         public bool VoidInvoice(int invoiceCode)
         {
@@ -89,6 +95,11 @@ namespace WinePOSFinal.ServicesLayer
         public bool SaveTaxData(int TaxID, Decimal Percentage)
         {
             return objDAL.SaveTaxData(TaxID, Percentage);
+        }
+
+        public bool SaveBulkPricing(int itemID,int quantity, Decimal price)
+        {
+            return objDAL.SaveBulkPricing(itemID, quantity, price);
         }
     }
 }
