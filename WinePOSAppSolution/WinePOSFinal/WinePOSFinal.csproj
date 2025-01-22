@@ -44,6 +44,9 @@
     <Reference Include="CrystalDecisions.Windows.Forms">
       <HintPath>bin\CrystalDecisions.Windows.Forms.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.PointOfService">
+      <HintPath>..\Assets\Microsoft.PointOfService.dll</HintPath>
+    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="WindowsFormsIntegration" />

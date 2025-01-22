@@ -114,7 +114,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- Item List -->
-            <DataGrid Grid.Column="0" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserAddRows="False" Name="dgBilling" SelectionMode="Single" SelectionUnit="FullRow" CellEditEnding="dgBilling_CellEditEnding" PreviewTextInput="dgBilling_PreviewTextInput" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <DataGrid Grid.Column="0" AutoGenerateColumns="False" HeadersVisibility="Column" CanUserAddRows="False" Name="dgBilling" SelectionMode="Single" SelectionUnit="FullRow" CellEditEnding="dgBilling_CellEditEnding" PreviewTextInput="dgBilling_PreviewTextInput" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" PreviewKeyDown="dgBilling_PreviewKeyDown" SelectedItem="{Binding SelectedBillingItem}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="UPC" Width="*" Binding="{Binding UPC}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}" IsReadOnly="True"/>
@@ -165,6 +165,7 @@
                     <Button Content="PRINT INVOICE" Background="Yellow" Name="btnPrintInvoice" Click="btnPrintInvoice_Click"/>
                     <Button Content="TENDER WINDOW" Background="Yellow" Name="btnTenderWindow" Click="btnTenderWindow_Click"/>
                     <Button Content="TAX CONFIG" Background="Red" Name="btnTaxConfig" Click="btnTaxConfig_Click"/>
+                    <Button Content="CASH DRAWER" Background="Red" Name="btnCashDrawer" Click="btnCashDrawer_Click"/>
                     <!--<Button Content="ACCOUNT"/>
                     <Button Content="CLOSE SHIFT"/>
                     <Button Content="INVENTORY ADJUST/RECEIVE"/>-->

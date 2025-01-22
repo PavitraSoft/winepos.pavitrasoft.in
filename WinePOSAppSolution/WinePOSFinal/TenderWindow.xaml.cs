@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.PointOfService;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Microsoft.PointOfService;
 
 namespace WinePOSFinal
 {
@@ -28,9 +30,16 @@ namespace WinePOSFinal
         private TextBlock _lblAmtChange;
 
 
+
+        private PosExplorer explorer;
+
+        private CashDrawer cashDrawer;
+
         public TenderWindow(decimal initialAmount, TextBlock lblRemaining, TextBlock lblAmtRemaining, TextBlock lblChange, TextBlock lblAmtChange)
         {
             InitializeComponent();
+
+            InitializeCashDrawer();
 
             _lblRemaining = lblRemaining;
             _lblAmtRemaining = lblAmtRemaining;
@@ -47,11 +56,44 @@ namespace WinePOSFinal
         public TenderWindow()
         {
             InitializeComponent();
+            InitializeCashDrawer();
             TotalAmount = 0; // Set the initial amount passed from MainWindow
             RemainingAmount = TotalAmount; // Initialize remaining amount
             AmountTextBox.Text = TotalAmount.ToString("F2"); // Populate the amount text box
             UpdateRemainingAmount();
             PaymentGrid.ItemsSource = Payments;
+        }
+
+        private void InitializeCashDrawer()
+
+        {
+
+            try
+
+            {
+
+                explorer = new PosExplorer();
+
+                DeviceInfo deviceInfo = explorer.GetDevice(DeviceType.CashDrawer, "CashDrawer");
+
+                cashDrawer = (CashDrawer)explorer.CreateInstance(deviceInfo);
+
+                cashDrawer.Open();
+
+                cashDrawer.Claim(1000);
+
+                cashDrawer.DeviceEnabled = true;
+
+            }
+
+            catch (Exception ex)
+
+            {
+
+                MessageBox.Show("Error initializing cash drawer: " + ex.Message);
+
+            }
+
         }
 
         // Number Button Click Handler
@@ -251,6 +293,26 @@ namespace WinePOSFinal
                     // Append a decimal point
                     AmountTextBox.Text += ".";
                 }
+            }
+        }
+
+
+        private void OpenCashDrawer()
+        {
+            try
+            {
+                if (cashDrawer != null && cashDrawer.DeviceEnabled)
+                {
+                    cashDrawer.OpenDrawer();
+                }
+                else
+                {
+                    MessageBox.Show("Cash drawer not found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error opening cash drawer: " + ex.Message);
             }
         }
 

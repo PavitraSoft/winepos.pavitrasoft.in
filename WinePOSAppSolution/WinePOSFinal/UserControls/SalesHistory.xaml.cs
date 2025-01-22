@@ -31,6 +31,8 @@ namespace WinePOSFinal.UserControls
 
         public void ReloadSalesHistoryData()
         {
+            FromDatePicker.SelectedDate = DateTime.Today;
+            ToDatePicker.SelectedDate = DateTime.Today;
             FetchAndPopulateInvoice();
         }
 
@@ -46,10 +48,10 @@ namespace WinePOSFinal.UserControls
                 }
 
                 // Fetch invoice data
-                dtInvoice = objService.FetchAndPopulateInvoice(isAdmin, null, null, string.Empty);
+                SearchButton_Click(null, null);
 
                 // Bind to DataGrid
-                SalesInventoryDataGrid.ItemsSource = dtInvoice.DefaultView;
+                //SalesInventoryDataGrid.ItemsSource = dtInvoice.DefaultView;
 
 
                 string userRole = AccessRightsManager.GetUserRole(); // This is a placeholder method. Replace it with your actual role-fetching logic.
@@ -172,9 +174,10 @@ namespace WinePOSFinal.UserControls
             {
                 try
                 {
+                    SearchButton_Click(null, null);
+
                     // Create a new report document
                     ReportDocument report = new ReportDocument();
-
 
                     // path for development
                     //string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
@@ -183,7 +186,7 @@ namespace WinePOSFinal.UserControls
                     //string reportPath = Path.Combine(projectRoot, targetFile);
 
                     //path for static file
-                    //string reportPath = System.IO.Path.Combine(@"H:\SOFTWARES\winepos.pavitrasoft.in-main\winepos.pavitrasoft.in-main\WinePOSAppSolution\WinePOSFinal\Reports\flashReport.rpt");
+                    //string reportPath = System.IO.Path.Combine(@"D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\flashReport.rpt");
                     //report.Load(reportPath);
 
                     // path fo live report
@@ -207,7 +210,7 @@ namespace WinePOSFinal.UserControls
                                               .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
 
                     var Checks = dtInvoice.AsEnumerable()
-                                              .Where(row => row.Field<string>("PaymentType") == "CHECKS")
+                                              .Where(row => row.Field<string>("PaymentType") == "CHECK")
                                               .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
 
                     var Credit = dtInvoice.AsEnumerable()
@@ -229,8 +232,8 @@ namespace WinePOSFinal.UserControls
                     DateTime? fromDate = FromDatePicker.SelectedDate;
                     DateTime? toDate = ToDatePicker.SelectedDate;
 
-                    DateTime dateFrom = fromDate ?? DateTime.Now;
-                    DateTime dateTo = toDate ?? DateTime.Now;
+                    DateTime dateFrom = fromDate ?? dtInvoice.AsEnumerable().Min(row => row.Field<DateTime>("CreatedDateTime"));
+                    DateTime dateTo = toDate ?? dtInvoice.AsEnumerable().Max(row => row.Field<DateTime>("CreatedDateTime"));
 
                     // Set database logon credentials (if required)
                     SetDatabaseLogin(report);
@@ -349,6 +352,8 @@ namespace WinePOSFinal.UserControls
 
             // Reset total price label
             TotalPriceLabel.Content = "Total Price: $0.00";
+
+            SearchButton_Click(null,null);
         }
 
         private void SalesInventoryDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -391,6 +396,8 @@ namespace WinePOSFinal.UserControls
                 return;
             }
 
+            string strSelectedInvoiceCodes = string.Empty;
+
             // Collect all selected rows
             var selectedRows = SalesInventoryDataGrid.SelectedItems.Cast<DataRowView>().ToList();
             var invoiceCodes = selectedRows.Select(row => row["InvoiceCode"].ToString()).Distinct();
@@ -402,7 +409,54 @@ namespace WinePOSFinal.UserControls
                 foreach (var invoiceCode in invoiceCodes)
                 {
                     //MessageBox.Show($"Voiding all entries with InvoiceCode: {invoiceCode}");
-                    objService.VoidInvoice(Convert.ToInt32(invoiceCode));
+                    strSelectedInvoiceCodes += invoiceCode.ToString() + ",";
+
+                    //objService.VoidInvoice(Convert.ToInt32(invoiceCode));
+                }
+
+                if (!string.IsNullOrWhiteSpace(strSelectedInvoiceCodes))
+                {
+                    DataTable dtVoid = objService.VoidInvoicesByCodes(strSelectedInvoiceCodes.TrimEnd(','), AccessRightsManager.GetUserName());
+
+                    if (dtVoid != null && dtVoid.Rows.Count > 0)
+                    {
+                        DataRow drVoid = dtVoid.Rows[0];
+
+                        string IsAllowed = Convert.ToString(drVoid["IsAllowed"]);
+                        string DateFrom = Convert.ToString(drVoid["DateFrom"]);
+                        string DateTo = Convert.ToString(drVoid["DateTo"]);
+                        string TotalInvoices = Convert.ToString(drVoid["TotalInvoices"]);
+                        string VoidedInvoices = Convert.ToString(drVoid["VoidedInvoices"]);
+                        string ToBeVoided = Convert.ToString(drVoid["ToBeVoided"]);
+                        string Percentage = Convert.ToString(drVoid["Percentage"]);
+                        string UserRole = Convert.ToString(drVoid["UserRole"]);
+
+                        if (IsAllowed == "False")
+                        {
+                            if (Convert.ToInt32(ToBeVoided) > 0)
+                            {
+                                MessageBox.Show($"Could not void invoice (Limit Exhausted).\n Total Invoices: {TotalInvoices}\n Voided Invoices: {VoidedInvoices}\n Invoices To Void: {ToBeVoided}", "Void Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            }
+                            else
+                            {
+                                MessageBox.Show("No Invoice found to Void.", "Void Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Invoice voided successfully.", "Void Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Some error occurred while voiding invoices.", "Void Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+
+                    FetchAndPopulateInvoice();
+                }
+                else
+                {
+                    MessageBox.Show("No Invoice to Void.", "Void Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
             else
@@ -411,7 +465,6 @@ namespace WinePOSFinal.UserControls
             }
 
 
-            FetchAndPopulateInvoice();
         }
     }
 }

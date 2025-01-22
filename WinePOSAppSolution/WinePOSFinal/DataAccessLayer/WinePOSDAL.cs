@@ -11,6 +11,7 @@ using System.Windows;
 using System.ComponentModel;
 using System.Xml.Serialization;
 using System.IO;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace WinePOSFinal.DataAccessLayer
 {
@@ -280,7 +281,7 @@ namespace WinePOSFinal.DataAccessLayer
             catch (Exception ex)
             {
                 // Handle any errors that occur during the execution
-                MessageBox.Show($"Error5: {ex.Message}");
+                MessageBox.Show($"Error5: {ex.ToString()}");
             }
 
             return role;
@@ -652,6 +653,40 @@ namespace WinePOSFinal.DataAccessLayer
 
             return dt;
 
+        }
+
+        public DataTable VoidInvoicesByCodes(string strInvoiceCodes, string strUserName)
+        {
+            bool bIsSuccess = false;
+            DataTable dt = new DataTable();
+
+            // Create SQL connection
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    // Open the connection
+                    connection.Open();
+
+                    // Create the command to execute the stored procedure
+                    SqlCommand cmd = new SqlCommand("usp_VoidInvoice", connection);
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                    // Add parameters to the command
+                    cmd.Parameters.AddWithValue("InvoiceCodes", strInvoiceCodes);
+                    cmd.Parameters.AddWithValue("UserName", strUserName);
+
+                    SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd);
+                    dataAdapter.Fill(dt); // Fill the DataTable with data from the database
+                }
+                catch (Exception ex)
+                {
+                    // Handle any errors that occur during the execution
+                    MessageBox.Show($"Error: {ex.Message}");
+                }
+            }
+
+            return dt;
         }
     }
 }

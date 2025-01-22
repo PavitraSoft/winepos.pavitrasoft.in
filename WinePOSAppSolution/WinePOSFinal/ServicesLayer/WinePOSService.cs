@@ -101,5 +101,10 @@ namespace WinePOSFinal.ServicesLayer
         {
             return objDAL.SaveBulkPricing(itemID, quantity, price);
         }
+
+        public DataTable VoidInvoicesByCodes(string strInvoiceCode, string strUserName)
+        {
+            return objDAL.VoidInvoicesByCodes(strInvoiceCode, strUserName);
+        }
     }
 }

@@ -29,6 +29,8 @@ using WinePOSFinal.UserControls;
 using System.IO;
 using Path = System.IO.Path;
 using System.IO.Ports;
+using Microsoft.PointOfService;
+using CrystalDecisions.Windows.Forms;
 
 namespace WinePOSFinal
 {
@@ -41,6 +43,11 @@ namespace WinePOSFinal
         DataTable dtAllItems = new DataTable();
         DataTable dtTax = new DataTable();
         DataTable dtBulkPricing = new DataTable();
+
+
+        private PosExplorer explorer;
+
+        private CashDrawer cashDrawer;
 
         WinePOSService objService = new WinePOSService();
         ObservableCollection<BillingItem> objBillingItems = new ObservableCollection<BillingItem>();
@@ -88,7 +95,41 @@ namespace WinePOSFinal
         public Billing()
         {
             InitializeComponent();
+
+            InitializeCashDrawer();
             ReloadBillingData();
+
+        }
+
+        private void InitializeCashDrawer()
+
+        {
+
+            try
+
+            {
+
+                explorer = new PosExplorer();
+
+                DeviceInfo deviceInfo = explorer.GetDevice(DeviceType.CashDrawer, "Tera");
+
+                cashDrawer = (CashDrawer)explorer.CreateInstance(deviceInfo);
+
+                cashDrawer.Open();
+
+                cashDrawer.Claim(1000);
+
+                cashDrawer.DeviceEnabled = true;
+
+            }
+
+            catch (Exception ex)
+
+            {
+
+                MessageBox.Show("Error initializing cash drawer: " + ex.Message);
+
+            }
 
         }
 
@@ -232,8 +273,7 @@ namespace WinePOSFinal
                         // Update the quantity of the existing item
                         int newQuantity = Convert.ToInt32(existingItem.Quantity) + parsedQuantity;
 
-
-                        DataRow[] dataRow = dtBulkPricing.Select(" UPC = " + strUPC + " AND Quantity % " + newQuantity + " = 0");
+                        DataRow[] dataRow = dtBulkPricing.Select(" UPC = " + strUPC + " AND " + newQuantity + " % Quantity = 0");
                         string strNote = string.Empty;
 
                         if (dataRow.Any())
@@ -246,15 +286,21 @@ namespace WinePOSFinal
                         }
 
 
-                        // if (CurrentQuantity >= newQuantity)
-                        if (true)
+                         if (CurrentQuantity >= newQuantity)
+                        //if (true)
                         {
+
+                            decimal discount = Convert.ToDecimal(existingItem.Discount);
+
+                            parsedPrice = parsedPrice * (1 - discount / 100);
+
                             decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
                             //decimal taxedPrice = parsedPrice + tax;
                             decimal taxedPrice = tax;
                             existingItem.Price = Convert.ToString(parsedPrice);
                             existingItem.Tax = (tax - parsedPrice).ToString();
                             existingItem.Quantity = Convert.ToString(newQuantity);
+                            existingItem.Discount = Convert.ToString(discount);
                             existingItem.TotalPrice = (taxedPrice * newQuantity).ToString("F2");
                             existingItem.Note = strNote;
                             // Clear the TextBox controls for new input
@@ -269,10 +315,10 @@ namespace WinePOSFinal
                     }
                     else
                     {
-                        //if (CurrentQuantity >= parsedQuantity)
-                        if (true)
+                        if (CurrentQuantity >= parsedQuantity)
+                        //if (true)
                         {
-                            DataRow[] dataRow = dtBulkPricing.Select(" UPC = " + strUPC + " AND Quantity % " + parsedQuantity + " = 0");
+                            DataRow[] dataRow = dtBulkPricing.Select(" UPC = " + strUPC + " AND " + parsedQuantity + " % Quantity = 0");
                             string strNote = string.Empty;
 
                             if (dataRow.Any())
@@ -382,26 +428,18 @@ namespace WinePOSFinal
 
         private void btnCash_Click(object sender, RoutedEventArgs e)
         {
-
             try
             {
-                // Adjust these settings according to your device's specifications
-                string portName = "COM1"; // Change to your device's port
-                int baudRate = 9600;     // Change as required by your device
-                byte[] openDrawerCommand = { 0x1B, 0x70, 0x00, 0x19, 0xFA }; // Example command for Epson printers
 
-                using (SerialPort serialPort = new SerialPort(portName, baudRate))
-                {
-                    serialPort.Open();
-                    serialPort.Write(openDrawerCommand, 0, openDrawerCommand.Length);
-                    //MessageBox.Show("Cash Drawer Opened!");
-                }
 
-               MessageBoxResult result = MessageBox.Show(
-               $"Are you sure you want to Cash the Current Billing Invoice?",
-               "Confirm Payment",
-               MessageBoxButton.YesNo,
-               MessageBoxImage.Question);
+                btnTenderWindow_Click(null, null);
+                //Open cash drawer
+                //OpenCashDrawer();
+                MessageBoxResult result = MessageBox.Show(
+                $"Are you sure you want to Cash the Current Billing Invoice?",
+                "Confirm Payment",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
 
                 // Handle user response
                 if (result == MessageBoxResult.Yes)
@@ -589,7 +627,7 @@ namespace WinePOSFinal
         {
             if (objBillingItems.Count > 0)
             {
-                SubTotal = objBillingItems.Sum(item => decimal.TryParse(item.TotalPrice, out var totalPrice) ? totalPrice : 0);
+                SubTotal = objBillingItems.Sum(item => (decimal.TryParse(item.Price, out var totalPrice) ? totalPrice : 0) * Convert.ToInt32(item.Quantity));
                 Tax = objBillingItems.Sum(item => decimal.TryParse(item.Tax, out var tax) ? (tax * Convert.ToInt32(item.Quantity)) : 0); // Assuming 10% tax
                 GrandTotal = SubTotal + Tax;
             }
@@ -908,17 +946,29 @@ namespace WinePOSFinal
                 {
                     if (Convert.ToDecimal(billingItem.Discount) <= 0)
                     {
-                        billingItem.Discount = Convert.ToString(discount);
 
-                        // Recalculate the Total Price
-                        billingItem.TotalPrice = Convert.ToString(Convert.ToDecimal(billingItem.Price) * Convert.ToInt32(billingItem.Quantity) * (1 - Convert.ToDecimal(billingItem.Discount) / 100));
+                        DataRow[] dr = dtAllItems.Select(" UPC = '" + billingItem.UPC + "'");
+
+                        decimal parsedPrice = Convert.ToDecimal(dr[0]["ChargedCost"]);
+                        int iQuantity = Convert.ToInt32(billingItem.Quantity);
+
+                        parsedPrice = parsedPrice * (1 - discount / 100);
+
+                        decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
+
+                        //decimal taxedPrice = parsedPrice + tax;
+                        decimal taxedPrice = tax;
+                        billingItem.Price = Convert.ToString(parsedPrice);
+                        billingItem.Tax = (tax - parsedPrice).ToString();
+                        billingItem.Discount = Convert.ToString(discount);
+                        billingItem.TotalPrice = (taxedPrice * iQuantity).ToString("F2");
                     }
                 }
 
                 // Refresh the DataGrid to reflect changes
-                CalculateTotals();
                 dgBilling.ItemsSource = null;
                 dgBilling.ItemsSource = objBillingItems;
+                CalculateTotals();
                 //dgBilling.Items.Refresh();
             }
         }
@@ -955,15 +1005,26 @@ namespace WinePOSFinal
                             return;
                         }
 
-                        // Update the item's Discount and recalculate TotalPrice
-                        editedItem.Discount = Convert.ToString(discount);
-                        decimal originalPrice = Convert.ToDecimal(editedItem.Price) * Convert.ToInt32(editedItem.Quantity);
-                        editedItem.TotalPrice = Convert.ToString(originalPrice * (1 - discount / 100));
+                        DataRow[] dr = dtAllItems.Select(" UPC = '" + editedItem.UPC + "'");
+
+                        decimal parsedPrice = Convert.ToDecimal(dr[0]["ChargedCost"]);
+                        int iQuantity = Convert.ToInt32(editedItem.Quantity);
+
+                        parsedPrice = parsedPrice * (1 - discount / 100);
+
+                        decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
+
+                        //decimal taxedPrice = parsedPrice + tax;
+                        decimal taxedPrice = tax;
+                        editedItem.Price = Convert.ToString(parsedPrice);
+                        editedItem.Tax = (tax - parsedPrice).ToString();
+                        editedItem.Discount =Convert.ToString(discount);
+                        editedItem.TotalPrice = (taxedPrice * iQuantity).ToString("F2");
 
                         // Refresh the grid (not strictly necessary if binding is set up correctly
-                        CalculateTotals();
                         dgBilling.ItemsSource = null;
                         dgBilling.ItemsSource = objBillingItems;
+                        CalculateTotals();
                     }
                 }
                 else if (e.Column.Header.ToString() == "Price")
@@ -1132,12 +1193,17 @@ namespace WinePOSFinal
                                 parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
                             }
 
+                            decimal discount = Convert.ToDecimal(existingItem.Discount);
+
+                            parsedPrice = parsedPrice * (1 - discount / 100);
+
                             decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
                             //decimal taxedPrice = parsedPrice + tax;
                             decimal taxedPrice = tax;
                             existingItem.Price = Convert.ToString(parsedPrice);
                             existingItem.Tax = (tax - parsedPrice).ToString();
                             existingItem.Quantity = Convert.ToString(newQuantity);
+                            existingItem.Discount = Convert.ToString(discount);
                             existingItem.TotalPrice = (taxedPrice * newQuantity).ToString("F2");
                             existingItem.Note = strNote;
                             // Clear the TextBox controls for new input
@@ -1214,6 +1280,137 @@ namespace WinePOSFinal
                 dgBilling.ItemsSource = null;
                 dgBilling.ItemsSource = objBillingItems;
             }
+        }
+
+        private void OpenCashDrawer()
+        {
+            try
+            {
+                if (cashDrawer != null && cashDrawer.DeviceEnabled)
+                {
+                    cashDrawer.OpenDrawer();
+                }
+                else
+                {
+                    MessageBox.Show("Cash drawer not found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error opening cash drawer: " + ex.Message);
+            }
+        }
+
+        private void dgBilling_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (dgBilling.SelectedItem is BillingItem selectedItem)
+            {
+                // Check if '>' or '<' keys are pressed
+                if (e.Key == Key.OemPeriod || e.Key == Key.OemComma)
+                {
+                    string keyPressed = e.Key == Key.OemPeriod ? ">" : "<";
+
+                    // Preserve the selected item and its index
+                    int selectedIndex = dgBilling.SelectedIndex;
+
+                    DataRow[] dr = dtAllItems.Select("UPC = '" + selectedItem.UPC + "'");
+                    int iQuantity = Convert.ToInt32(selectedItem.Quantity);
+                    decimal discount = Convert.ToDecimal(selectedItem.Discount);
+
+                    if (keyPressed == ">")
+                    {
+                        iQuantity++;
+                    }
+                    else
+                    {
+                        iQuantity--;
+                        if (iQuantity <= 0)
+                        {
+                            MessageBoxResult result = MessageBox.Show(
+                                   $"Do you want to remove selected Item?",
+                                   "Confirm Edit",
+                                   MessageBoxButton.YesNo,
+                                   MessageBoxImage.Question);
+
+                            // Handle user response
+                            if (result == MessageBoxResult.Yes)
+                            {
+                                btnRemoveItem_Click(null, null);
+                                return; // Exit if the item is removed
+                            }
+                            else
+                            {
+                                return; // Exit without making any changes
+                            }
+                        }
+                    }
+
+                    DataRow[] dataRow = dtBulkPricing.Select("ItemID = " + selectedItem.ItemID + " AND " + Convert.ToString(iQuantity) + " % Quantity = 0");
+                    string strNote = string.Empty;
+
+                    decimal parsedPrice = Convert.ToDecimal(dr[0]["ChargedCost"]);
+
+                    if (dataRow.Any())
+                    {
+                        parsedPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
+                        string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
+                        strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(parsedPrice);
+
+                        parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
+                    }
+
+                    parsedPrice = parsedPrice * (1 - discount / 100);
+                    decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
+                    decimal taxedPrice = tax;
+
+                    // Update the selected item properties
+                    selectedItem.Price = Convert.ToString(parsedPrice);
+                    selectedItem.Tax = (tax - parsedPrice).ToString();
+                    selectedItem.Discount = Convert.ToString(discount);
+                    selectedItem.Quantity = Convert.ToString(iQuantity);
+                    selectedItem.TotalPrice = (taxedPrice * iQuantity).ToString("F2");
+
+                    //// Instead of refreshing the entire grid, modify the ObservableCollection
+                    //var itemsList = objBillingItems.ToList(); // Convert ObservableCollection to a List
+                    //int index = itemsList.FindIndex(item => item.UPC == selectedItem.UPC); // Find the index
+                    //if (index != -1)
+                    //{
+                    //    itemsList[index] = selectedItem; // Update the item in the list
+                    //    objBillingItems = new ObservableCollection<BillingItem>(itemsList); // Reassign to the ObservableCollection
+                    //}
+
+                    //// Update the DataGrid with the new ItemsSource
+                    //dgBilling.ItemsSource = objBillingItems;
+
+                    //// Explicitly reselect the item after refreshing
+                    //dgBilling.SelectedIndex = selectedIndex; // Ensure the selected index is set
+                    //dgBilling.SelectedItem = selectedItem;  // Set the selected item explicitly
+                    //dgBilling.ScrollIntoView(selectedItem); // Ensure the selected item is visible
+
+                    //// Recalculate totals
+                    //CalculateTotals();
+
+                    // Avoid full refresh, only update the specific item
+                    dgBilling.Items.Refresh();
+
+                    // Re-set the selection explicitly to preserve it after the refresh
+                    dgBilling.SelectedIndex = selectedIndex; // Ensure the selected index is set
+                    dgBilling.SelectedItem = selectedItem;  // Set the selected item explicitly
+                    dgBilling.ScrollIntoView(selectedItem); // Ensure the selected item is visible
+
+                    // Recalculate totals
+                    CalculateTotals();
+
+                    // Prevent further processing of the key
+                    e.Handled = true;
+                }
+            }
+        }
+
+        private void btnCashDrawer_Click(object sender, RoutedEventArgs e)
+        {
+            //Open cash drawer
+            OpenCashDrawer();
         }
     }
 
