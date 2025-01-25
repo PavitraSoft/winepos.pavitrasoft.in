@@ -31,6 +31,10 @@ using Path = System.IO.Path;
 using System.IO.Ports;
 using Microsoft.PointOfService;
 using CrystalDecisions.Windows.Forms;
+using System.Net.NetworkInformation;
+using System.Globalization;
+using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace WinePOSFinal
 {
@@ -61,6 +65,8 @@ namespace WinePOSFinal
         private string inputBuffer = string.Empty;
         private bool isScanning = false;
         private int invoiceNumber = 0;
+
+        PosPrinter m_Printer = null;
 
         public decimal SubTotal
         {
@@ -96,7 +102,9 @@ namespace WinePOSFinal
         {
             InitializeComponent();
 
+            //InitializeCashDrawer(true);
             InitializeCashDrawer();
+            //InitializePrinter();
             ReloadBillingData();
 
         }
@@ -110,8 +118,9 @@ namespace WinePOSFinal
             {
 
                 explorer = new PosExplorer();
+                string strLogicalName = "CashDrawer";
 
-                DeviceInfo deviceInfo = explorer.GetDevice(DeviceType.CashDrawer, "Tera");
+                DeviceInfo deviceInfo = explorer.GetDevice(DeviceType.CashDrawer, strLogicalName);
 
                 cashDrawer = (CashDrawer)explorer.CreateInstance(deviceInfo);
 
@@ -131,6 +140,231 @@ namespace WinePOSFinal
 
             }
 
+        }
+
+        private void InitializeCashDrawer(bool use)
+
+        {
+
+            //<<<step1>>>--Start
+            //Use a Logical Device Name which has been set on the SetupPOS.
+            string strLogicalName = "CashDrawer";
+
+            //Create PosExplorer
+            PosExplorer posExplorer = new PosExplorer();
+
+            DeviceInfo deviceInfo = null;
+
+            //<<<step3>>>--Start
+            try
+            {
+                deviceInfo = posExplorer.GetDevice(DeviceType.CashDrawer, strLogicalName);
+            }
+            catch (Exception)
+            {
+                //MessageBox.Show("Failed to get device information.", MessageBoxButton.OK, MessageBoxImage.Information);
+                //Disable button
+                //ChangeButtonStatus();
+                return;
+            }
+
+            try
+            {
+                cashDrawer = (CashDrawer)posExplorer.CreateInstance(deviceInfo);
+            }
+            catch (Exception)
+            {
+                //Failed CreateInstance
+                //MessageBox.Show("Failed to create instance", MessageBoxButton.OK, MessageBoxImage.Information);
+                //MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                //Disable button
+                //ChangeButtonStatus();
+                return;
+            }
+
+            //Add StatusUpdateEventHandler
+            //AddStatusUpdateEvent(m_Drawer);
+
+            try
+            {
+                //Open the device
+                //Use a Logical Device Name which has been set on the SetupPOS.
+                cashDrawer.Open();
+            }
+            catch (PosControlException)
+            {
+
+                //MessageBox.Show("This device has not been registered, or cannot use.", MessageBoxButtons.OK, MessageBoxImage.Information);
+                //ChangeButtonStatus();
+                return;
+            }
+
+            try
+            {
+                //Get the exclusive control right for the opened device.
+                //Then the device is disable from other application.
+                cashDrawer.Claim(1000);
+            }
+            catch (PosControlException)
+            {
+                //MessageBox.Show("Failed to get exclusive rights to the device.", MessageBoxButtons.OK, MessageBoxImage.Information);
+                //ChangeButtonStatus();
+                return;
+            }
+
+            // Power reporting
+            try
+            {
+                if (cashDrawer.CapPowerReporting != PowerReporting.None)
+                {
+                    cashDrawer.PowerNotify = PowerNotification.Enabled;
+                }
+            }
+            catch (PosControlException)
+            {
+            }
+
+            try
+            {
+                //Enable the device.
+                cashDrawer.DeviceEnabled = true;
+            }
+            catch (PosControlException)
+            {
+
+                //MessageBox.Show("Now the device is disable to use.", MessageBoxButtons.OK, MessageBoxImage.Information);
+
+                //ChangeButtonStatus();
+                return;
+            }
+            //<<<step3>>>--End
+
+            //<<<step1>>>--End
+
+            //<<<step4>>>--Start
+            //if (m_Drawer.CapStatisticsReporting == false)
+            //{
+            //    btnRetrieveStatistics.Enabled = false;
+            //    txtStatistics.Enabled = false;
+            //}
+            //<<<step4>>>--End
+
+        }
+
+        private void InitializePrinter()
+        {
+            //<<<step1>>>--Start
+            //Use a Logical Device Name which has been set on the SetupPOS.
+            string strLogicalName = "PosPrinter";
+
+            //Current Directory Path
+            string strCurDir = Directory.GetCurrentDirectory();
+
+            string strFilePath = strCurDir.Substring(0, strCurDir.LastIndexOf("Step6") + "Step6\\".Length);
+
+            strFilePath += "Logo.bmp";
+
+            try
+            {
+                //Create PosExplorer
+                PosExplorer posExplorer = new PosExplorer();
+
+                DeviceInfo deviceInfo = null;
+
+                try
+                {
+                    deviceInfo = posExplorer.GetDevice(DeviceType.PosPrinter, strLogicalName);
+                    m_Printer = (PosPrinter)posExplorer.CreateInstance(deviceInfo);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Failed Initialize printer." + ex.Message, "Printer", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    //ChangeButtonStatus();
+                    return;
+                }
+
+                //Open the device
+                m_Printer.Open();
+
+                //Get the exclusive control right for the opened device.
+                //Then the device is disable from other application.
+                m_Printer.Claim(1000);
+
+                //Enable the device.
+                m_Printer.DeviceEnabled = true;
+
+                //<<<step3>>>--Start
+                //Output by the high quality mode
+                m_Printer.RecLetterQuality = true;
+
+                if (m_Printer.CapRecBitmap == true)
+                {
+
+                    bool bSetBitmapSuccess = false;
+                    for (int iRetryCount = 0; iRetryCount < 5; iRetryCount++)
+                    {
+                        try
+                        {
+                            //<<<step5>>>--Start
+                            //Register a bitmap
+                            m_Printer.SetBitmap(1, PrinterStation.Receipt,
+                                strFilePath, m_Printer.RecLineWidth / 2,
+                                PosPrinter.PrinterBitmapCenter);
+                            //<<<step5>>>--End
+                            bSetBitmapSuccess = true;
+                            break;
+                        }
+                        catch (PosControlException pce)
+                        {
+                            if (pce.ErrorCode == ErrorCode.Failure && pce.ErrorCodeExtended == 0 && pce.Message == "It is not initialized.")
+                            {
+                                System.Threading.Thread.Sleep(1000);
+                            }
+                        }
+                    }
+                    if (!bSetBitmapSuccess)
+                    {
+                        //MessageBox.Show("Failed to set bitmap.", "Printer_SampleStep6", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("Failed to set bitmap.", "Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+                //<<<step3>>>--End
+
+                //<<<step5>>>--Start
+                // Even if using any printers, 0.01mm unit makes it possible to print neatly.
+                m_Printer.MapMode = MapMode.Metric;
+                //<<<step5>>>--End
+            }
+            catch (PosControlException ex)
+            {
+
+
+                if (m_Printer != null)
+                {
+                    try
+                    {
+                        //Cancel the device
+                        m_Printer.DeviceEnabled = false;
+
+                        //Release the device exclusive control right.
+                        m_Printer.Release();
+
+                    }
+                    catch (PosControlException)
+                    {
+                    }
+                    finally
+                    {
+                        //Finish using the device.
+                        m_Printer.Close();
+                    }
+                }
+
+                MessageBox.Show("Error in Initialize printer." + ex.Message, "Printer", MessageBoxButton.OK, MessageBoxImage.Warning);
+                //ChangeButtonStatus();
+            }
+            //<<<step1>>>--End
         }
 
         public void ReloadBillingData()
@@ -444,7 +678,7 @@ namespace WinePOSFinal
                 // Handle user response
                 if (result == MessageBoxResult.Yes)
                 {
-                    if (SaveInvoice(objBillingItems, true, "CASH"))
+                    if (SaveInvoice(objBillingItems, false, "CASH"))
                     {
                         MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
                         // Optionally, clear the  after paymentDataGrid
@@ -504,55 +738,218 @@ namespace WinePOSFinal
             {
                 try
                 {
-                    // Create a new report document
-                    ReportDocument report = new ReportDocument();
 
-                    // Load the report (winebill.rpt)
-                    //string reportPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Reports\winebill.rpt");
-                    string reportPath = System.IO.Path.Combine(@"D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\winebill.rpt");
+                    DataTable InvoiceData = objService.FetchAndPopulateInvoice(true, null, null, Convert.ToString(invoiceNumber));
 
-                    string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                    // Target file
-                    string targetFile = Path.Combine("Reports", "winebill.rpt");
+                    string[] name = InvoiceData.AsEnumerable()
+                                 .Select(row => row.Field<string>("Name").ToString())
+                                 .ToArray();
 
-                    // Combine base directory with the relative path
-                    //string reportPath = Path.Combine(baseDirectory, targetFile);
-                    report.Load(reportPath);
+                    string[] price = InvoiceData.AsEnumerable()
+                                 .Select(row => row.Field<decimal>("Price").ToString())
+                                 .ToArray();
 
-                    // Create and populate the DataTable
-                    //DataTable dt = objService.GetInventoryData(string.Empty, string.Empty);
+                    string[] quantity = InvoiceData.AsEnumerable()
+                                 .Select(row => row.Field<int>("Quantity").ToString())
+                                 .ToArray();
 
-                    // Set the DataTable as the data source for the report
-                    //report.SetDataSource(dt);
+                    string[] tax = InvoiceData.AsEnumerable()
+                                 .Select(row => row.Field<decimal>("Tax").ToString())
+                                 .ToArray();
 
-                    // Set database logon credentials (if required)
-                    SetDatabaseLogin(report);
+                    string[] totalPrice = InvoiceData.AsEnumerable()
+                                 .Select(row => row.Field<decimal>("TotalPrice").ToString())
+                                 .ToArray();
 
-                    // Dynamically set the InvoiceCode parameter for the report
-                    report.SetParameterValue("InvoiceCode", invoiceNumber);
+                    PrintInvoice(name, price, quantity, tax, totalPrice);
 
-                    // Export the report to a PDF file
-                    string exportPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "WineBill.pdf");
-                    report.ExportToDisk(ExportFormatType.PortableDocFormat, exportPath);
-
-                    // Display the PDF in the WebBrowser control
-                    //pdfWebViewer.Navigate(exportPath); // Navigate to the generated PDF file
+                    //// Create a new report document
+                    //ReportDocument report = new ReportDocument();
 
 
-                    // Optionally, open the generated report in a PDF viewer
-                    System.Diagnostics.Process.Start(exportPath);
+                    //// Load the report (winebill.rpt)
+                    ////string reportPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Reports\winebill.rpt");
+                    //string reportPath = System.IO.Path.Combine(@"D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\winebill.rpt");
+
+                    //string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                    //// Target file
+                    //string targetFile = Path.Combine("Reports", "winebill.rpt");
+
+                    //// Combine base directory with the relative path
+                    ////string reportPath = Path.Combine(baseDirectory, targetFile);
+                    //report.Load(reportPath);
+
+                    //// Create and populate the DataTable
+                    ////DataTable dt = objService.GetInventoryData(string.Empty, string.Empty);
+
+                    //// Set the DataTable as the data source for the report
+                    ////report.SetDataSource(dt);
+
+                    //// Set database logon credentials (if required)
+                    //SetDatabaseLogin(report);
+
+                    //// Dynamically set the InvoiceCode parameter for the report
+                    //report.SetParameterValue("InvoiceCode", invoiceNumber);
+
+                    //// Export the report to a PDF file
+                    //string exportPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "WineBill.pdf");
+                    //report.ExportToDisk(ExportFormatType.PortableDocFormat, exportPath);
+
+                    //// Display the PDF in the WebBrowser control
+                    ////pdfWebViewer.Navigate(exportPath); // Navigate to the generated PDF file
+
+
+                    //// Optionally, open the generated report in a PDF viewer
+                    //System.Diagnostics.Process.Start(exportPath);
 
                     //MessageBox.Show("Report generated and displayed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {
-                    //MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
             {
                 MessageBox.Show("Please make payment first to print invoice.", "Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+        }
+
+        private void PrintInvoice(string[] name, string[] price, string[] quantity, string[] tax, string[] totalPrice)
+        {
+            //<<<step2>>>--Start
+            //Initialization
+            DateTime nowDate = DateTime.Now;                            //System date
+            DateTimeFormatInfo dateFormat = new DateTimeFormatInfo();   //Date Format
+            dateFormat.MonthDayPattern = "MMMM";
+            string strDate = nowDate.ToString("MMMM,dd,yyyy  HH:mm", dateFormat);
+            string strbcData = "4902720005074";
+            //String[] astritem = { "apples", "grapes", "bananas", "lemons", "oranges" };
+            //String[] astrprice = { "10.00", "20.00", "30.00", "40.00", "50.00" };
+
+            if (m_Printer.CapRecPresent)
+            {
+
+                try
+                {
+                    //<<<step6>>>--Start
+                    //Batch processing mode
+                    m_Printer.TransactionPrint(PrinterStation.Receipt
+                        , PrinterTransactionControl.Transaction);
+
+                    //<<<step3>>>--Start
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|1B");
+                    //<<<step3>>>--End
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|N"
+                        + "123xxstreet,xxxcity,xxxxstate\n");
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA"
+                        + "TEL 9999-99-9999   C#2\n");
+
+                    //<<<step5>>--Start
+                    //Make 2mm speces
+                    //ESC|#uF = Line Feed
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|200uF");
+                    //<<<step5>>>-End
+
+                    int iRecLineCharsCount = m_Printer.RecLineCharsList.Length;
+                    if (iRecLineCharsCount >= 2)
+                    {
+                        m_Printer.RecLineChars = m_Printer.RecLineCharsList[1];
+                        m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + strDate + "\n");
+                        m_Printer.RecLineChars = m_Printer.RecLineCharsList[0];
+                    }
+                    else
+                    {
+                        m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + strDate + "\n");
+                    }
+
+                    //<<<step5>>>--Start
+                    //Make 5mm speces
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
+
+                    //Print buying goods
+                    double total = 0.0;
+                    string strPrintData = "";
+                    for (int i = 0; i < name.Length; i++)
+                    {
+                        decimal itemTotal = Convert.ToDecimal(quantity[i]) * Convert.ToDecimal(price[i]);
+
+                        strPrintData = MakePrintString(m_Printer.RecLineChars, name[i], "   " + quantity[i] + " @ $" + price[i] + " $"
+                            + (Convert.ToDecimal(quantity[i]) * Convert.ToDecimal(price[i])));
+
+                        m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
+
+                        total += Convert.ToDouble(itemTotal);
+
+                    }
+
+                    //Make 2mm speces
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|200uF");
+
+                    //Print the total cost
+                    strPrintData = MakePrintString(m_Printer.RecLineChars, "Tax excluded."
+                        , "$" + total.ToString("F"));
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + strPrintData + "\n");
+
+                    decimal totaltax = tax.Select(item => Convert.ToDecimal(item)).Sum();
+                    decimal totalPriceAfterTax = totalPrice.Select(item => Convert.ToDecimal(item)).Sum();
+
+                    strPrintData = MakePrintString(m_Printer.RecLineChars, "Tax ", "$"
+                        + (totaltax).ToString("F"));
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|uC" + strPrintData + "\n");
+
+                    strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "Total", "$"
+                        + (totalPriceAfterTax).ToString("F"));
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
+                        + strPrintData + "\n");
+
+                    //strPrintData = MakePrintString(m_Printer.RecLineChars, "Customer's payment", "$200.00");
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt
+                        , strPrintData + "\n");
+
+                    //strPrintData = MakePrintString(m_Printer.RecLineChars, "Change", "$" + (200.00 - (total * 1.05)).ToString("F"));
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
+
+                    //Make 5mm speces
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
+
+                    //<<<step4>>>--Start
+                    if (m_Printer.CapRecBarCode == true)
+                    {
+                        //Barcode printing
+                        m_Printer.PrintBarCode(PrinterStation.Receipt, strbcData,
+                            BarCodeSymbology.EanJan13, 1000,
+                            m_Printer.RecLineWidth, PosPrinter.PrinterBarCodeLeft,
+                            BarCodeTextPosition.Below);
+                    }
+                    //<<<step4>>>--End
+                    //<<<step5>>>--End
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|fP");
+                    //<<<step2>>>--End
+
+                    //print all the buffer data. and exit the batch processing mode.
+                    m_Printer.TransactionPrint(PrinterStation.Receipt
+                        , PrinterTransactionControl.Normal);
+                    //<<<step6>>>--End
+                }
+                catch (PosControlException ex)
+                {
+                    MessageBox.Show("Error while printing invoice. Exception:" + ex.ToString(), "Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+
+            //<<<step6>>>--Start
+            // When a cursor is back to its default shape, it means the process ends
+            //Cursor.Current = Cursors.Default;
+            //<<<step6>>>--End
 
         }
 
@@ -759,7 +1156,7 @@ namespace WinePOSFinal
             // Handle user response
             if (result == MessageBoxResult.Yes)
             {
-                if (SaveInvoice(objBillingItems, true, "CHECK"))
+                if (SaveInvoice(objBillingItems, false, "CHECK"))
                 {
                     MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     // Optionally, clear the DataGrid after payment
@@ -789,7 +1186,7 @@ namespace WinePOSFinal
             // Handle user response
             if (result == MessageBoxResult.Yes)
             {
-                if (SaveInvoice(objBillingItems, true, "CREDIT"))
+                if (SaveInvoice(objBillingItems, false, "CREDIT"))
                 {
                     MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     // Optionally, clear the DataGrid after payment
@@ -1411,6 +1808,24 @@ namespace WinePOSFinal
         {
             //Open cash drawer
             OpenCashDrawer();
+        }
+
+        public String MakePrintString(int iLineChars, String strBuf, String strPrice)
+        {
+            int iSpaces = 0;
+            String tab = "";
+            try
+            {
+                iSpaces = iLineChars - (strBuf.Length + strPrice.Length);
+                for (int j = 0; j < iSpaces; j++)
+                {
+                    tab += " ";
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return strBuf + tab + strPrice;
         }
     }
 

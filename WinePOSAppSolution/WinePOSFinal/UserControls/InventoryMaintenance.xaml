@@ -151,12 +151,12 @@
 
                 <StackPanel Grid.Row="0" Grid.Column="2">
                     <CheckBox Name="txtchkST" Content="Sales Tax" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
-                    <CheckBox Name="txtchkST2" Content="Sales Tax 2" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
+                    <!--<CheckBox Name="txtchkST2" Content="Sales Tax 2" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
                     <CheckBox Name="txtchkST3" Content="Sales Tax 3" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
                     <CheckBox Name="txtchkST4" Content="Sales Tax 4" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
                     <CheckBox Name="txtchkST5" Content="Sales Tax 5" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
                     <CheckBox Name="txtchkST6" Content="Sales Tax 6" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
-                    <CheckBox Name="txtchkBT" Content="Bar Tax" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>
+                    <CheckBox Name="txtchkBT" Content="Bar Tax" Checked="txtchkST_Checked" Unchecked="txtchkST_Checked"/>-->
                     <CheckBox Name="txtQuickAdd" Content="QuickAdd" Visibility="Collapsed"/>
                 </StackPanel>
             </Grid>
@@ -322,7 +322,7 @@
                         </DataGridTextColumn>
 
                         <!-- Price Column: Restrict to Decimals (12,3) -->
-                        <DataGridTextColumn Header="Price" Binding="{Binding Price, UpdateSourceTrigger=PropertyChanged}" Width="200" >
+                        <DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat={}{0:F2}, UpdateSourceTrigger=PropertyChanged}" Width="200" >
                             <DataGridTextColumn.EditingElementStyle>
                                 <Style TargetType="TextBox">
                                     <EventSetter Event="PreviewTextInput" Handler="Price_PreviewTextInput"/>

@@ -390,7 +390,7 @@ namespace WinePOSFinal.DataAccessLayer
                 conn.Open();
 
                 // Sample query to retrieve data
-                string query = "SELECT * FROM SalesTax WITH (NOLOCK)"; // Replace with your actual query
+                string query = "SELECT * FROM SalesTax WITH (NOLOCK) WHERE IsActive = 1"; // Replace with your actual query
 
                 using (SqlCommand command = new SqlCommand(query, conn))
                 {

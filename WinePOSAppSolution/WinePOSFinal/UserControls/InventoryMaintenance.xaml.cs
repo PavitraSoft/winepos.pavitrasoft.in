@@ -127,12 +127,12 @@ namespace WinePOSFinal
             txtPriceWithTax.Text = Convert.ToString(objItem.SalesTaxAmt);
 
             txtchkST.IsChecked = objItem.Sales_Tax;
-            txtchkST2.IsChecked = objItem.Sales_Tax_2;
-            txtchkST3.IsChecked = objItem.Sales_Tax_3;
-            txtchkST4.IsChecked = objItem.Sales_Tax_4;
-            txtchkST5.IsChecked = objItem.Sales_Tax_5;
-            txtchkST6.IsChecked = objItem.Sales_Tax_6;
-            txtchkBT.IsChecked = objItem.Bar_Tax;
+            //txtchkST2.IsChecked = objItem.Sales_Tax_2;
+            //txtchkST3.IsChecked = objItem.Sales_Tax_3;
+            //txtchkST4.IsChecked = objItem.Sales_Tax_4;
+            //txtchkST5.IsChecked = objItem.Sales_Tax_5;
+            //txtchkST6.IsChecked = objItem.Sales_Tax_6;
+            //txtchkBT.IsChecked = objItem.Bar_Tax;
 
             txtQuickAdd.IsChecked = objItem.QuickADD;
 
@@ -191,12 +191,12 @@ namespace WinePOSFinal
             objItem.SalesTaxAmt = !string.IsNullOrWhiteSpace(txtPriceWithTax.Text) ? Convert.ToDecimal(txtPriceWithTax.Text) : 0;
 
             objItem.Sales_Tax = txtchkST.IsChecked == true;
-            objItem.Sales_Tax_2 = txtchkST2.IsChecked == true;
-            objItem.Sales_Tax_3 = txtchkST3.IsChecked == true;
-            objItem.Sales_Tax_4 = txtchkST4.IsChecked == true;
-            objItem.Sales_Tax_5 = txtchkST5.IsChecked == true;
-            objItem.Sales_Tax_6 = txtchkST5.IsChecked == true;
-            objItem.Bar_Tax = txtchkBT.IsChecked == true;
+            //objItem.Sales_Tax_2 = txtchkST2.IsChecked == true;
+            //objItem.Sales_Tax_3 = txtchkST3.IsChecked == true;
+            //objItem.Sales_Tax_4 = txtchkST4.IsChecked == true;
+            //objItem.Sales_Tax_5 = txtchkST5.IsChecked == true;
+            //objItem.Sales_Tax_6 = txtchkST5.IsChecked == true;
+            //objItem.Bar_Tax = txtchkBT.IsChecked == true;
             objItem.QuickADD = txtQuickAdd.IsChecked == true;
 
             objItem.BulkPricingItems = BulkPricingItems;
@@ -233,35 +233,35 @@ namespace WinePOSFinal
                 totalTax += GetTaxRate("Sales_Tax", dtTax);
             }
             // Check each checkbox and add or subtract the corresponding tax
-            if (txtchkST2.IsChecked == true)
-            {
-                totalTax += GetTaxRate("Sales_Tax_2", dtTax);
-            }
-            // Check each checkbox and add or subtract the corresponding tax
-            if (txtchkST3.IsChecked == true)
-            {
-                totalTax += GetTaxRate("Sales_Tax_3", dtTax);
-            }
-            // Check each checkbox and add or subtract the corresponding tax
-            if (txtchkST4.IsChecked == true)
-            {
-                totalTax += GetTaxRate("Sales_Tax_4", dtTax);
-            }
-            // Check each checkbox and add or subtract the corresponding tax
-            if (txtchkST5.IsChecked == true)
-            {
-                totalTax += GetTaxRate("Sales_Tax_5", dtTax);
-            }
-            // Check each checkbox and add or subtract the corresponding tax
-            if (txtchkST6.IsChecked == true)
-            {
-                totalTax += GetTaxRate("Sales_Tax_6", dtTax);
-            }
-            // Check each checkbox and add or subtract the corresponding tax
-            if (txtchkBT.IsChecked == true)
-            {
-                totalTax += GetTaxRate("Bar_Tax", dtTax);
-            }
+            //if (txtchkST2.IsChecked == true)
+            //{
+            //    totalTax += GetTaxRate("Sales_Tax_2", dtTax);
+            //}
+            //// Check each checkbox and add or subtract the corresponding tax
+            //if (txtchkST3.IsChecked == true)
+            //{
+            //    totalTax += GetTaxRate("Sales_Tax_3", dtTax);
+            //}
+            //// Check each checkbox and add or subtract the corresponding tax
+            //if (txtchkST4.IsChecked == true)
+            //{
+            //    totalTax += GetTaxRate("Sales_Tax_4", dtTax);
+            //}
+            //// Check each checkbox and add or subtract the corresponding tax
+            //if (txtchkST5.IsChecked == true)
+            //{
+            //    totalTax += GetTaxRate("Sales_Tax_5", dtTax);
+            //}
+            //// Check each checkbox and add or subtract the corresponding tax
+            //if (txtchkST6.IsChecked == true)
+            //{
+            //    totalTax += GetTaxRate("Sales_Tax_6", dtTax);
+            //}
+            //// Check each checkbox and add or subtract the corresponding tax
+            //if (txtchkBT.IsChecked == true)
+            //{
+            //    totalTax += GetTaxRate("Bar_Tax", dtTax);
+            //}
 
             // Calculate final price after adding or subtracting tax
             finalPrice = baseAmount + (baseAmount * totalTax / 100);
@@ -384,7 +384,7 @@ namespace WinePOSFinal
             string fullText = textBox.Text.Insert(textBox.SelectionStart, e.Text);
 
             // Regex to match decimals up to 12 digits before and 3 digits after the decimal point
-            e.Handled = !Regex.IsMatch(fullText, @"^\d{0,12}(\.\d{0,3})?$");
+            e.Handled = !Regex.IsMatch(fullText, @"^\d{0,9}(\.\d{0,3})?$");
         }
     }
     public class ComboBoxItem
