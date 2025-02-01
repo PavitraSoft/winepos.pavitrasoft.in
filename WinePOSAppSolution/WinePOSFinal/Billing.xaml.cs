@@ -49,10 +49,6 @@ namespace WinePOSFinal
         DataTable dtBulkPricing = new DataTable();
 
 
-        private PosExplorer explorer;
-
-        private CashDrawer cashDrawer;
-
         WinePOSService objService = new WinePOSService();
         ObservableCollection<BillingItem> objBillingItems = new ObservableCollection<BillingItem>();
 
@@ -66,7 +62,7 @@ namespace WinePOSFinal
         private bool isScanning = false;
         private int invoiceNumber = 0;
 
-        PosPrinter m_Printer = null;
+        MainWindow mainWindow = null;
 
         public decimal SubTotal
         {
@@ -103,269 +99,11 @@ namespace WinePOSFinal
             InitializeComponent();
 
             //InitializeCashDrawer(true);
-            InitializeCashDrawer();
-            //InitializePrinter();
             ReloadBillingData();
 
         }
 
-        private void InitializeCashDrawer()
-
-        {
-
-            try
-
-            {
-
-                explorer = new PosExplorer();
-                string strLogicalName = "CashDrawer";
-
-                DeviceInfo deviceInfo = explorer.GetDevice(DeviceType.CashDrawer, strLogicalName);
-
-                cashDrawer = (CashDrawer)explorer.CreateInstance(deviceInfo);
-
-                cashDrawer.Open();
-
-                cashDrawer.Claim(1000);
-
-                cashDrawer.DeviceEnabled = true;
-
-            }
-
-            catch (Exception ex)
-
-            {
-
-                MessageBox.Show("Error initializing cash drawer: " + ex.Message);
-
-            }
-
-        }
-
-        private void InitializeCashDrawer(bool use)
-
-        {
-
-            //<<<step1>>>--Start
-            //Use a Logical Device Name which has been set on the SetupPOS.
-            string strLogicalName = "CashDrawer";
-
-            //Create PosExplorer
-            PosExplorer posExplorer = new PosExplorer();
-
-            DeviceInfo deviceInfo = null;
-
-            //<<<step3>>>--Start
-            try
-            {
-                deviceInfo = posExplorer.GetDevice(DeviceType.CashDrawer, strLogicalName);
-            }
-            catch (Exception)
-            {
-                //MessageBox.Show("Failed to get device information.", MessageBoxButton.OK, MessageBoxImage.Information);
-                //Disable button
-                //ChangeButtonStatus();
-                return;
-            }
-
-            try
-            {
-                cashDrawer = (CashDrawer)posExplorer.CreateInstance(deviceInfo);
-            }
-            catch (Exception)
-            {
-                //Failed CreateInstance
-                //MessageBox.Show("Failed to create instance", MessageBoxButton.OK, MessageBoxImage.Information);
-                //MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                //Disable button
-                //ChangeButtonStatus();
-                return;
-            }
-
-            //Add StatusUpdateEventHandler
-            //AddStatusUpdateEvent(m_Drawer);
-
-            try
-            {
-                //Open the device
-                //Use a Logical Device Name which has been set on the SetupPOS.
-                cashDrawer.Open();
-            }
-            catch (PosControlException)
-            {
-
-                //MessageBox.Show("This device has not been registered, or cannot use.", MessageBoxButtons.OK, MessageBoxImage.Information);
-                //ChangeButtonStatus();
-                return;
-            }
-
-            try
-            {
-                //Get the exclusive control right for the opened device.
-                //Then the device is disable from other application.
-                cashDrawer.Claim(1000);
-            }
-            catch (PosControlException)
-            {
-                //MessageBox.Show("Failed to get exclusive rights to the device.", MessageBoxButtons.OK, MessageBoxImage.Information);
-                //ChangeButtonStatus();
-                return;
-            }
-
-            // Power reporting
-            try
-            {
-                if (cashDrawer.CapPowerReporting != PowerReporting.None)
-                {
-                    cashDrawer.PowerNotify = PowerNotification.Enabled;
-                }
-            }
-            catch (PosControlException)
-            {
-            }
-
-            try
-            {
-                //Enable the device.
-                cashDrawer.DeviceEnabled = true;
-            }
-            catch (PosControlException)
-            {
-
-                //MessageBox.Show("Now the device is disable to use.", MessageBoxButtons.OK, MessageBoxImage.Information);
-
-                //ChangeButtonStatus();
-                return;
-            }
-            //<<<step3>>>--End
-
-            //<<<step1>>>--End
-
-            //<<<step4>>>--Start
-            //if (m_Drawer.CapStatisticsReporting == false)
-            //{
-            //    btnRetrieveStatistics.Enabled = false;
-            //    txtStatistics.Enabled = false;
-            //}
-            //<<<step4>>>--End
-
-        }
-
-        private void InitializePrinter()
-        {
-            //<<<step1>>>--Start
-            //Use a Logical Device Name which has been set on the SetupPOS.
-            string strLogicalName = "PosPrinter";
-
-            //Current Directory Path
-            string strCurDir = Directory.GetCurrentDirectory();
-
-            string strFilePath = strCurDir.Substring(0, strCurDir.LastIndexOf("Step6") + "Step6\\".Length);
-
-            strFilePath += "Logo.bmp";
-
-            try
-            {
-                //Create PosExplorer
-                PosExplorer posExplorer = new PosExplorer();
-
-                DeviceInfo deviceInfo = null;
-
-                try
-                {
-                    deviceInfo = posExplorer.GetDevice(DeviceType.PosPrinter, strLogicalName);
-                    m_Printer = (PosPrinter)posExplorer.CreateInstance(deviceInfo);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Failed Initialize printer." + ex.Message, "Printer", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    //ChangeButtonStatus();
-                    return;
-                }
-
-                //Open the device
-                m_Printer.Open();
-
-                //Get the exclusive control right for the opened device.
-                //Then the device is disable from other application.
-                m_Printer.Claim(1000);
-
-                //Enable the device.
-                m_Printer.DeviceEnabled = true;
-
-                //<<<step3>>>--Start
-                //Output by the high quality mode
-                m_Printer.RecLetterQuality = true;
-
-                if (m_Printer.CapRecBitmap == true)
-                {
-
-                    bool bSetBitmapSuccess = false;
-                    for (int iRetryCount = 0; iRetryCount < 5; iRetryCount++)
-                    {
-                        try
-                        {
-                            //<<<step5>>>--Start
-                            //Register a bitmap
-                            m_Printer.SetBitmap(1, PrinterStation.Receipt,
-                                strFilePath, m_Printer.RecLineWidth / 2,
-                                PosPrinter.PrinterBitmapCenter);
-                            //<<<step5>>>--End
-                            bSetBitmapSuccess = true;
-                            break;
-                        }
-                        catch (PosControlException pce)
-                        {
-                            if (pce.ErrorCode == ErrorCode.Failure && pce.ErrorCodeExtended == 0 && pce.Message == "It is not initialized.")
-                            {
-                                System.Threading.Thread.Sleep(1000);
-                            }
-                        }
-                    }
-                    if (!bSetBitmapSuccess)
-                    {
-                        //MessageBox.Show("Failed to set bitmap.", "Printer_SampleStep6", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        MessageBox.Show("Failed to set bitmap.", "Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    }
-                }
-                //<<<step3>>>--End
-
-                //<<<step5>>>--Start
-                // Even if using any printers, 0.01mm unit makes it possible to print neatly.
-                m_Printer.MapMode = MapMode.Metric;
-                //<<<step5>>>--End
-            }
-            catch (PosControlException ex)
-            {
-
-
-                if (m_Printer != null)
-                {
-                    try
-                    {
-                        //Cancel the device
-                        m_Printer.DeviceEnabled = false;
-
-                        //Release the device exclusive control right.
-                        m_Printer.Release();
-
-                    }
-                    catch (PosControlException)
-                    {
-                    }
-                    finally
-                    {
-                        //Finish using the device.
-                        m_Printer.Close();
-                    }
-                }
-
-                MessageBox.Show("Error in Initialize printer." + ex.Message, "Printer", MessageBoxButton.OK, MessageBoxImage.Warning);
-                //ChangeButtonStatus();
-            }
-            //<<<step1>>>--End
-        }
+       
 
         public void ReloadBillingData()
         {
@@ -475,142 +213,162 @@ namespace WinePOSFinal
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            string strUPC = txtUPC.Text;
-
-            string strName = string.Empty;
-            string strPrice = string.Empty;
-            string strQuantity = string.Empty;
-            int CurrentQuantity = 0;
-            int ItemID = 0;
-            string strTotalPrice = string.Empty;
-            string strDiscount = string.Empty;
-
-            DataRow[] dr = dtAllItems.Select(" UPC = '" + strUPC + "'");
-
-
-            if (dr != null && dr.Count() > 0)
+            try
             {
-                strName = Convert.ToString(dr[0]["Description"]);
-                strPrice = Convert.ToString(dr[0]["ChargedCost"]);
-                CurrentQuantity = Convert.ToInt32(dr[0]["Stock"]);
-                ItemID = Convert.ToInt32(dr[0]["ItemID"]);
-                strQuantity = txtQuantity.Text;
+                string strUPC = txtUPC.Text;
 
-                // Calculate total price (for this example, assuming price and quantity are numeric)
-                if (decimal.TryParse(strPrice, out decimal parsedPrice) && int.TryParse(strQuantity, out int parsedQuantity))
+                string strName = string.Empty;
+                string strPrice = string.Empty;
+                string strQuantity = string.Empty;
+                int CurrentQuantity = 0;
+                int ItemID = 0;
+                string strTotalPrice = string.Empty;
+                string strDiscount = string.Empty;
+
+                DataRow[] dr = dtAllItems.Select(" UPC = '" + strUPC + "'");
+
+
+                if (dr != null && dr.Count() > 0)
                 {
-                    // Check if the item already exists in the ObservableCollection
-                    var existingItem = objBillingItems.FirstOrDefault(item => item.UPC == strUPC);
+                    strName = Convert.ToString(dr[0]["Description"]);
+                    strPrice = Convert.ToString(dr[0]["ChargedCost"]);
+                    CurrentQuantity = Convert.ToInt32(dr[0]["Stock"]);
+                    ItemID = Convert.ToInt32(dr[0]["ItemID"]);
+                    strQuantity = txtQuantity.Text;
 
-                    if (existingItem != null)
+                    // Calculate total price (for this example, assuming price and quantity are numeric)
+                    if (decimal.TryParse(strPrice, out decimal parsedPrice) && int.TryParse(strQuantity, out int parsedQuantity))
                     {
-                        // Update the quantity of the existing item
-                        int newQuantity = Convert.ToInt32(existingItem.Quantity) + parsedQuantity;
+                        // Check if the item already exists in the ObservableCollection
+                        var existingItem = objBillingItems.FirstOrDefault(item => item.UPC == strUPC);
 
-                        DataRow[] dataRow = dtBulkPricing.Select(" UPC = " + strUPC + " AND " + newQuantity + " % Quantity = 0");
-                        string strNote = string.Empty;
-
-                        if (dataRow.Any())
+                        if (existingItem != null)
                         {
-                            parsedPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
-                            string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
-                            strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(parsedPrice);
+                            // Update the quantity of the existing item
+                            int newQuantity = Convert.ToInt32(existingItem.Quantity) + parsedQuantity;
 
-                            parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
-                        }
-
-
-                         if (CurrentQuantity >= newQuantity)
-                        //if (true)
-                        {
-
-                            decimal discount = Convert.ToDecimal(existingItem.Discount);
-
-                            parsedPrice = parsedPrice * (1 - discount / 100);
-
-                            decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
-                            //decimal taxedPrice = parsedPrice + tax;
-                            decimal taxedPrice = tax;
-                            existingItem.Price = Convert.ToString(parsedPrice);
-                            existingItem.Tax = (tax - parsedPrice).ToString();
-                            existingItem.Quantity = Convert.ToString(newQuantity);
-                            existingItem.Discount = Convert.ToString(discount);
-                            existingItem.TotalPrice = (taxedPrice * newQuantity).ToString("F2");
-                            existingItem.Note = strNote;
-                            // Clear the TextBox controls for new input
-                            txtUPC.Clear();
-                            txtName.Clear();
-                            txtQuantity.Text = "1";
-                        }
-                        else
-                        {
-                            MessageBox.Show($"Asked Quantity: {newQuantity} Current Quantity: {CurrentQuantity}.");
-                        }
-                    }
-                    else
-                    {
-                        if (CurrentQuantity >= parsedQuantity)
-                        //if (true)
-                        {
-                            DataRow[] dataRow = dtBulkPricing.Select(" UPC = " + strUPC + " AND " + parsedQuantity + " % Quantity = 0");
+                            //DataRow[] dataRow = dtBulkPricing.Select(" UPC = " + strUPC + " AND " + newQuantity + " % Quantity = 0");
+                            DataRow[] dataRow = dtBulkPricing.Select(" UPC = '" + strUPC + "'");
                             string strNote = string.Empty;
 
                             if (dataRow.Any())
                             {
-                                parsedPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
+                                decimal bulkPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
                                 string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
-                                strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(parsedPrice);
+                                if (Convert.ToInt32(strQuan) <= Convert.ToInt32(newQuantity))
+                                {
+                                    strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(bulkPrice);
+                                }
 
+                                parsedPrice = (Convert.ToInt32(Convert.ToInt32(newQuantity) / Convert.ToInt32(strQuan)) * bulkPrice) + ((Convert.ToInt32(newQuantity) % Convert.ToInt32(strQuan)) * parsedPrice);
 
-                                parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
+                                //parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
                             }
 
-                            decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
-                            //decimal taxedPrice = parsedPrice + tax;
-                            decimal taxedPrice = tax;
-                            decimal totalPrice = taxedPrice * parsedQuantity;
 
-
-
-
-                            // Create a new BillingItem
-                            BillingItem newItem = new BillingItem
+                            if (CurrentQuantity >= newQuantity)
+                            //if (true)
                             {
-                                UPC = strUPC,
-                                Name = strName,
-                                Price = Convert.ToString(parsedPrice),
-                                Quantity = Convert.ToString(parsedQuantity),
-                                Tax = (tax- parsedPrice).ToString("F2"), // Format total price as a string with 2 decimals
-                                Discount = "0",
-                                TotalPrice = totalPrice.ToString("F2"), // Format total price as a string with 2 decimals
-                                UserName = AccessRightsManager.GetUserName(),
-                                Note = strNote,
-                                ItemID = Convert.ToString(ItemID),
-                            };
 
-                            // Add the new item to the ObservableCollection
-                            objBillingItems.Add(newItem);
+                                decimal discount = Convert.ToDecimal(existingItem.Discount);
 
-                            // Clear the TextBox controls for new input
-                            txtUPC.Clear();
-                            txtName.Clear();
-                            txtQuantity.Text = "1";
+                                parsedPrice = parsedPrice * (1 - discount / 100);
+
+                                decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
+                                //decimal taxedPrice = parsedPrice + tax;
+                                decimal taxedPrice = tax;
+                                existingItem.Price = Convert.ToString(parsedPrice);
+                                existingItem.Tax = (tax - parsedPrice).ToString();
+                                existingItem.Quantity = Convert.ToString(newQuantity);
+                                existingItem.Discount = Convert.ToString(discount);
+                                existingItem.TotalPrice = (taxedPrice * newQuantity).ToString("F2");
+                                existingItem.Note = strNote;
+                                // Clear the TextBox controls for new input
+                                txtUPC.Clear();
+                                txtName.Clear();
+                                txtQuantity.Text = "1";
+                            }
+                            else
+                            {
+                                MessageBox.Show($"Asked Quantity: {newQuantity} Current Quantity: {CurrentQuantity}.");
+                            }
                         }
                         else
                         {
-                            MessageBox.Show($"Asked Quantity: {parsedQuantity} Current Quantity: {CurrentQuantity}.");
+                            if (CurrentQuantity >= parsedQuantity)
+                            //if (true)
+                            {
+                                //DataRow[] dataRow = dtBulkPricing.Select(" UPC = " + strUPC + " AND " + parsedQuantity + " % Quantity = 0");
+                                DataRow[] dataRow = dtBulkPricing.Select(" UPC = '" + strUPC + "'");
+                                string strNote = string.Empty;
+
+                                if (dataRow.Any())
+                                {
+                                    decimal bulkPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
+                                    string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
+
+                                    if (Convert.ToInt32(strQuan) <= Convert.ToInt32(parsedQuantity))
+                                    {
+                                        strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(bulkPrice);
+                                    }
+
+                                    parsedPrice = (Convert.ToInt32(Convert.ToInt32(parsedQuantity) / Convert.ToInt32(strQuan)) * bulkPrice) + ((Convert.ToInt32(parsedQuantity) % Convert.ToInt32(strQuan)) * parsedPrice);
+
+
+                                    //parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
+                                }
+
+                                decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
+                                //decimal taxedPrice = parsedPrice + tax;
+                                decimal taxedPrice = tax;
+                                decimal totalPrice = taxedPrice * parsedQuantity;
+
+
+
+
+                                // Create a new BillingItem
+                                BillingItem newItem = new BillingItem
+                                {
+                                    UPC = strUPC,
+                                    Name = strName,
+                                    Price = Convert.ToString(parsedPrice),
+                                    Quantity = Convert.ToString(parsedQuantity),
+                                    Tax = (tax - parsedPrice).ToString("F2"), // Format total price as a string with 2 decimals
+                                    Discount = "0",
+                                    TotalPrice = totalPrice.ToString("F2"), // Format total price as a string with 2 decimals
+                                    UserName = AccessRightsManager.GetUserName(),
+                                    Note = strNote,
+                                    ItemID = Convert.ToString(ItemID),
+                                };
+
+                                // Add the new item to the ObservableCollection
+                                objBillingItems.Add(newItem);
+
+                                // Clear the TextBox controls for new input
+                                txtUPC.Clear();
+                                txtName.Clear();
+                                txtQuantity.Text = "1";
+                            }
+                            else
+                            {
+                                MessageBox.Show($"Asked Quantity: {parsedQuantity} Current Quantity: {CurrentQuantity}.");
+                            }
                         }
+
+                        CalculateTotals();
+
                     }
-
-                    CalculateTotals();
-
+                    else
+                    {
+                        MessageBox.Show("Please enter valid UPC and quantity.");
+                    }
+                    dgBilling.ItemsSource = null;
+                    dgBilling.ItemsSource = objBillingItems;
                 }
-                else
-                {
-                    MessageBox.Show("Please enter valid UPC and quantity.");
-                }
-                dgBilling.ItemsSource = null;
-                dgBilling.ItemsSource = objBillingItems;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error:" + ex.ToString());
             }
         }
 
@@ -668,7 +426,6 @@ namespace WinePOSFinal
 
                 btnTenderWindow_Click(null, null);
                 //Open cash drawer
-                //OpenCashDrawer();
                 MessageBoxResult result = MessageBox.Show(
                 $"Are you sure you want to Cash the Current Billing Invoice?",
                 "Confirm Payment",
@@ -684,6 +441,7 @@ namespace WinePOSFinal
                         // Optionally, clear the  after paymentDataGrid
                         objBillingItems.Clear();
 
+                        OpenCashDrawer();
 
                         btnPrintInvoice_Click(null, null);
                     }
@@ -761,7 +519,13 @@ namespace WinePOSFinal
                                  .Select(row => row.Field<decimal>("TotalPrice").ToString())
                                  .ToArray();
 
-                    PrintInvoice(name, price, quantity, tax, totalPrice);
+                    string[] discount = InvoiceData.AsEnumerable()
+                                 .Select(row => row.Field<decimal>("Discount").ToString())
+                                 .ToArray();
+
+                    string paymentType = Convert.ToString(InvoiceData.Rows[0]["PaymentType"]);
+
+                    PrintInvoice(name, price, quantity, tax, totalPrice, discount, paymentType, invoiceNumber);
 
                     //// Create a new report document
                     //ReportDocument report = new ReportDocument();
@@ -815,15 +579,17 @@ namespace WinePOSFinal
             }
         }
 
-        private void PrintInvoice(string[] name, string[] price, string[] quantity, string[] tax, string[] totalPrice)
+        private void PrintInvoice(string[] name, string[] price, string[] quantity, string[] tax, string[] totalPrice, string[] discount, string paymentType, string invoiceNumber)
         {
+            var mainWindow = (MainWindow)Application.Current.MainWindow;
+            PosPrinter m_Printer = mainWindow.m_Printer;
             //<<<step2>>>--Start
             //Initialization
             DateTime nowDate = DateTime.Now;                            //System date
             DateTimeFormatInfo dateFormat = new DateTimeFormatInfo();   //Date Format
             dateFormat.MonthDayPattern = "MMMM";
             string strDate = nowDate.ToString("MMMM,dd,yyyy  HH:mm", dateFormat);
-            string strbcData = "4902720005074";
+            string strbcData = invoiceNumber;
             //String[] astritem = { "apples", "grapes", "bananas", "lemons", "oranges" };
             //String[] astrprice = { "10.00", "20.00", "30.00", "40.00", "50.00" };
 
@@ -876,7 +642,9 @@ namespace WinePOSFinal
                     {
                         decimal itemTotal = Convert.ToDecimal(quantity[i]) * Convert.ToDecimal(price[i]);
 
-                        strPrintData = MakePrintString(m_Printer.RecLineChars, name[i], "   " + quantity[i] + " @ $" + price[i] + " $"
+                        string strDiscount = (Convert.ToDecimal(discount[i]) != 0) ? "* (" + Convert.ToString(discount[i]) + "%)" : string.Empty;
+
+                        strPrintData = MakePrintString(m_Printer.RecLineChars, name[i] + strDiscount, "   " + quantity[i] + " @ $" + price[i] + " $"
                             + (Convert.ToDecimal(quantity[i]) * Convert.ToDecimal(price[i])));
 
                         m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
@@ -917,6 +685,13 @@ namespace WinePOSFinal
 
                     m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
 
+
+                    strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "Payment Type", "$"
+                        + paymentType);
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
+                        + strPrintData + "\n");
+
                     //Make 5mm speces
                     m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
 
@@ -931,6 +706,13 @@ namespace WinePOSFinal
                     }
                     //<<<step4>>>--End
                     //<<<step5>>>--End
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|fP");
+
+                    strPrintData = "Thank you for shopping at Crown Liquor!";
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
+
 
                     m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|fP");
                     //<<<step2>>>--End
@@ -1567,27 +1349,41 @@ namespace WinePOSFinal
                         int newQuantity = Convert.ToInt32(existingItem.Quantity) + parsedQuantity;
 
 
-                        DataRow[] dataRow = dtBulkPricing.Select(" ItemID = " + Convert.ToString(ItemID) + " AND " + newQuantity + " % Quantity = 0");
+                        //DataRow[] dataRow = dtBulkPricing.Select(" ItemID = " + Convert.ToString(ItemID) + " AND " + newQuantity + " % Quantity = 0");
+                        DataRow[] dataRow = dtBulkPricing.Select(" ItemID = " + Convert.ToString(ItemID));
                         string strNote = string.Empty;
 
-                        if (dataRow.Any())
-                        {
-                            parsedPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
-                            string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
-                            strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(parsedPrice);
-                        }
+                        //if (dataRow.Any())
+                        //{
+                        //    decimal bulkPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
+                        //    string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
+
+                        //    if (Convert.ToInt32(strQuan) <= Convert.ToInt32(newQuantity))
+                        //    {
+                        //        strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(bulkPrice);
+                        //    }
+
+                        //    parsedPrice = (Convert.ToInt32(Convert.ToInt32(newQuantity) / Convert.ToInt32(strQuan)) * bulkPrice) + ((Convert.ToInt32(newQuantity) % Convert.ToInt32(strQuan)) * parsedPrice);
+                        //}
 
                         if (CurrentQuantity >= newQuantity)
                         //if (true)
                         {
                             if (dataRow.Any())
                             {
-                                parsedPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
+                                decimal bulkPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
                                 string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
-                                strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(parsedPrice);
+                                //strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(parsedPrice);
 
 
-                                parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
+                                if (Convert.ToInt32(strQuan) <= Convert.ToInt32(newQuantity))
+                                {
+                                    strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(bulkPrice);
+                                }
+
+                                parsedPrice = (Convert.ToInt32(Convert.ToInt32(newQuantity) / Convert.ToInt32(strQuan)) * bulkPrice) + ((Convert.ToInt32(newQuantity) % Convert.ToInt32(strQuan)) * parsedPrice);
+
+                                //parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
                             }
 
                             decimal discount = Convert.ToDecimal(existingItem.Discount);
@@ -1618,19 +1414,24 @@ namespace WinePOSFinal
                         if (CurrentQuantity >= parsedQuantity)
                         //if (true)
                         {
-
-
-                            DataRow[] dataRow = dtBulkPricing.Select(" ItemID = " + Convert.ToString(ItemID) + " AND " + parsedQuantity + " % Quantity = 0");
+                            //DataRow[] dataRow = dtBulkPricing.Select(" ItemID = " + Convert.ToString(ItemID) + " AND " + parsedQuantity + " % Quantity = 0");
+                            DataRow[] dataRow = dtBulkPricing.Select(" ItemID = " + Convert.ToString(ItemID));
                             string strNote = string.Empty;
 
                             if (dataRow.Any())
                             {
-                                parsedPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
+                                decimal bulkPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
                                 string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
-                                strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(parsedPrice);
+                                //strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(parsedPrice);
 
+                                if (Convert.ToInt32(strQuan) <= Convert.ToInt32(parsedQuantity))
+                                {
+                                    strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(bulkPrice);
+                                }
 
-                                parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
+                                parsedPrice = (Convert.ToInt32(Convert.ToInt32(parsedQuantity) / Convert.ToInt32(strQuan)) * bulkPrice) + ((Convert.ToInt32(parsedQuantity) % Convert.ToInt32(strQuan)) * parsedPrice);
+
+                                //parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
                             }
 
                             decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
@@ -1683,6 +1484,9 @@ namespace WinePOSFinal
         {
             try
             {
+                var mainWindow = (MainWindow)Application.Current.MainWindow;
+                CashDrawer cashDrawer = mainWindow.cashDrawer;
+
                 if (cashDrawer != null && cashDrawer.DeviceEnabled)
                 {
                     cashDrawer.OpenDrawer();
@@ -1749,11 +1553,19 @@ namespace WinePOSFinal
 
                     if (dataRow.Any())
                     {
-                        parsedPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
+                        decimal bulkPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
                         string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
-                        strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(parsedPrice);
+                        //strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(parsedPrice);
 
-                        parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
+
+                        if (Convert.ToInt32(strQuan) <= Convert.ToInt32(iQuantity))
+                        {
+                            strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(bulkPrice);
+                        }
+
+                        parsedPrice = (Convert.ToInt32(Convert.ToInt32(iQuantity) / Convert.ToInt32(strQuan)) * bulkPrice) + ((Convert.ToInt32(iQuantity) % Convert.ToInt32(strQuan)) * parsedPrice);
+
+                        //parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
                     }
 
                     parsedPrice = parsedPrice * (1 - discount / 100);

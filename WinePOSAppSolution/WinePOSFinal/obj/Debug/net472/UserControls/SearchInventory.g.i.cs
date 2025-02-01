@@ -134,7 +134,7 @@ namespace WinePOSFinal {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/WinePOSFinal;component/usercontrols/searchinventory.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/WinePOSFinal;V1.0.0.0;component/usercontrols/searchinventory.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\UserControls\SearchInventory.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

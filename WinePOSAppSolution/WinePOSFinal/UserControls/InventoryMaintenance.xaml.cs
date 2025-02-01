@@ -1,21 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using WinePOSFinal.ServicesLayer;
-using System.Data;
 using WinePOSFinal.Classes;
-using System.Text.RegularExpressions;
+using WinePOSFinal.ServicesLayer;
 
 namespace WinePOSFinal
 {
@@ -205,6 +197,9 @@ namespace WinePOSFinal
             {
                 MessageBox.Show("Item Saved Successfully.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
 
+                Billing objBilling = new Billing();
+
+                objBilling.ReloadBillingData();
 
 
                 ClearFields();
@@ -213,6 +208,8 @@ namespace WinePOSFinal
             {
                 MessageBox.Show("Some error occurred while saving this Item.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+
+
         }
 
         public void btnClear_Click(object sender, RoutedEventArgs e)

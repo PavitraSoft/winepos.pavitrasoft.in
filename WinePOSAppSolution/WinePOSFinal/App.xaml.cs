@@ -13,5 +13,9 @@ namespace WinePOSFinal
     /// </summary>
     public partial class App : Application
     {
+        private void Application_Exit(object sender, ExitEventArgs e)
+        {
+            //MessageBox.Show("Application is closing!");
+        }
     }
 }

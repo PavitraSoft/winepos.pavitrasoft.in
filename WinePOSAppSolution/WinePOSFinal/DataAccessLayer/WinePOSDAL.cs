@@ -201,7 +201,7 @@ namespace WinePOSFinal.DataAccessLayer
                                 bItem.BuilkPricingID = Convert.ToInt32(dr["BuilkPricingID"]);
                                 bItem.ItemID = Convert.ToInt32(dr["ItemID"]);
                                 bItem.Quantity = Convert.ToInt32(dr["Quantity"]);
-                                bItem.Price = Convert.ToInt32(dr["Pricing"]);
+                                bItem.Price = Convert.ToDecimal(dr["Pricing"]);
 
                                 items.BulkPricingItems.Add(bItem);
 
@@ -365,6 +365,7 @@ namespace WinePOSFinal.DataAccessLayer
                     cmd.Parameters.AddWithValue("IsVoided", IsVoidInvoice);
                     cmd.Parameters.AddWithValue("InvoiceCode", nextInvoiceCode);
                     cmd.Parameters.AddWithValue("PaymentType", PaymentType);
+                    cmd.Parameters.AddWithValue("Discount", objBillingItem.Discount);
 
                     // Execute the stored procedure (this will not return anything)
                     int rowsAffected = cmd.ExecuteNonQuery();
@@ -459,7 +460,7 @@ namespace WinePOSFinal.DataAccessLayer
 
 
                 // Sample query to retrieve data
-                string query = "SELECT InvoiceCode, UPC, Name ,Price,Quantity,Tax,TotalPrice,UserName,CreatedDateTime,PaymentType, CASE WHEN IsVoided = 1 THEN 'Yes' ELSE 'No' END AS IsVoided FROM Invoice WITH (NOLOCK) WHERE 1 = 1 " + where + " ORDER BY CreatedDateTime DESC"; // Replace with your actual query
+                string query = "SELECT InvoiceCode, UPC, Name ,Price,Quantity,Tax,TotalPrice,UserName,CreatedDateTime,PaymentType, CASE WHEN IsVoided = 1 THEN 'Yes' ELSE 'No' END AS IsVoided, Discount FROM Invoice WITH (NOLOCK) WHERE 1 = 1 " + where + " ORDER BY CreatedDateTime DESC"; // Replace with your actual query
 
                 using (SqlCommand command = new SqlCommand(query, conn))
                 {

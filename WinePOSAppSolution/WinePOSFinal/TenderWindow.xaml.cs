@@ -39,7 +39,7 @@ namespace WinePOSFinal
         {
             InitializeComponent();
 
-            InitializeCashDrawer();
+            //InitializeCashDrawer();
 
             _lblRemaining = lblRemaining;
             _lblAmtRemaining = lblAmtRemaining;
@@ -56,7 +56,7 @@ namespace WinePOSFinal
         public TenderWindow()
         {
             InitializeComponent();
-            InitializeCashDrawer();
+            //InitializeCashDrawer();
             TotalAmount = 0; // Set the initial amount passed from MainWindow
             RemainingAmount = TotalAmount; // Initialize remaining amount
             AmountTextBox.Text = TotalAmount.ToString("F2"); // Populate the amount text box

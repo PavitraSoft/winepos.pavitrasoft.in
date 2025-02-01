@@ -12,6 +12,8 @@ using System.Linq;
 using System.Data.SqlClient;
 using System.IO;
 using DocumentFormat.OpenXml.Vml.Office;
+using Microsoft.PointOfService;
+using System.Globalization;
 
 namespace WinePOSFinal.UserControls
 {
@@ -112,52 +114,80 @@ namespace WinePOSFinal.UserControls
             }
         }
 
-        // Placeholder for the print logic
-        private void PrintInvoice(string invoiceCode)
+
+
+        private void PrintInvoice(string invoiceNumber)
         {
-            // Implement your actual print logic here
             try
             {
-                // Create a new report document
-                ReportDocument report = new ReportDocument();
 
-                // Load the report (winebill.rpt)
-                //string reportPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Reports\winebill.rpt");
+                DataTable InvoiceData = objService.FetchAndPopulateInvoice(true, null, null, Convert.ToString(invoiceNumber));
+
+                string[] name = InvoiceData.AsEnumerable()
+                             .Select(row => row.Field<string>("Name").ToString())
+                             .ToArray();
+
+                string[] price = InvoiceData.AsEnumerable()
+                             .Select(row => row.Field<decimal>("Price").ToString())
+                             .ToArray();
+
+                string[] quantity = InvoiceData.AsEnumerable()
+                             .Select(row => row.Field<int>("Quantity").ToString())
+                             .ToArray();
+
+                string[] tax = InvoiceData.AsEnumerable()
+                             .Select(row => row.Field<decimal>("Tax").ToString())
+                             .ToArray();
+
+                string[] totalPrice = InvoiceData.AsEnumerable()
+                             .Select(row => row.Field<decimal>("TotalPrice").ToString())
+                             .ToArray();
+
+                string[] discount = InvoiceData.AsEnumerable()
+                             .Select(row => row.Field<decimal>("Discount").ToString())
+                             .ToArray();
+
+                string paymentType = Convert.ToString(InvoiceData.Rows[0]["PaymentType"]);
+
+                PrintInvoice(name, price, quantity, tax, totalPrice, discount, paymentType);
+
+                //// Create a new report document
+                //ReportDocument report = new ReportDocument();
+
+
+                //// Load the report (winebill.rpt)
+                ////string reportPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Reports\winebill.rpt");
                 //string reportPath = System.IO.Path.Combine(@"D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\winebill.rpt");
 
-                string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                // Target file
-                string targetFile = Path.Combine("Reports", "winebill.rpt");
+                //string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                //// Target file
+                //string targetFile = Path.Combine("Reports", "winebill.rpt");
 
-                // Combine base directory with the relative path
-                string reportPath = Path.Combine(baseDirectory, targetFile);
-                report.Load(reportPath);
+                //// Combine base directory with the relative path
+                ////string reportPath = Path.Combine(baseDirectory, targetFile);
+                //report.Load(reportPath);
 
-                // Create and populate the DataTable
-                //DataTable dt = objService.GetInventoryData(string.Empty, string.Empty);
+                //// Create and populate the DataTable
+                ////DataTable dt = objService.GetInventoryData(string.Empty, string.Empty);
 
-                // Set the DataTable as the data source for the report
-                //report.SetDataSource(dt);
+                //// Set the DataTable as the data source for the report
+                ////report.SetDataSource(dt);
 
-                // Set database logon credentials (if required)
-                SetDatabaseLogin(report);
+                //// Set database logon credentials (if required)
+                //SetDatabaseLogin(report);
 
-                // Dynamically set the InvoiceCode parameter for the report
-                report.SetParameterValue("InvoiceCode", invoiceCode);
+                //// Dynamically set the InvoiceCode parameter for the report
+                //report.SetParameterValue("InvoiceCode", invoiceNumber);
 
-                ReportViewerWindow viewer = new ReportViewerWindow();
-                viewer.SetReport(report);
-                viewer.Show();
-
-                // Export the report to a PDF file
+                //// Export the report to a PDF file
                 //string exportPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "WineBill.pdf");
                 //report.ExportToDisk(ExportFormatType.PortableDocFormat, exportPath);
 
-                // Display the PDF in the WebBrowser control
-                //pdfWebViewer.Navigate(exportPath); // Navigate to the generated PDF file
+                //// Display the PDF in the WebBrowser control
+                ////pdfWebViewer.Navigate(exportPath); // Navigate to the generated PDF file
 
 
-                // Optionally, open the generated report in a PDF viewer
+                //// Optionally, open the generated report in a PDF viewer
                 //System.Diagnostics.Process.Start(exportPath);
 
                 //MessageBox.Show("Report generated and displayed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -168,13 +198,231 @@ namespace WinePOSFinal.UserControls
             }
         }
 
+        private void PrintInvoice(string[] name, string[] price, string[] quantity, string[] tax, string[] totalPrice, string[] discount, string paymentType)
+        {
+            var mainWindow = (MainWindow)Application.Current.MainWindow;
+            PosPrinter m_Printer = mainWindow.m_Printer;
+            //<<<step2>>>--Start
+            //Initialization
+            DateTime nowDate = DateTime.Now;                            //System date
+            DateTimeFormatInfo dateFormat = new DateTimeFormatInfo();   //Date Format
+            dateFormat.MonthDayPattern = "MMMM";
+            string strDate = nowDate.ToString("MMMM,dd,yyyy  HH:mm", dateFormat);
+            string strbcData = "4902720005074";
+            //String[] astritem = { "apples", "grapes", "bananas", "lemons", "oranges" };
+            //String[] astrprice = { "10.00", "20.00", "30.00", "40.00", "50.00" };
+
+            if (m_Printer.CapRecPresent)
+            {
+
+                try
+                {
+                    //<<<step6>>>--Start
+                    //Batch processing mode
+                    m_Printer.TransactionPrint(PrinterStation.Receipt
+                        , PrinterTransactionControl.Transaction);
+
+                    //<<<step3>>>--Start
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|1B");
+                    //<<<step3>>>--End
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|N"
+                        + "123xxstreet,xxxcity,xxxxstate\n");
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA"
+                        + "TEL 9999-99-9999   C#2\n");
+
+                    //<<<step5>>--Start
+                    //Make 2mm speces
+                    //ESC|#uF = Line Feed
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|200uF");
+                    //<<<step5>>>-End
+
+                    int iRecLineCharsCount = m_Printer.RecLineCharsList.Length;
+                    if (iRecLineCharsCount >= 2)
+                    {
+                        m_Printer.RecLineChars = m_Printer.RecLineCharsList[1];
+                        m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + strDate + "\n");
+                        m_Printer.RecLineChars = m_Printer.RecLineCharsList[0];
+                    }
+                    else
+                    {
+                        m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + strDate + "\n");
+                    }
+
+                    //<<<step5>>>--Start
+                    //Make 5mm speces
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
+
+                    //Print buying goods
+                    double total = 0.0;
+                    string strPrintData = "";
+                    for (int i = 0; i < name.Length; i++)
+                    {
+                        decimal itemTotal = Convert.ToDecimal(quantity[i]) * Convert.ToDecimal(price[i]);
+
+                        string strDiscount = (Convert.ToDecimal(discount[i]) != 0) ? "* (" + Convert.ToString(discount[i]) + "%)" : string.Empty;
+
+                        strPrintData = MakePrintString(m_Printer.RecLineChars, name[i] + strDiscount, "   " + quantity[i] + " @ $" + price[i] + " $"
+                            + (Convert.ToDecimal(quantity[i]) * Convert.ToDecimal(price[i])));
+
+                        m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
+
+                        total += Convert.ToDouble(itemTotal);
+
+                    }
+
+                    //Make 2mm speces
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|200uF");
+
+                    //Print the total cost
+                    strPrintData = MakePrintString(m_Printer.RecLineChars, "Tax excluded."
+                        , "$" + total.ToString("F"));
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + strPrintData + "\n");
+
+                    decimal totaltax = tax.Select(item => Convert.ToDecimal(item)).Sum();
+                    decimal totalPriceAfterTax = totalPrice.Select(item => Convert.ToDecimal(item)).Sum();
+
+                    strPrintData = MakePrintString(m_Printer.RecLineChars, "Tax ", "$"
+                        + (totaltax).ToString("F"));
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|uC" + strPrintData + "\n");
+
+                    strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "Total", "$"
+                        + (totalPriceAfterTax).ToString("F"));
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
+                        + strPrintData + "\n");
+
+                    //strPrintData = MakePrintString(m_Printer.RecLineChars, "Customer's payment", "$200.00");
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt
+                        , strPrintData + "\n");
+
+                    //strPrintData = MakePrintString(m_Printer.RecLineChars, "Change", "$" + (200.00 - (total * 1.05)).ToString("F"));
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
+
+
+                    strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "Payment Type", "$"
+                        + paymentType);
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
+                        + strPrintData + "\n");
+
+                    //Make 5mm speces
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
+
+                    //<<<step4>>>--Start
+                    if (m_Printer.CapRecBarCode == true)
+                    {
+                        //Barcode printing
+                        m_Printer.PrintBarCode(PrinterStation.Receipt, strbcData,
+                            BarCodeSymbology.EanJan13, 1000,
+                            m_Printer.RecLineWidth, PosPrinter.PrinterBarCodeLeft,
+                            BarCodeTextPosition.Below);
+                    }
+                    //<<<step4>>>--End
+                    //<<<step5>>>--End
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|fP");
+
+                    strPrintData = "Thank you for shopping at Crown Liquor!";
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
+
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|fP");
+                    //<<<step2>>>--End
+
+                    //print all the buffer data. and exit the batch processing mode.
+                    m_Printer.TransactionPrint(PrinterStation.Receipt
+                        , PrinterTransactionControl.Normal);
+                    //<<<step6>>>--End
+                }
+                catch (PosControlException ex)
+                {
+                    MessageBox.Show("Error while printing invoice. Exception:" + ex.ToString(), "Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+
+            //<<<step6>>>--Start
+            // When a cursor is back to its default shape, it means the process ends
+            //Cursor.Current = Cursors.Default;
+            //<<<step6>>>--End
+
+        }
+
+
+        // Placeholder for the print logic
+        //private void PrintInvoice(string invoiceCode)
+        //{
+        //    // Implement your actual print logic here
+        //    try
+        //    {
+        //        // Create a new report document
+        //        ReportDocument report = new ReportDocument();
+
+        //        // Load the report (winebill.rpt)
+        //        //string reportPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Reports\winebill.rpt");
+        //        //string reportPath = System.IO.Path.Combine(@"D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\winebill.rpt");
+
+        //        string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        //        // Target file
+        //        string targetFile = Path.Combine("Reports", "winebill.rpt");
+
+        //        // Combine base directory with the relative path
+        //        string reportPath = Path.Combine(baseDirectory, targetFile);
+        //        report.Load(reportPath);
+
+        //        // Create and populate the DataTable
+        //        //DataTable dt = objService.GetInventoryData(string.Empty, string.Empty);
+
+        //        // Set the DataTable as the data source for the report
+        //        //report.SetDataSource(dt);
+
+        //        // Set database logon credentials (if required)
+        //        SetDatabaseLogin(report);
+
+        //        // Dynamically set the InvoiceCode parameter for the report
+        //        report.SetParameterValue("InvoiceCode", invoiceCode);
+
+        //        ReportViewerWindow viewer = new ReportViewerWindow();
+        //        viewer.SetReport(report);
+        //        viewer.Show();
+
+        //        // Export the report to a PDF file
+        //        //string exportPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "WineBill.pdf");
+        //        //report.ExportToDisk(ExportFormatType.PortableDocFormat, exportPath);
+
+        //        // Display the PDF in the WebBrowser control
+        //        //pdfWebViewer.Navigate(exportPath); // Navigate to the generated PDF file
+
+
+        //        // Optionally, open the generated report in a PDF viewer
+        //        //System.Diagnostics.Process.Start(exportPath);
+
+        //        //MessageBox.Show("Report generated and displayed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //    }
+        //}
+
         private void FlashReportButton_Click(object sender, RoutedEventArgs e)
         {
             if (dtInvoice.Rows.Count > 0)
             {
                 try
-                {
+                { 
+
                     SearchButton_Click(null, null);
+
+                    var addWindow = new FlashReport(dtInvoice, FromDatePicker.SelectedDate, ToDatePicker.SelectedDate);
+                    addWindow.ShowDialog();
+
 
                     // Create a new report document
                     ReportDocument report = new ReportDocument();
@@ -353,7 +601,7 @@ namespace WinePOSFinal.UserControls
             // Reset total price label
             TotalPriceLabel.Content = "Total Price: $0.00";
 
-            SearchButton_Click(null,null);
+            SearchButton_Click(null, null);
         }
 
         private void SalesInventoryDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -465,6 +713,26 @@ namespace WinePOSFinal.UserControls
             }
 
 
+        }
+
+
+
+        public String MakePrintString(int iLineChars, String strBuf, String strPrice)
+        {
+            int iSpaces = 0;
+            String tab = "";
+            try
+            {
+                iSpaces = iLineChars - (strBuf.Length + strPrice.Length);
+                for (int j = 0; j < iSpaces; j++)
+                {
+                    tab += " ";
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return strBuf + tab + strPrice;
         }
     }
 }
