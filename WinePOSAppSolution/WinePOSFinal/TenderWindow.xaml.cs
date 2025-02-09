@@ -34,6 +34,7 @@ namespace WinePOSFinal
         private PosExplorer explorer;
 
         private CashDrawer cashDrawer;
+        private bool firstKeyPress;
 
         public TenderWindow(decimal initialAmount, TextBlock lblRemaining, TextBlock lblAmtRemaining, TextBlock lblChange, TextBlock lblAmtChange)
         {
@@ -51,6 +52,9 @@ namespace WinePOSFinal
             AmountTextBox.Text = TotalAmount.ToString("F2"); // Populate the amount text box
             UpdateRemainingAmount();
             PaymentGrid.ItemsSource = Payments;
+
+            btnCustomAmount.Content = Math.Ceiling(initialAmount).ToString();
+            firstKeyPress = true;
         }
 
         public TenderWindow()
@@ -102,7 +106,15 @@ namespace WinePOSFinal
             var button = sender as System.Windows.Controls.Button;
             if (button != null)
             {
-                AmountTextBox.Text += button.Content.ToString();
+                if (firstKeyPress)
+                {
+                    AmountTextBox.Text = button.Content.ToString();
+                    firstKeyPress = false;
+                }
+                else
+                {
+                    AmountTextBox.Text += button.Content.ToString();
+                }
             }
         }
 
@@ -115,6 +127,7 @@ namespace WinePOSFinal
             RemainingAmount = 0m;
             UpdateRemainingAmount();
             PaymentGrid.Items.Refresh();
+            firstKeyPress = false;
         }
 
         // Quick Tender Button Click Handler
@@ -123,6 +136,7 @@ namespace WinePOSFinal
             var button = sender as System.Windows.Controls.Button;
             if (button != null)
             {
+                firstKeyPress = false;
                 decimal amount = decimal.Parse(button.Content.ToString().Trim('$'));
                 AddPayment("Quick Tender", amount);
             }
@@ -187,6 +201,7 @@ namespace WinePOSFinal
             var button = sender as System.Windows.Controls.Button;
             if (button != null)
             {
+                firstKeyPress = false;
                 string operation = button.Content.ToString();
                 if (operation == "+" && decimal.TryParse(AmountTextBox.Text, out decimal currentAmount))
                 {
@@ -283,6 +298,11 @@ namespace WinePOSFinal
             // Ensure AmountTextBox is not empty and does not already contain a decimal point
             if (!AmountTextBox.Text.Contains("."))
             {
+                if (firstKeyPress)
+                {
+                    AmountTextBox.Text = string.Empty;
+                    firstKeyPress = false;
+                }
                 if (string.IsNullOrEmpty(AmountTextBox.Text))
                 {
                     // If textbox is empty, start with "0."

@@ -138,6 +138,7 @@
                     <!-- Define Rows for Each Item -->
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <!--<RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -157,6 +158,8 @@
                     <!-- Media Totals Items -->
                     <TextBlock Text="Transactions" Grid.Row="0" Grid.Column="0" />
                     <TextBlock Name="txtTransactions" Text="$531.95" Grid.Row="0" Grid.Column="1" TextAlignment="Right" />
+                    <TextBlock Text="Average Transaction" Grid.Row="1" Grid.Column="0" />
+                    <TextBlock Name="txtAvgTransactions" Text="$531.95" Grid.Row="1" Grid.Column="1" TextAlignment="Right" />
 
                     
                 </Grid>

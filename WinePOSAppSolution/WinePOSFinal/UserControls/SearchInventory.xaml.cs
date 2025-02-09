@@ -375,26 +375,82 @@ namespace WinePOSFinal
 
                         foreach (DataRow dr in dtData.Rows)
                         {
+
+                            decimal decValue;
+                            int intValue;
+
                             Items objItem = new Items();
 
                             objItem.ItemID = 0;
 
-                            objItem.Category = Convert.ToString(dr["Category"]);
-                            objItem.UPC = Convert.ToString(dr["UPC"]);
-                            objItem.Name = Convert.ToString(dr["Name"]);
-                            objItem.Additional_Description = Convert.ToString(dr["Additional_Description"]);
+                            objItem.Category = Convert.ToString(dr["Category_ID"]);
+                            objItem.UPC = Convert.ToString(dr["ItemNum"]);
+                            objItem.Name = Convert.ToString(dr["ItemName"]);
+                            objItem.Additional_Description = Convert.ToString(dr["ItemName"]);
 
-                            objItem.ItemCost = Convert.ToDecimal(dr["ItemCost"]);
-                            objItem.ChargedCost = Convert.ToDecimal(dr["ChargedCost"]);
-                            objItem.InStock = Convert.ToInt32(dr["InStock"]);
+                            //objItem.ItemCost = Convert.ToString(dr["Cost"]) == "False" ? 0 : Convert.ToDecimal(dr["Cost"]);
 
-                            objItem.Sales_Tax = Convert.ToString(dr["Sales_Tax"]) == "True";
-                            objItem.Sales_Tax_2 = Convert.ToString(dr["Sales_Tax_2"]) == "True";
-                            objItem.Sales_Tax_3 = Convert.ToString(dr["Sales_Tax_3"]) == "True";
-                            objItem.Sales_Tax_4 = Convert.ToString(dr["Sales_Tax_4"]) == "True";
-                            objItem.Sales_Tax_5 = Convert.ToString(dr["Sales_Tax_5"]) == "True";
-                            objItem.Sales_Tax_6 = Convert.ToString(dr["Sales_Tax_6"]) == "True";
-                            objItem.Bar_Tax = Convert.ToString(dr["Bar_Tax"]) == "True";
+                            if (decimal.TryParse(Convert.ToString(dr["Cost"]), out decValue))
+                            {
+                                objItem.ItemCost = decValue;
+                            }
+                            else
+                            {
+                                objItem.ItemCost = 0;
+                            }
+
+                            //objItem.ChargedCost = Convert.ToString(dr["Price"]) == "False" ? 0 : Convert.ToDecimal(dr["Price"]);
+
+                            if (decimal.TryParse(Convert.ToString(dr["Price"]), out decValue))
+                            {
+                                objItem.ChargedCost = decValue;
+                            }
+                            else
+                            {
+                                objItem.ChargedCost = 0;
+                            }
+
+                            //objItem.InStock = Convert.ToString(dr["In_Stock"]) == "False" ? 0 : Convert.ToInt32(dr["In_Stock"]);
+
+                            if (int.TryParse(Convert.ToString(dr["In_Stock"]), out intValue))
+                            {
+                                objItem.InStock = intValue;
+                            }
+                            else
+                            {
+                                objItem.InStock = 0;
+                            }
+
+                            objItem.Sales_Tax = Convert.ToString(dr["Tax_1"]) == "True";
+                            objItem.Sales_Tax_2 = Convert.ToString(dr["Tax_2"]) == "True";
+                            objItem.Sales_Tax_3 = Convert.ToString(dr["Tax_3"]) == "True";
+                            objItem.Sales_Tax_4 = Convert.ToString(dr["Tax_4"]) == "True";
+                            objItem.Sales_Tax_5 = Convert.ToString(dr["Tax_5"]) == "True";
+                            objItem.Sales_Tax_6 = Convert.ToString(dr["Tax_6"]) == "True";
+                            //objItem.Bar_Tax = Convert.ToString(dr["Bar_Tax"]) == "True";
+
+
+                            objItem.VendorName = Convert.ToString(dr["VendorName"]);
+                            //objItem.VendorPartNo = Convert.ToString(dr["Vendor_Part_Num"]);
+                            if (decimal.TryParse(Convert.ToString(dr["Case_Cost"]), out decValue))
+                            {
+                                objItem.CaseCost = decValue;
+                            }
+                            else
+                            {
+                                objItem.CaseCost = 0;
+                            }
+                            //objItem.CaseCost =   Convert.ToString(dr["Case_Cost"]) == "False" ? 0 : Convert.ToDecimal(dr["Case_Cost"]);
+                            //objItem.InCase = Convert.ToString(dr["Number_In_Case"]) == "False" ? 0 : Convert.ToInt32(dr["Number_In_Case"]);
+
+                            if (int.TryParse(Convert.ToString(dr["Number_In_Case"]), out intValue))
+                            {
+                                objItem.InCase = intValue;
+                            }
+                            else
+                            {
+                                objItem.InCase = 0;
+                            }
 
                             objService.SaveItem(objItem);
                         }
@@ -404,7 +460,7 @@ namespace WinePOSFinal
                     else
                     {
                         // Invalid file extension
-                        MessageBox.Show("Invalid file type. Please select a valid Excel file (*.xlsx or *.xls).",
+                        MessageBox.Show("Invalid file type. Please select a valid Excel file (*.xlsx, *.xls or *.csv).",
                                         "Invalid File",
                                         MessageBoxButton.OK,
                                         MessageBoxImage.Warning);

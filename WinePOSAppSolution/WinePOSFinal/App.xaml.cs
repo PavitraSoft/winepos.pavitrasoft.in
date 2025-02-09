@@ -13,9 +13,34 @@ namespace WinePOSFinal
     /// </summary>
     public partial class App : Application
     {
+        public static MainWindow MainAppInstance { get; private set; }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            // Manually create and show the Login window
+            Login loginWindow = new Login();
+            this.MainWindow = loginWindow; // Set it as the main window
+            loginWindow.Show();
+        }
+
+        public static void SetMainAppInstance(MainWindow mainApp)
+        {
+            MainAppInstance = mainApp;
+        }
+
         private void Application_Exit(object sender, ExitEventArgs e)
         {
-            //MessageBox.Show("Application is closing!");
+            // Call CleanupResources in MainAppWindow before exit
+            if (MainAppInstance != null)
+            {
+                MainAppInstance.Window_Closing();
+            }
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
         }
     }
 }

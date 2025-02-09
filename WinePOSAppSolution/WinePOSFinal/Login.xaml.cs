@@ -37,13 +37,21 @@ namespace WinePOSFinal
             // Validate login credentials
             if (IsValidLogin(username, password))
             {
-                // If login is successful, hide the current window and show the new window
-                MainWindow mainwindow = new MainWindow(); // Replace with your actual dashboard window
-                mainwindow.Show();
+                // Open the Main Application Window
+                MainWindow mainApp = new MainWindow();
+                App.SetMainAppInstance(mainApp);  // Store reference to main window
 
-                // Update the application's MainWindow reference
-                Application.Current.MainWindow = mainwindow;
-                this.Hide();
+                mainApp.Show();
+                Application.Current.MainWindow = mainApp;
+                this.Close(); // Close the login window
+
+                //// If login is successful, hide the current window and show the new window
+                //MainWindow mainwindow = new MainWindow(); // Replace with your actual dashboard window
+                //mainwindow.Show();
+
+                //// Update the application's MainWindow reference
+                //Application.Current.MainWindow = mainwindow;
+                //this.Hide();
             }
             else
             {

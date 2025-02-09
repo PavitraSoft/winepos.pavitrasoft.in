@@ -20,53 +20,104 @@ namespace WinePOSFinal
     /// </summary>
     public partial class FlashReport : Window
     {
-        public FlashReport(DataTable dtInvoice, DateTime? FromDate, DateTime? ToDate)
+        public FlashReport(DataTable dtInvoice, DataTable dtPayment, DateTime? FromDate, DateTime? ToDate)
         {
             InitializeComponent();
 
-            PopulateReport(dtInvoice, FromDate, ToDate);
+            PopulateReport(dtInvoice, dtPayment, FromDate, ToDate);
         }
 
-        private void PopulateReport(DataTable dtInvoice, DateTime? FromDate, DateTime? ToDate)
+        private void PopulateReport(DataTable dtInvoice, DataTable dtPayment, DateTime? FromDate, DateTime? ToDate)
         {
             //decimal GrossSalesAmt = Convert.ToDecimal(dtInvoice.Compute("SUM(TotalPrice)", string.Empty));
             //decimal TaxAmt = Convert.ToDecimal(dtInvoice.Compute("SUM(Tax)", string.Empty));
 
             // Sum of prices where tax = 0
+            //var sumTaxZero = dtInvoice.AsEnumerable()
+            //                          .Where(row => row.Field<decimal>("Tax") == 0)
+            //                          .Sum(row => row.Field<decimal>("Price") * row.Field<int>("Quantity"));
+
             var sumTaxZero = dtInvoice.AsEnumerable()
-                                      .Where(row => row.Field<decimal>("Tax") == 0)
-                                      .Sum(row => row.Field<decimal>("Price") * row.Field<int>("Quantity"));
+                          .Where(row => (row.Field<decimal>("Tax") == 0 ||
+                                       (row.Field<decimal>("Tax") != 0 &&
+                                        (row.Field<string>("PaymentType") == "CASH" ||
+                                         row.Field<string>("PaymentType") == "CHECK"))))
+                          .Sum(row => row.Field<decimal>("Price") * row.Field<int>("Quantity"));
 
             // Sum of prices where tax > 0
+            //var sumTaxNonZero = dtInvoice.AsEnumerable()
+            //                             .Where(row => row.Field<decimal>("Tax") > 0)
+            //                             .Sum(row => row.Field<decimal>("Price") * row.Field<int>("Quantity"));
+
             var sumTaxNonZero = dtInvoice.AsEnumerable()
-                                         .Where(row => row.Field<decimal>("Tax") > 0)
-                                         .Sum(row => row.Field<decimal>("Price") * row.Field<int>("Quantity"));
+                             .Where(row => row.Field<decimal>("Tax") > 0 &&
+                                          row.Field<string>("PaymentType") != "CASH" &&
+                                          row.Field<string>("PaymentType") != "CHECK")
+                             .Sum(row => (row.Field<decimal>("Price") + row.Field<decimal>("Tax")) * row.Field<int>("Quantity"));
 
 
             // Sum of prices where tax > 0
-            var TaxAmt = dtInvoice.AsEnumerable()
-                                         .Sum(row => row.Field<decimal>("Tax") * row.Field<int>("Quantity"));
+            //var TaxAmt = dtInvoice.AsEnumerable()
+            //                             .Sum(row => row.Field<decimal>("Tax") * row.Field<int>("Quantity"));
 
-            var GrossSalesAmt = dtInvoice.AsEnumerable()
-                                         .Sum(row => row.Field<decimal>("TotalPrice"));
+            var TaxAmt = dtInvoice.AsEnumerable()
+                      .Where(row => row.Field<string>("PaymentType") != "CASH" &&
+                                    row.Field<string>("PaymentType") != "CHECK")
+                      .Sum(row => row.Field<decimal>("Tax") * row.Field<int>("Quantity"));
+
+
+            var TaxAmtCash = dtInvoice.AsEnumerable()
+                      .Where(row => row.Field<string>("PaymentType") == "CASH")
+                      .Sum(row => row.Field<decimal>("Tax") * row.Field<int>("Quantity"));
+
+
+            var TaxAmtCheck = dtInvoice.AsEnumerable()
+                      .Where(row => row.Field<string>("PaymentType") == "CHECK")
+                      .Sum(row => row.Field<decimal>("Tax") * row.Field<int>("Quantity"));
 
             decimal NetSalesAmt = sumTaxZero + sumTaxNonZero;
 
-            var Cash = dtInvoice.AsEnumerable()
-                                      .Where(row => row.Field<string>("PaymentType") == "CASH")
-                                      .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
+            //var GrossSalesAmt = dtInvoice.AsEnumerable()
+            //                             .Sum(row => row.Field<decimal>("TotalPrice"));
 
-            var Checks = dtInvoice.AsEnumerable()
-                                      .Where(row => row.Field<string>("PaymentType") == "CHECK")
-                                      .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
+            decimal GrossSalesAmt = NetSalesAmt + TaxAmt;
 
-            var Credit = dtInvoice.AsEnumerable()
-                                      .Where(row => row.Field<string>("PaymentType") == "CREDIT")
-                                      .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
 
-            var PalmPay = dtInvoice.AsEnumerable()
-                                      .Where(row => row.Field<string>("PaymentType") == "PALMPAY")
-                                      .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
+            //var Cash = dtInvoice.AsEnumerable()
+            //                          .Where(row => row.Field<string>("PaymentType") == "CASH")
+            //                          .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
+
+            //var Cash = dtPayment.AsEnumerable()
+            //                          .Where(row => row.Field<string>("PaymentType").ToUpper() == "CASH")
+            //                          .Sum(row => row.IsNull("Price") ? 0 : row.Field<decimal>("Amount") * row.Field<int>("Quantity"));
+            var Cash = (dtPayment.AsEnumerable()
+                                      .Where(row => row.Field<string>("PaymentType").ToUpper() == "CASH")
+                                      .Sum(row => row.IsNull("Amount") ? 0 : row.Field<decimal>("Amount"))) - TaxAmtCash;
+
+            //var Checks = dtInvoice.AsEnumerable()
+            //                          .Where(row => row.Field<string>("PaymentType") == "CHECK")
+            //                          .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
+
+            //var Checks = dtPayment.AsEnumerable()
+            //                          .Where(row => row.Field<string>("PaymentType").ToUpper() == "CHECK")
+            //                          .Sum(row => row.IsNull("Price") ? 0 : row.Field<decimal>("Price") * row.Field<int>("Quantity"));
+            var Checks = (dtPayment.AsEnumerable()
+                                      .Where(row => row.Field<string>("PaymentType").ToUpper() == "CHECK")
+                                      .Sum(row => row.IsNull("Amount") ? 0 : row.Field<decimal>("Amount"))) - TaxAmtCheck;
+
+            //var Credit = dtPayment.AsEnumerable()
+            //                          .Where(row => row.Field<string>("PaymentType").ToUpper() == "CREDIT")
+            //                          .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
+            var Credit = dtPayment.AsEnumerable()
+                                      .Where(row => row.Field<string>("PaymentType").ToUpper() == "CREDIT")
+                                      .Sum(row => row.IsNull("Amount") ? 0 : row.Field<decimal>("Amount"));
+
+            //var PalmPay = dtPayment.AsEnumerable()
+            //                          .Where(row => row.Field<string>("PaymentType").ToUpper() == "PALMPAY")
+            //                          .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
+            var PalmPay = dtPayment.AsEnumerable()
+                                      .Where(row => row.Field<string>("PaymentType").ToUpper() == "PALMPAY")
+                                      .Sum(row => row.IsNull("Amount") ? 0 : row.Field<decimal>("Amount"));
 
             string QuantitySold = Convert.ToString(dtInvoice.Compute("SUM(Quantity)", string.Empty));
 
@@ -79,11 +130,11 @@ namespace WinePOSFinal
             DateTime? fromDate = FromDate;
             DateTime? toDate = ToDate;
 
-            DateTime dateFrom = fromDate ?? dtInvoice.AsEnumerable().Min(row => row.Field<DateTime>("CreatedDateTime"));
-            DateTime dateTo = toDate ?? dtInvoice.AsEnumerable().Max(row => row.Field<DateTime>("CreatedDateTime"));
+            //DateTime dateFrom = fromDate ?? dtInvoice.AsEnumerable().Min(row => row.Field<DateTime>("CreatedDateTime"));
+            //DateTime dateTo = toDate ?? dtInvoice.AsEnumerable().Max(row => row.Field<DateTime>("CreatedDateTime"));
 
-            txtDateFrom.Text = Convert.ToString(dateFrom);
-            txtDateTo.Text = Convert.ToString(dateTo);
+            txtDateFrom.Text = FromDate.Value.Date.AddHours(0).AddMinutes(0).AddSeconds(1).ToString("dd-MMM-yyyy HH:mm:ss");
+            txtDateTo.Text = ToDate.Value.Date.AddHours(23).AddMinutes(59).AddSeconds(59).ToString("dd-MMM-yyyy HH:mm:ss");
 
             NetSales.Text = Convert.ToString(NetSalesAmt);
             NetSalesT.Text = Convert.ToString(sumTaxNonZero);
@@ -97,6 +148,8 @@ namespace WinePOSFinal
             txtPalmPay.Text = Convert.ToString(PalmPay);
 
             txtTransactions.Text = Convert.ToString(Transactions);
+            txtAvgTransactions.Text = Convert.ToInt32(Transactions) != 0 ? (Convert.ToDecimal(GrossSalesAmt) / Convert.ToDecimal(Transactions)).ToString("0.00") : "0.00";
+
         }
 
         private void ExitButton_Click(object sender, RoutedEventArgs e)

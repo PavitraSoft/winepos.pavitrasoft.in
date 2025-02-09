@@ -43,6 +43,11 @@ namespace WinePOSFinal.ServicesLayer
             return objDAL.DeleteItemDataByID(intItemID);
         }
 
+        public bool DeleteInvoiceByNumber(int intItemID)
+        {
+            return objDAL.DeleteInvoiceByNumber(intItemID);
+        }
+
         public string ValidateLogin(string strUserName, string strPassWord)
         {
             return objDAL.ValidateLogin(strUserName, strPassWord);
@@ -55,9 +60,9 @@ namespace WinePOSFinal.ServicesLayer
 
 
 
-        public bool SaveInvoice(BillingItem objBillingItem, bool IsVoidInvoice, string PaymentType, ref int invoiceNumber)
+        public bool SaveInvoice(BillingItem objBillingItem, bool IsVoidInvoice, string PaymentType, ref int invoiceNumber, List<Payments> objPayments)
         {
-            return objDAL.SaveInvoice(objBillingItem, IsVoidInvoice, PaymentType, ref invoiceNumber);
+            return objDAL.SaveInvoice(objBillingItem, IsVoidInvoice, PaymentType, ref invoiceNumber, objPayments);
         }
 
         public DataTable GetTaxData()
@@ -70,7 +75,7 @@ namespace WinePOSFinal.ServicesLayer
             return objDAL.GetBulkPricingData();
         }
 
-        public DataTable FetchAndPopulateInvoice(bool IsAdmin, DateTime? fromDate, DateTime? toDate, string InvoiceNumber)
+        public DataSet FetchAndPopulateInvoice(bool IsAdmin, DateTime? fromDate, DateTime? toDate, string InvoiceNumber)
         {
             return objDAL.FetchAndPopulateInvoice(IsAdmin, fromDate, toDate, InvoiceNumber);
         }

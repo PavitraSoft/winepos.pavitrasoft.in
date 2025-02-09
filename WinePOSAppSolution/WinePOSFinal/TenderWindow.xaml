@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WinePOSFinal"
         mc:Ignorable="d"
-        Title="TenderWindow" Height="600" Width="1000">
+        Title="TenderWindow" Height="600" Width="1100">
     <Grid Margin="10">
         <!-- Number Input Section -->
         <TextBox x:Name="AmountTextBox" FontSize="24" Width="250" Height="50" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10"
@@ -45,6 +45,7 @@
             <Button Content="$10" Background="Green" FontSize="20" Foreground="White" Width="70" Height="50" Margin="5" Click="QuickTenderButton_Click"/>
             <Button Content="$20" Background="Green" FontSize="20" Foreground="White" Width="70" Height="50" Margin="5" Click="QuickTenderButton_Click"/>
             <Button Content="$50" Background="Green" FontSize="20" Foreground="White" Width="70" Height="50" Margin="5" Click="QuickTenderButton_Click"/>
+            <Button Content="$50" Background="YellowGreen" Name="btnCustomAmount" FontSize="20" Foreground="White" Width="70" Height="50" Margin="5" Click="QuickTenderButton_Click"/>
         </StackPanel>
 
         <!-- Action Buttons -->

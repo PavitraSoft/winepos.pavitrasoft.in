@@ -43,6 +43,13 @@
                             Margin="5,0" 
                             VerticalAlignment="Center" 
                             Click="VoidInvoice_Click"/>
+                    <Button Name="EditInvoice" 
+                            Content="Edit Invoice" 
+                            Width="120" 
+                            Height="30" 
+                            Margin="5,0" 
+                            VerticalAlignment="Center" 
+                            Click="EditInvoice_Click"/>
                 </StackPanel>
             </Border>
         </StackPanel>

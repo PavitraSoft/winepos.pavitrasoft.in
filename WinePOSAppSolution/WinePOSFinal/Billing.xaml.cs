@@ -35,6 +35,9 @@ using System.Net.NetworkInformation;
 using System.Globalization;
 using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Wordprocessing;
+using DocumentFormat.OpenXml.Bibliography;
+using System.Security.Policy;
+using System.Security.Cryptography.X509Certificates;
 
 namespace WinePOSFinal
 {
@@ -61,8 +64,11 @@ namespace WinePOSFinal
         private string inputBuffer = string.Empty;
         private bool isScanning = false;
         private int invoiceNumber = 0;
+        private int editinvoiceNumber = 0;
 
         MainWindow mainWindow = null;
+
+        private List<Payments> paymentList = new List<Payments>();
 
         public decimal SubTotal
         {
@@ -179,10 +185,10 @@ namespace WinePOSFinal
                 // If the input is not valid, remove the last character (undo the invalid input)
                 textBox.Text = string.Join("", textBox.Text.Where(c => Char.IsDigit(c)));
 
-                if (string.IsNullOrWhiteSpace(textBox.Text))
-                {
-                    textBox.Text = "1";
-                }
+                //if (string.IsNullOrWhiteSpace(textBox.Text))
+                //{
+                //    textBox.Text = "1";
+                //}
 
                 // Reset the caret position to the end of the text
                 textBox.SelectionStart = textBox.Text.Length;
@@ -225,7 +231,20 @@ namespace WinePOSFinal
                 string strTotalPrice = string.Empty;
                 string strDiscount = string.Empty;
 
-                DataRow[] dr = dtAllItems.Select(" UPC = '" + strUPC + "'");
+                DataRow[] dr;
+
+                strName = txtName.Text.Split('-')[0].Trim();
+
+                if (strName == "NUTS" || strName == "ICE BAG")
+                {
+                    dr = dtAllItems.Select(" Description = '" + strName + "'");
+                }
+                else
+                {
+                    dr = dtAllItems.Select(" UPC = '" + strUPC + "'");
+                }
+
+                //DataRow[] dr = dtAllItems.Select(" UPC = '" + strUPC + "'");
 
 
                 if (dr != null && dr.Count() > 0)
@@ -239,123 +258,199 @@ namespace WinePOSFinal
                     // Calculate total price (for this example, assuming price and quantity are numeric)
                     if (decimal.TryParse(strPrice, out decimal parsedPrice) && int.TryParse(strQuantity, out int parsedQuantity))
                     {
-                        // Check if the item already exists in the ObservableCollection
-                        var existingItem = objBillingItems.FirstOrDefault(item => item.UPC == strUPC);
-
-                        if (existingItem != null)
+                        if (parsedQuantity > 0)
                         {
-                            // Update the quantity of the existing item
-                            int newQuantity = Convert.ToInt32(existingItem.Quantity) + parsedQuantity;
+                            // Check if the item already exists in the ObservableCollection
+                            var existingItem = objBillingItems.FirstOrDefault(item => item.ItemID == Convert.ToString(ItemID));
 
-                            //DataRow[] dataRow = dtBulkPricing.Select(" UPC = " + strUPC + " AND " + newQuantity + " % Quantity = 0");
-                            DataRow[] dataRow = dtBulkPricing.Select(" UPC = '" + strUPC + "'");
-                            string strNote = string.Empty;
-
-                            if (dataRow.Any())
+                            if (existingItem != null)
                             {
-                                decimal bulkPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
-                                string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
-                                if (Convert.ToInt32(strQuan) <= Convert.ToInt32(newQuantity))
-                                {
-                                    strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(bulkPrice);
-                                }
+                                // Update the quantity of the existing item
+                                int newQuantity = Convert.ToInt32(existingItem.Quantity) + parsedQuantity;
 
-                                parsedPrice = (Convert.ToInt32(Convert.ToInt32(newQuantity) / Convert.ToInt32(strQuan)) * bulkPrice) + ((Convert.ToInt32(newQuantity) % Convert.ToInt32(strQuan)) * parsedPrice);
+                                //DataRow[] dataRow = dtBulkPricing.Select(" UPC = " + strUPC + " AND " + newQuantity + " % Quantity = 0");
+                                DataRow[] dataRow = dtBulkPricing.Select(" ItemID = " + Convert.ToString(ItemID));
 
-                                //parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
-                            }
-
-
-                            if (CurrentQuantity >= newQuantity)
-                            //if (true)
-                            {
-
-                                decimal discount = Convert.ToDecimal(existingItem.Discount);
-
-                                parsedPrice = parsedPrice * (1 - discount / 100);
-
-                                decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
-                                //decimal taxedPrice = parsedPrice + tax;
-                                decimal taxedPrice = tax;
-                                existingItem.Price = Convert.ToString(parsedPrice);
-                                existingItem.Tax = (tax - parsedPrice).ToString();
-                                existingItem.Quantity = Convert.ToString(newQuantity);
-                                existingItem.Discount = Convert.ToString(discount);
-                                existingItem.TotalPrice = (taxedPrice * newQuantity).ToString("F2");
-                                existingItem.Note = strNote;
-                                // Clear the TextBox controls for new input
-                                txtUPC.Clear();
-                                txtName.Clear();
-                                txtQuantity.Text = "1";
-                            }
-                            else
-                            {
-                                MessageBox.Show($"Asked Quantity: {newQuantity} Current Quantity: {CurrentQuantity}.");
-                            }
-                        }
-                        else
-                        {
-                            if (CurrentQuantity >= parsedQuantity)
-                            //if (true)
-                            {
-                                //DataRow[] dataRow = dtBulkPricing.Select(" UPC = " + strUPC + " AND " + parsedQuantity + " % Quantity = 0");
-                                DataRow[] dataRow = dtBulkPricing.Select(" UPC = '" + strUPC + "'");
+                                //DataRow[] dataRow = dtBulkPricing.Select(" UPC = '" + strUPC + "'");
                                 string strNote = string.Empty;
+                                decimal totalPrice = parsedPrice * newQuantity;
 
                                 if (dataRow.Any())
                                 {
-                                    decimal bulkPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
-                                    string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
+                                    // Extract all bulk pricing configurations and sort them in descending order based on quantity
+                                    var bulkPricingList = dataRow
+                                        .Select(row => new
+                                        {
+                                            Quantity = Convert.ToInt32(row["Quantity"]),
+                                            Price = Convert.ToDecimal(row["Pricing"])
+                                        })
+                                        .OrderByDescending(x => x.Quantity) // Sort in descending order
+                                        .ToList();
 
-                                    if (Convert.ToInt32(strQuan) <= Convert.ToInt32(parsedQuantity))
+                                    int selectedBulkQuantity = 1;  // Default to normal price
+                                    decimal selectedBulkPrice = parsedPrice; // Default normal price
+
+                                    // Determine the best bulk pricing tier applicable
+                                    foreach (var bulk in bulkPricingList)
                                     {
-                                        strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(bulkPrice);
+                                        if (newQuantity >= bulk.Quantity)
+                                        {
+                                            selectedBulkQuantity = bulk.Quantity;
+                                            selectedBulkPrice = bulk.Price;
+
+                                            strNote = $"Bulk Pricing @{selectedBulkQuantity} for ${selectedBulkPrice}";
+
+                                            break; // Use the highest applicable bulk pricing
+                                        }
                                     }
 
-                                    parsedPrice = (Convert.ToInt32(Convert.ToInt32(parsedQuantity) / Convert.ToInt32(strQuan)) * bulkPrice) + ((Convert.ToInt32(parsedQuantity) % Convert.ToInt32(strQuan)) * parsedPrice);
 
-
-                                    //parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
+                                    // Calculate total price
+                                    totalPrice = (Convert.ToInt32(newQuantity / selectedBulkQuantity) * selectedBulkPrice) +
+                                                 ((newQuantity % selectedBulkQuantity) * parsedPrice);
                                 }
 
-                                decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
-                                //decimal taxedPrice = parsedPrice + tax;
-                                decimal taxedPrice = tax;
-                                decimal totalPrice = taxedPrice * parsedQuantity;
+                                //if (dataRow.Any())
+                                //{
+                                //    decimal bulkPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
+                                //    string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
+                                //    if (Convert.ToInt32(strQuan) <= Convert.ToInt32(newQuantity))
+                                //    {
+                                //        strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(bulkPrice);
+                                //    }
+
+                                //    totalPrice = (Convert.ToInt32(Convert.ToInt32(newQuantity) / Convert.ToInt32(strQuan)) * bulkPrice) + ((Convert.ToInt32(newQuantity) % Convert.ToInt32(strQuan)) * parsedPrice);
+
+                                //    //parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
+                                //}
 
 
-
-
-                                // Create a new BillingItem
-                                BillingItem newItem = new BillingItem
+                                if (CurrentQuantity >= newQuantity)
+                                //if (true)
                                 {
-                                    UPC = strUPC,
-                                    Name = strName,
-                                    Price = Convert.ToString(parsedPrice),
-                                    Quantity = Convert.ToString(parsedQuantity),
-                                    Tax = (tax - parsedPrice).ToString("F2"), // Format total price as a string with 2 decimals
-                                    Discount = "0",
-                                    TotalPrice = totalPrice.ToString("F2"), // Format total price as a string with 2 decimals
-                                    UserName = AccessRightsManager.GetUserName(),
-                                    Note = strNote,
-                                    ItemID = Convert.ToString(ItemID),
-                                };
 
-                                // Add the new item to the ObservableCollection
-                                objBillingItems.Add(newItem);
+                                    decimal discount = Convert.ToDecimal(existingItem.Discount);
 
-                                // Clear the TextBox controls for new input
-                                txtUPC.Clear();
-                                txtName.Clear();
-                                txtQuantity.Text = "1";
+                                    totalPrice = totalPrice * (1 - discount / 100);
+
+                                    decimal tax = CalculatePriceAfterTax(totalPrice, dr[0], dtTax);
+                                    //decimal taxedPrice = parsedPrice + tax;
+                                    decimal taxedPrice = tax;
+                                    existingItem.Price = Convert.ToString(parsedPrice);
+                                    existingItem.Tax = ((tax - totalPrice) / newQuantity).ToString();
+                                    existingItem.Quantity = Convert.ToString(newQuantity);
+                                    existingItem.Discount = Convert.ToString(discount);
+                                    existingItem.TotalPrice = taxedPrice.ToString("F2");
+                                    existingItem.Note = strNote;
+                                    // Clear the TextBox controls for new input
+                                    txtUPC.Clear();
+                                    txtName.Clear();
+                                    txtQuantity.Text = "1";
+                                }
+                                else
+                                {
+                                    MessageBox.Show($"Asked Quantity: {newQuantity} Current Quantity: {CurrentQuantity}.");
+                                }
                             }
                             else
                             {
-                                MessageBox.Show($"Asked Quantity: {parsedQuantity} Current Quantity: {CurrentQuantity}.");
-                            }
-                        }
+                                if (CurrentQuantity >= parsedQuantity)
+                                //if (true)
+                                {
+                                    //DataRow[] dataRow = dtBulkPricing.Select(" UPC = " + strUPC + " AND " + parsedQuantity + " % Quantity = 0");
+                                    DataRow[] dataRow = dtBulkPricing.Select(" ItemID = '" + ItemID + "'");
+                                    string strNote = string.Empty;
+                                    decimal totalPrice = parsedPrice * parsedQuantity;
 
-                        CalculateTotals();
+                                    if (dataRow.Any())
+                                    {
+                                        // Extract all bulk pricing configurations and sort them in descending order based on quantity
+                                        var bulkPricingList = dataRow
+                                            .Select(row => new
+                                            {
+                                                Quantity = Convert.ToInt32(row["Quantity"]),
+                                                Price = Convert.ToDecimal(row["Pricing"])
+                                            })
+                                            .OrderByDescending(x => x.Quantity) // Sort in descending order
+                                            .ToList();
+
+                                        int selectedBulkQuantity = 1;  // Default to normal price
+                                        decimal selectedBulkPrice = parsedPrice; // Default normal price
+
+                                        // Determine the best bulk pricing tier applicable
+                                        foreach (var bulk in bulkPricingList)
+                                        {
+                                            if (parsedQuantity >= bulk.Quantity)
+                                            {
+                                                selectedBulkQuantity = bulk.Quantity;
+                                                selectedBulkPrice = bulk.Price;
+
+                                                strNote = $"Bulk Pricing @{selectedBulkQuantity} for ${selectedBulkPrice}";
+
+                                                break; // Use the highest applicable bulk pricing
+                                            }
+                                        }
+
+
+                                        // Calculate total price
+                                        totalPrice = (Convert.ToInt32(parsedQuantity / selectedBulkQuantity) * selectedBulkPrice) +
+                                                     ((parsedQuantity % selectedBulkQuantity) * parsedPrice);
+                                    }
+
+                                    //if (dataRow.Any())
+                                    //{
+                                    //    decimal bulkPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
+                                    //    string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
+
+                                    //    if (Convert.ToInt32(strQuan) <= Convert.ToInt32(parsedQuantity))
+                                    //    {
+                                    //        strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(bulkPrice);
+                                    //    }
+
+                                    //    totalPrice = (Convert.ToInt32(Convert.ToInt32(parsedQuantity) / Convert.ToInt32(strQuan)) * bulkPrice) + ((Convert.ToInt32(parsedQuantity) % Convert.ToInt32(strQuan)) * parsedPrice);
+
+
+                                    //    //parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
+                                    //}
+
+                                    decimal tax = CalculatePriceAfterTax(totalPrice, dr[0], dtTax);
+                                    //decimal taxedPrice = parsedPrice + tax;
+                                    decimal taxedPrice = tax;
+
+
+
+
+                                    // Create a new BillingItem
+                                    BillingItem newItem = new BillingItem
+                                    {
+                                        UPC = strUPC,
+                                        Name = strName,
+                                        Price = Convert.ToString(parsedPrice),
+                                        Quantity = Convert.ToString(parsedQuantity),
+                                        Tax = (tax - totalPrice).ToString("F2"), // Format total price as a string with 2 decimals
+                                        Discount = "0",
+                                        TotalPrice = taxedPrice.ToString("F2"), // Format total price as a string with 2 decimals
+                                        UserName = AccessRightsManager.GetUserName(),
+                                        Note = strNote,
+                                        ItemID = Convert.ToString(ItemID),
+                                    };
+
+                                    // Add the new item to the ObservableCollection
+                                    objBillingItems.Add(newItem);
+
+                                    // Clear the TextBox controls for new input
+                                    txtUPC.Clear();
+                                    txtName.Clear();
+                                    txtQuantity.Text = "1";
+                                }
+                                else
+                                {
+                                    MessageBox.Show($"Asked Quantity: {parsedQuantity} Current Quantity: {CurrentQuantity}.");
+                                }
+                            }
+
+                            CalculateTotals();
+                        }
 
                     }
                     else
@@ -389,32 +484,40 @@ namespace WinePOSFinal
 
         private void btnPalmPay_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show(
-               $"Are you sure you want to Pay the Current Billing Invoice?",
-               "Confirm Payment",
-               MessageBoxButton.YesNo,
-               MessageBoxImage.Question);
+            //MessageBoxResult result = MessageBox.Show(
+            //   $"Are you sure you want to Pay the Current Billing Invoice?",
+            //   "Confirm Payment",
+            //   MessageBoxButton.YesNo,
+            //   MessageBoxImage.Question);
 
             // Handle user response
-            if (result == MessageBoxResult.Yes)
+            //if (result == MessageBoxResult.Yes)
+            //{
+            decimal totalPrice = objBillingItems.Sum(item => Convert.ToDecimal(item.TotalPrice));
+            paymentList.Add(new Payments("PALMPAY", totalPrice));
+            if (SaveInvoice(objBillingItems, false, "PALMPAY", paymentList, editinvoiceNumber))
             {
-                if (SaveInvoice(objBillingItems, false, "PALMPAY"))
-                {
-                    MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    // Optionally, clear the DataGrid after payment
-                    objBillingItems.Clear();
-
-                    btnPrintInvoice_Click(null, null);
-                }
-                else
-                {
-                    MessageBox.Show("Error while saving the current Invoice.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
+                //MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                // Optionally, clear the DataGrid after payment
+                objBillingItems.Clear();
+                paymentList.Clear();
+                //MessageBoxResult result = MessageBox.Show(
+                //    $"Payment confirmed. Thank you! Do you want to print invoice?",
+                //    "Print Invoice",
+                //    MessageBoxButton.YesNo,
+                //    MessageBoxImage.Question);
+                //if (result == MessageBoxResult.Yes)
+                //    btnPrintInvoice_Click(null, null);
             }
             else
             {
-                MessageBox.Show("Payment canceled.", "Payment Canceled", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error while saving the current Invoice.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Payment canceled.", "Payment Canceled", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //}
 
         }
 
@@ -424,36 +527,59 @@ namespace WinePOSFinal
             {
 
 
-                btnTenderWindow_Click(null, null);
-                //Open cash drawer
-                MessageBoxResult result = MessageBox.Show(
-                $"Are you sure you want to Cash the Current Billing Invoice?",
-                "Confirm Payment",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
+                //btnTenderWindow_Click(null, null);
+                ////Open cash drawer
+                //MessageBoxResult result = MessageBox.Show(
+                //$"Are you sure you want to Cash the Current Billing Invoice?",
+                //"Confirm Payment",
+                //MessageBoxButton.YesNo,
+                //MessageBoxImage.Question);
 
-                // Handle user response
+                //// Handle user response
+                //if (result == MessageBoxResult.Yes)
+                //{
+
+                decimal totalPrice = objBillingItems.Sum(item => Convert.ToDecimal(item.TotalPrice));
+                paymentList.Add(new Payments("CASH", totalPrice));
+
+
+                btnTenderWindow_Click(null, null);
+
+                MessageBoxResult result = MessageBox.Show(
+                    $"Confirm Payment?",
+                    "Payment",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
-                    if (SaveInvoice(objBillingItems, false, "CASH"))
+
+                    if (SaveInvoice(objBillingItems, false, "CASH", paymentList, editinvoiceNumber))
                     {
-                        MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        //MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
                         // Optionally, clear the  after paymentDataGrid
                         objBillingItems.Clear();
+                        paymentList.Clear();
+                        //OpenCashDrawer();
 
-                        OpenCashDrawer();
 
-                        btnPrintInvoice_Click(null, null);
+                        //MessageBoxResult result = MessageBox.Show(
+                        //    $"Payment confirmed. Thank you! Do you want to print invoice?",
+                        //    "Print Invoice",
+                        //    MessageBoxButton.YesNo,
+                        //    MessageBoxImage.Question);
+                        //if (result == MessageBoxResult.Yes)
+                        //    btnPrintInvoice_Click(null, null);
                     }
                     else
                     {
                         MessageBox.Show("Error while saving the current Invoice.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
-                else
-                {
-                    MessageBox.Show("Payment canceled.", "Payment Canceled", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
+                //}
+                //else
+                //{
+                //    MessageBox.Show("Payment canceled.", "Payment Canceled", MessageBoxButton.OK, MessageBoxImage.Warning);
+                //}
             }
             catch (Exception ex)
             {
@@ -482,7 +608,7 @@ namespace WinePOSFinal
 
                 // Optionally, clear the DataGrid after payment
                 objBillingItems.Clear();
-
+                paymentList.Clear();
                 //btnPrintInvoice_Click(null, null);
 
                 MessageBox.Show("Invoice has been cleared. Thank you!", "Clear", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -490,250 +616,334 @@ namespace WinePOSFinal
 
         }
 
-        private void btnPrintInvoice_Click(object sender, RoutedEventArgs e)
-        {
-            if (invoiceNumber != 0)
-            {
-                try
-                {
+        //private void btnPrintInvoice_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (invoiceNumber != 0)
+        //    {
+        //        try
+        //        {
 
-                    DataTable InvoiceData = objService.FetchAndPopulateInvoice(true, null, null, Convert.ToString(invoiceNumber));
+        //            //DataTable InvoiceData = objService.FetchAndPopulateInvoice(true, null, null, Convert.ToString(invoiceNumber));
+        //            DataSet dsInvoiceData = objService.FetchAndPopulateInvoice(true, null, null, Convert.ToString(invoiceNumber));
 
-                    string[] name = InvoiceData.AsEnumerable()
-                                 .Select(row => row.Field<string>("Name").ToString())
-                                 .ToArray();
+        //            DataTable InvoiceData = dsInvoiceData.Tables[0];
+        //            DataTable PaymentData = dsInvoiceData.Tables[1];
 
-                    string[] price = InvoiceData.AsEnumerable()
-                                 .Select(row => row.Field<decimal>("Price").ToString())
-                                 .ToArray();
+        //            string[] name = InvoiceData.AsEnumerable()
+        //                         .Select(row => row.Field<string>("Name").ToString())
+        //                         .ToArray();
 
-                    string[] quantity = InvoiceData.AsEnumerable()
-                                 .Select(row => row.Field<int>("Quantity").ToString())
-                                 .ToArray();
+        //            string[] price = InvoiceData.AsEnumerable()
+        //                         .Select(row => row.Field<decimal>("Price").ToString())
+        //                         .ToArray();
 
-                    string[] tax = InvoiceData.AsEnumerable()
-                                 .Select(row => row.Field<decimal>("Tax").ToString())
-                                 .ToArray();
+        //            string[] quantity = InvoiceData.AsEnumerable()
+        //                         .Select(row => row.Field<int>("Quantity").ToString())
+        //                         .ToArray();
 
-                    string[] totalPrice = InvoiceData.AsEnumerable()
-                                 .Select(row => row.Field<decimal>("TotalPrice").ToString())
-                                 .ToArray();
+        //            string[] tax = InvoiceData.AsEnumerable()
+        //                         .Select(row => row.Field<decimal>("Tax").ToString())
+        //                         .ToArray();
 
-                    string[] discount = InvoiceData.AsEnumerable()
-                                 .Select(row => row.Field<decimal>("Discount").ToString())
-                                 .ToArray();
+        //            string[] totalPrice = InvoiceData.AsEnumerable()
+        //                         .Select(row => row.Field<decimal>("TotalPrice").ToString())
+        //                         .ToArray();
 
-                    string paymentType = Convert.ToString(InvoiceData.Rows[0]["PaymentType"]);
+        //            string[] discount = InvoiceData.AsEnumerable()
+        //                         .Select(row => row.Field<decimal>("Discount").ToString())
+        //                         .ToArray();
 
-                    PrintInvoice(name, price, quantity, tax, totalPrice, discount, paymentType, invoiceNumber);
+        //            string paymentType = Convert.ToString(InvoiceData.Rows[0]["PaymentType"]);
 
-                    //// Create a new report document
-                    //ReportDocument report = new ReportDocument();
+        //            string strCashAmt = string.Empty;
+        //            string strCheckAmt = string.Empty;
+        //            string strCreditAmt = string.Empty;
+        //            string strPalmPayAmt = string.Empty;
 
+        //            foreach(DataRow dataRow in PaymentData.Rows)
+        //            {
+        //                string strPaymentType = Convert.ToString(dataRow["PaymentType"]).ToUpper();
+        //                decimal Amount = Convert.ToDecimal(dataRow["Amount"]);
 
-                    //// Load the report (winebill.rpt)
-                    ////string reportPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Reports\winebill.rpt");
-                    //string reportPath = System.IO.Path.Combine(@"D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\winebill.rpt");
+        //                if (Amount > 0)
+        //                {
+        //                    if (strPaymentType == "CASH")
+        //                        strCashAmt = Amount.ToString("G29");
+        //                    else if (strPaymentType == "CHECK")
+        //                        strCheckAmt = Amount.ToString("G29");
+        //                    else if (strPaymentType == "CREDIT")
+        //                        strCreditAmt = Amount.ToString("G29");
+        //                    else if (strPaymentType == "PALMPAY")
+        //                        strPalmPayAmt = Amount.ToString("G29");
+        //                }
+        //            }
 
-                    //string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                    //// Target file
-                    //string targetFile = Path.Combine("Reports", "winebill.rpt");
+        //            PrintInvoice(name, price, quantity, tax, totalPrice, discount, strCashAmt, strCheckAmt, strCreditAmt, strPalmPayAmt, Convert.ToString(invoiceNumber));
 
-                    //// Combine base directory with the relative path
-                    ////string reportPath = Path.Combine(baseDirectory, targetFile);
-                    //report.Load(reportPath);
-
-                    //// Create and populate the DataTable
-                    ////DataTable dt = objService.GetInventoryData(string.Empty, string.Empty);
-
-                    //// Set the DataTable as the data source for the report
-                    ////report.SetDataSource(dt);
-
-                    //// Set database logon credentials (if required)
-                    //SetDatabaseLogin(report);
-
-                    //// Dynamically set the InvoiceCode parameter for the report
-                    //report.SetParameterValue("InvoiceCode", invoiceNumber);
-
-                    //// Export the report to a PDF file
-                    //string exportPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "WineBill.pdf");
-                    //report.ExportToDisk(ExportFormatType.PortableDocFormat, exportPath);
-
-                    //// Display the PDF in the WebBrowser control
-                    ////pdfWebViewer.Navigate(exportPath); // Navigate to the generated PDF file
+        //            //// Create a new report document
+        //            //ReportDocument report = new ReportDocument();
 
 
-                    //// Optionally, open the generated report in a PDF viewer
-                    //System.Diagnostics.Process.Start(exportPath);
+        //            //// Load the report (winebill.rpt)
+        //            ////string reportPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Reports\winebill.rpt");
+        //            //string reportPath = System.IO.Path.Combine(@"D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\winebill.rpt");
 
-                    //MessageBox.Show("Report generated and displayed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            else
-            {
-                MessageBox.Show("Please make payment first to print invoice.", "Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-        }
+        //            //string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        //            //// Target file
+        //            //string targetFile = Path.Combine("Reports", "winebill.rpt");
 
-        private void PrintInvoice(string[] name, string[] price, string[] quantity, string[] tax, string[] totalPrice, string[] discount, string paymentType, string invoiceNumber)
-        {
-            var mainWindow = (MainWindow)Application.Current.MainWindow;
-            PosPrinter m_Printer = mainWindow.m_Printer;
-            //<<<step2>>>--Start
-            //Initialization
-            DateTime nowDate = DateTime.Now;                            //System date
-            DateTimeFormatInfo dateFormat = new DateTimeFormatInfo();   //Date Format
-            dateFormat.MonthDayPattern = "MMMM";
-            string strDate = nowDate.ToString("MMMM,dd,yyyy  HH:mm", dateFormat);
-            string strbcData = invoiceNumber;
-            //String[] astritem = { "apples", "grapes", "bananas", "lemons", "oranges" };
-            //String[] astrprice = { "10.00", "20.00", "30.00", "40.00", "50.00" };
+        //            //// Combine base directory with the relative path
+        //            ////string reportPath = Path.Combine(baseDirectory, targetFile);
+        //            //report.Load(reportPath);
 
-            if (m_Printer.CapRecPresent)
-            {
+        //            //// Create and populate the DataTable
+        //            ////DataTable dt = objService.GetInventoryData(string.Empty, string.Empty);
 
-                try
-                {
-                    //<<<step6>>>--Start
-                    //Batch processing mode
-                    m_Printer.TransactionPrint(PrinterStation.Receipt
-                        , PrinterTransactionControl.Transaction);
+        //            //// Set the DataTable as the data source for the report
+        //            ////report.SetDataSource(dt);
 
-                    //<<<step3>>>--Start
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|1B");
-                    //<<<step3>>>--End
+        //            //// Set database logon credentials (if required)
+        //            //SetDatabaseLogin(report);
 
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|N"
-                        + "123xxstreet,xxxcity,xxxxstate\n");
+        //            //// Dynamically set the InvoiceCode parameter for the report
+        //            //report.SetParameterValue("InvoiceCode", invoiceNumber);
 
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA"
-                        + "TEL 9999-99-9999   C#2\n");
+        //            //// Export the report to a PDF file
+        //            //string exportPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "WineBill.pdf");
+        //            //report.ExportToDisk(ExportFormatType.PortableDocFormat, exportPath);
 
-                    //<<<step5>>--Start
-                    //Make 2mm speces
-                    //ESC|#uF = Line Feed
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|200uF");
-                    //<<<step5>>>-End
-
-                    int iRecLineCharsCount = m_Printer.RecLineCharsList.Length;
-                    if (iRecLineCharsCount >= 2)
-                    {
-                        m_Printer.RecLineChars = m_Printer.RecLineCharsList[1];
-                        m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + strDate + "\n");
-                        m_Printer.RecLineChars = m_Printer.RecLineCharsList[0];
-                    }
-                    else
-                    {
-                        m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + strDate + "\n");
-                    }
-
-                    //<<<step5>>>--Start
-                    //Make 5mm speces
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
-
-                    //Print buying goods
-                    double total = 0.0;
-                    string strPrintData = "";
-                    for (int i = 0; i < name.Length; i++)
-                    {
-                        decimal itemTotal = Convert.ToDecimal(quantity[i]) * Convert.ToDecimal(price[i]);
-
-                        string strDiscount = (Convert.ToDecimal(discount[i]) != 0) ? "* (" + Convert.ToString(discount[i]) + "%)" : string.Empty;
-
-                        strPrintData = MakePrintString(m_Printer.RecLineChars, name[i] + strDiscount, "   " + quantity[i] + " @ $" + price[i] + " $"
-                            + (Convert.ToDecimal(quantity[i]) * Convert.ToDecimal(price[i])));
-
-                        m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
-
-                        total += Convert.ToDouble(itemTotal);
-
-                    }
-
-                    //Make 2mm speces
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|200uF");
-
-                    //Print the total cost
-                    strPrintData = MakePrintString(m_Printer.RecLineChars, "Tax excluded."
-                        , "$" + total.ToString("F"));
-
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + strPrintData + "\n");
-
-                    decimal totaltax = tax.Select(item => Convert.ToDecimal(item)).Sum();
-                    decimal totalPriceAfterTax = totalPrice.Select(item => Convert.ToDecimal(item)).Sum();
-
-                    strPrintData = MakePrintString(m_Printer.RecLineChars, "Tax ", "$"
-                        + (totaltax).ToString("F"));
-
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|uC" + strPrintData + "\n");
-
-                    strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "Total", "$"
-                        + (totalPriceAfterTax).ToString("F"));
-
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
-                        + strPrintData + "\n");
-
-                    //strPrintData = MakePrintString(m_Printer.RecLineChars, "Customer's payment", "$200.00");
-
-                    m_Printer.PrintNormal(PrinterStation.Receipt
-                        , strPrintData + "\n");
-
-                    //strPrintData = MakePrintString(m_Printer.RecLineChars, "Change", "$" + (200.00 - (total * 1.05)).ToString("F"));
-
-                    m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
+        //            //// Display the PDF in the WebBrowser control
+        //            ////pdfWebViewer.Navigate(exportPath); // Navigate to the generated PDF file
 
 
-                    strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "Payment Type", "$"
-                        + paymentType);
+        //            //// Optionally, open the generated report in a PDF viewer
+        //            //System.Diagnostics.Process.Start(exportPath);
 
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
-                        + strPrintData + "\n");
+        //            //MessageBox.Show("Report generated and displayed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show("Please make payment first to print invoice.", "Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
+        //    }
+        //}
 
-                    //Make 5mm speces
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
+        //private void PrintInvoice(string[] name, string[] price, string[] quantity, string[] tax, string[] totalPrice, string[] discount, string strCashAmt, string strCheckAmt, string strCreditAmt, string strPalmPayAmt, string invoiceNumber)
+        //{
+        //    var mainWindow = (MainWindow)Application.Current.MainWindow;
+        //    PosPrinter m_Printer = mainWindow.m_Printer;
+        //    //<<<step2>>>--Start
+        //    //Initialization
+        //    DateTime nowDate = DateTime.Now;                            //System date
+        //    DateTimeFormatInfo dateFormat = new DateTimeFormatInfo();   //Date Format
+        //    dateFormat.MonthDayPattern = "MMMM";
+        //    string strDate = nowDate.ToString("MMMM,dd,yyyy  HH:mm", dateFormat);
+        //    string strbcData = invoiceNumber;
+        //    //String[] astritem = { "apples", "grapes", "bananas", "lemons", "oranges" };
+        //    //String[] astrprice = { "10.00", "20.00", "30.00", "40.00", "50.00" };
 
-                    //<<<step4>>>--Start
-                    if (m_Printer.CapRecBarCode == true)
-                    {
-                        //Barcode printing
-                        m_Printer.PrintBarCode(PrinterStation.Receipt, strbcData,
-                            BarCodeSymbology.EanJan13, 1000,
-                            m_Printer.RecLineWidth, PosPrinter.PrinterBarCodeLeft,
-                            BarCodeTextPosition.Below);
-                    }
-                    //<<<step4>>>--End
-                    //<<<step5>>>--End
+        //    if (m_Printer.CapRecPresent)
+        //    {
 
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|fP");
+        //        try
+        //        {
+        //            //<<<step6>>>--Start
+        //            //Batch processing mode
+        //            m_Printer.TransactionPrint(PrinterStation.Receipt
+        //                , PrinterTransactionControl.Transaction);
 
-                    strPrintData = "Thank you for shopping at Crown Liquor!";
+        //            //<<<step3>>>--Start
+        //            m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|1B");
+        //            //<<<step3>>>--End
 
-                    m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
+        //            m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|N"
+        //                + "123xxstreet,xxxcity,xxxxstate\n");
+
+        //            m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA"
+        //                + "TEL 9999-99-9999   C#2\n");
+
+        //            //<<<step5>>--Start
+        //            //Make 2mm speces
+        //            //ESC|#uF = Line Feed
+        //            m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|200uF");
+        //            //<<<step5>>>-End
+
+        //            int iRecLineCharsCount = m_Printer.RecLineCharsList.Length;
+        //            if (iRecLineCharsCount >= 2)
+        //            {
+        //                m_Printer.RecLineChars = m_Printer.RecLineCharsList[1];
+        //                m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + strDate + "\n");
+        //                m_Printer.RecLineChars = m_Printer.RecLineCharsList[0];
+        //            }
+        //            else
+        //            {
+        //                m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + strDate + "\n");
+        //            }
+
+        //            //<<<step5>>>--Start
+        //            //Make 5mm speces
+        //            m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
+
+        //            //Print buying goods
+        //            double total = 0.0;
+        //            string strPrintData = "";
+        //            for (int i = 0; i < name.Length; i++)
+        //            {
+        //                decimal itemTotal = Convert.ToDecimal(quantity[i]) * Convert.ToDecimal(price[i]);
+
+        //                string strDiscount = (Convert.ToDecimal(discount[i]) != 0) ? "* (" + Convert.ToString(discount[i]) + "%)" : string.Empty;
+
+        //                strPrintData = MakePrintString(m_Printer.RecLineChars, name[i] + strDiscount, "   " + quantity[i] + " @ $" + price[i] + " $"
+        //                    + (Convert.ToDecimal(quantity[i]) * Convert.ToDecimal(price[i])));
+
+        //                m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
+
+        //                total += Convert.ToDouble(itemTotal);
+
+        //            }
+
+        //            //Make 2mm speces
+        //            m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|200uF");
+
+        //            //Print the total cost
+        //            strPrintData = MakePrintString(m_Printer.RecLineChars, "Tax excluded."
+        //                , "$" + total.ToString("F"));
+
+        //            m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + strPrintData + "\n");
+
+        //            decimal totaltax = tax.Select(item => Convert.ToDecimal(item)).Sum();
+        //            decimal totalPriceAfterTax = totalPrice.Select(item => Convert.ToDecimal(item)).Sum();
+
+        //            strPrintData = MakePrintString(m_Printer.RecLineChars, "Tax ", "$"
+        //                + (totaltax).ToString("F"));
+
+        //            m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|uC" + strPrintData + "\n");
+
+        //            strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "Total", "$"
+        //                + (totalPriceAfterTax).ToString("F"));
+
+        //            m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
+        //                + strPrintData + "\n");
+
+        //            //strPrintData = MakePrintString(m_Printer.RecLineChars, "Customer's payment", "$200.00");
+
+        //            m_Printer.PrintNormal(PrinterStation.Receipt
+        //                , strPrintData + "\n");
+
+        //            //strPrintData = MakePrintString(m_Printer.RecLineChars, "Change", "$" + (200.00 - (total * 1.05)).ToString("F"));
+
+        //            m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
+
+        //            if (!string.IsNullOrWhiteSpace(strCashAmt))
+        //            {
+        //                strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "CASH", "$"
+        //                    + strCashAmt);
+
+        //                m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
+        //                    + strPrintData + "\n");
+        //            }
+        //            if (!string.IsNullOrWhiteSpace(strCheckAmt))
+        //            {
+        //                strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "CHECK", "$"
+        //                    + strCheckAmt);
+
+        //                m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
+        //                    + strPrintData + "\n");
+        //            }
+        //            if (!string.IsNullOrWhiteSpace(strPalmPayAmt))
+        //            {
+        //                strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "PALM PAY", "$"
+        //                    + strPalmPayAmt);
+
+        //                m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
+        //                    + strPrintData + "\n");
+        //            }
+        //            if (!string.IsNullOrWhiteSpace(strCreditAmt))
+        //            {
+        //                strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "CASH", "$"
+        //                    + strCreditAmt);
+
+        //                m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
+        //                    + strPrintData + "\n");
+        //            }
+
+        //            //strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "Payment Type", "$"
+        //            //    + paymentType);
+
+        //            //m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
+        //            //    + strPrintData + "\n");
+
+        //            //Make 5mm speces
+        //            //m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
+
+        //            //<<<step4>>>--Start
+        //            if (m_Printer.CapRecBarCode == true)
+        //            {
+        //                string barcodeData = ConvertInvoiceToEAN13(Convert.ToInt32(strbcData));
+
+        //                //Barcode printing
+        //                m_Printer.PrintBarCode(PrinterStation.Receipt, barcodeData,
+        //                    BarCodeSymbology.EanJan13, 1000,
+        //                    m_Printer.RecLineWidth, PosPrinter.PrinterBarCodeLeft,
+        //                    BarCodeTextPosition.Below);
+        //            }
+        //            //<<<step4>>>--End
 
 
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|fP");
-                    //<<<step2>>>--End
+        //            //Make 5mm speces
+        //            m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
 
-                    //print all the buffer data. and exit the batch processing mode.
-                    m_Printer.TransactionPrint(PrinterStation.Receipt
-                        , PrinterTransactionControl.Normal);
-                    //<<<step6>>>--End
-                }
-                catch (PosControlException ex)
-                {
-                    MessageBox.Show("Error while printing invoice. Exception:" + ex.ToString(), "Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-            }
+        //            strPrintData = "Thank you for shopping at Crown Liquor!";
 
-            //<<<step6>>>--Start
-            // When a cursor is back to its default shape, it means the process ends
-            //Cursor.Current = Cursors.Default;
-            //<<<step6>>>--End
+        //            m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
 
-        }
+        //            //<<<step5>>>--End
+
+
+        //            m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|fP");
+        //            //<<<step2>>>--End
+
+        //            //print all the buffer data. and exit the batch processing mode.
+        //            m_Printer.TransactionPrint(PrinterStation.Receipt
+        //                , PrinterTransactionControl.Normal);
+        //            //<<<step6>>>--End
+        //        }
+        //        catch (PosControlException ex)
+        //        {
+        //            MessageBox.Show("Error while printing invoice. Exception:" + ex.ToString(), "Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
+        //        }
+        //    }
+
+        //    //<<<step6>>>--Start
+        //    // When a cursor is back to its default shape, it means the process ends
+        //    //Cursor.Current = Cursors.Default;
+        //    //<<<step6>>>--End
+
+        //}
+
+        //public static string ConvertInvoiceToEAN13(int invoiceNumber)
+        //{
+        //    // Convert invoice number to string
+        //    string base12Digits = invoiceNumber.ToString();
+
+        //    // Ensure it's at least 12 digits by padding with leading zeros
+        //    base12Digits = base12Digits.PadLeft(12, '0');
+
+        //    // Calculate EAN-13 checksum
+        //    int sum = 0;
+        //    for (int i = 0; i < 12; i++)
+        //    {
+        //        int digit = base12Digits[i] - '0'; // Convert char to integer
+        //        sum += (i % 2 == 0) ? digit : digit * 3; // Odd position: digit * 1, Even position: digit * 3
+        //    }
+
+        //    int checksum = (10 - (sum % 10)) % 10; // Compute the checksum
+        //    return base12Digits + checksum; // Return valid 13-digit barcode
+        //}
 
 
         private void SetDatabaseLogin(ReportDocument report)
@@ -806,8 +1016,11 @@ namespace WinePOSFinal
         {
             if (objBillingItems.Count > 0)
             {
-                SubTotal = objBillingItems.Sum(item => (decimal.TryParse(item.Price, out var totalPrice) ? totalPrice : 0) * Convert.ToInt32(item.Quantity));
-                Tax = objBillingItems.Sum(item => decimal.TryParse(item.Tax, out var tax) ? (tax * Convert.ToInt32(item.Quantity)) : 0); // Assuming 10% tax
+                decimal TotalPrice = objBillingItems.Sum(item => (decimal.TryParse(item.TotalPrice, out var dectotalPrice) ? dectotalPrice : 0));
+                decimal TaxPrice = objBillingItems.Sum(item => (decimal.TryParse(item.Tax, out var decTax) ? decTax * Convert.ToInt32(item.Quantity) : 0));
+
+                SubTotal = TotalPrice - Tax;
+                Tax = TaxPrice;
                 GrandTotal = SubTotal + Tax;
             }
             else
@@ -825,16 +1038,22 @@ namespace WinePOSFinal
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private bool SaveInvoice(ObservableCollection<BillingItem> objBilling, bool IsVoidInvoice, string PaymentType)
+        private bool SaveInvoice(ObservableCollection<BillingItem> objBilling, bool IsVoidInvoice, string PaymentType, List<Payments> objPayments, int iNumber)
         {
             try
             {
-                invoiceNumber = 0;
+                objService.DeleteInvoiceByNumber(iNumber);
+                if (iNumber != 0)
+                {
+                    invoiceNumber = iNumber;
+                }
+                editinvoiceNumber = 0;
                 foreach (BillingItem bi in objBilling)
                 {
-                    objService.SaveInvoice(bi, IsVoidInvoice, PaymentType, ref invoiceNumber);
+                    objService.SaveInvoice(bi, IsVoidInvoice, PaymentType, ref invoiceNumber, objPayments);
+                    objPayments = new List<Payments>();
                 }
-
+                invoiceNumber = 0;
                 SendLowQuantityMail();
 
                 dtAllItems = objService.GetInventoryData(string.Empty, string.Empty);
@@ -929,62 +1148,82 @@ namespace WinePOSFinal
 
         private void btnCheck_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show(
-               $"Are you sure you want to Check the Current Billing Invoice?",
-               "Confirm Payment",
-               MessageBoxButton.YesNo,
-               MessageBoxImage.Question);
+            //MessageBoxResult result = MessageBox.Show(
+            //   $"Are you sure you want to Check the Current Billing Invoice?",
+            //   "Confirm Payment",
+            //   MessageBoxButton.YesNo,
+            //   MessageBoxImage.Question);
 
-            // Handle user response
-            if (result == MessageBoxResult.Yes)
+            //// Handle user response
+            //if (result == MessageBoxResult.Yes)
+            //{
+
+            decimal totalPrice = objBillingItems.Sum(item => Convert.ToDecimal(item.TotalPrice));
+            paymentList.Add(new Payments("CHECK", totalPrice));
+            if (SaveInvoice(objBillingItems, false, "CHECK", paymentList, editinvoiceNumber))
             {
-                if (SaveInvoice(objBillingItems, false, "CHECK"))
-                {
-                    MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    // Optionally, clear the DataGrid after payment
-                    objBillingItems.Clear();
+                //MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                // Optionally, clear the DataGrid after payment
+                objBillingItems.Clear();
+                paymentList.Clear();
 
-                    btnPrintInvoice_Click(null, null);
-                }
-                else
-                {
-                    MessageBox.Show("Error while saving the current Invoice.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
+                //MessageBoxResult result = MessageBox.Show(
+                //    $"Payment confirmed. Thank you! Do you want to print invoice?",
+                //    "Print Invoice",
+                //    MessageBoxButton.YesNo,
+                //    MessageBoxImage.Question);
+                //if (result == MessageBoxResult.Yes)
+                //    btnPrintInvoice_Click(null, null);
             }
             else
             {
-                MessageBox.Show("Payment canceled.", "Payment Canceled", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error while saving the current Invoice.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Payment canceled.", "Payment Canceled", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //}
         }
 
         private void btnCredit_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show(
-               $"Are you sure you want to Credit the Current Billing Invoice?",
-               "Confirm Payment",
-               MessageBoxButton.YesNo,
-               MessageBoxImage.Question);
+            //MessageBoxResult result = MessageBox.Show(
+            //   $"Are you sure you want to Credit the Current Billing Invoice?",
+            //   "Confirm Payment",
+            //   MessageBoxButton.YesNo,
+            //   MessageBoxImage.Question);
 
             // Handle user response
-            if (result == MessageBoxResult.Yes)
-            {
-                if (SaveInvoice(objBillingItems, false, "CREDIT"))
-                {
-                    MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    // Optionally, clear the DataGrid after payment
-                    objBillingItems.Clear();
+            //if (result == MessageBoxResult.Yes)
+            //{
 
-                    btnPrintInvoice_Click(null, null);
-                }
-                else
-                {
-                    MessageBox.Show("Error while saving the current Invoice.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
+            decimal totalPrice = objBillingItems.Sum(item => Convert.ToDecimal(item.TotalPrice));
+            paymentList.Add(new Payments("CREDIT", totalPrice));
+            if (SaveInvoice(objBillingItems, false, "CREDIT", paymentList, editinvoiceNumber))
+            {
+                //MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                // Optionally, clear the DataGrid after payment
+                objBillingItems.Clear();
+                paymentList.Clear();
+
+                //MessageBoxResult result = MessageBox.Show(
+                //    $"Payment confirmed. Thank you! Do you want to print invoice?",
+                //    "Print Invoice",
+                //    MessageBoxButton.YesNo,
+                //    MessageBoxImage.Question);
+                //if (result == MessageBoxResult.Yes)
+                //    btnPrintInvoice_Click(null, null);
             }
             else
             {
-                MessageBox.Show("Payment canceled.", "Payment Canceled", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Error while saving the current Invoice.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Payment canceled.", "Payment Canceled", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //}
         }
 
 
@@ -1334,7 +1573,7 @@ namespace WinePOSFinal
                 CurrentQuantity = Convert.ToInt32(dr[0]["Stock"]);
                 ItemID = Convert.ToInt32(dr[0]["ItemID"]);
                 strUPC = Convert.ToString(dr[0]["UPC"]);
-                strQuantity = txtQuantity.Text;
+                strQuantity = "1";
 
                 // Calculate total price (for this example, assuming price and quantity are numeric)
                 if (decimal.TryParse(strPrice, out decimal parsedPrice) && int.TryParse(strQuantity, out int parsedQuantity))
@@ -1369,35 +1608,73 @@ namespace WinePOSFinal
                         if (CurrentQuantity >= newQuantity)
                         //if (true)
                         {
+                            decimal totalPrice = parsedPrice * newQuantity;
+
                             if (dataRow.Any())
                             {
-                                decimal bulkPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
-                                string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
-                                //strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(parsedPrice);
+                                // Extract all bulk pricing configurations and sort them in descending order based on quantity
+                                var bulkPricingList = dataRow
+                                    .Select(row => new
+                                    {
+                                        Quantity = Convert.ToInt32(row["Quantity"]),
+                                        Price = Convert.ToDecimal(row["Pricing"])
+                                    })
+                                    .OrderByDescending(x => x.Quantity) // Sort in descending order
+                                    .ToList();
 
+                                int selectedBulkQuantity = 1;  // Default to normal price
+                                decimal selectedBulkPrice = parsedPrice; // Default normal price
 
-                                if (Convert.ToInt32(strQuan) <= Convert.ToInt32(newQuantity))
+                                // Determine the best bulk pricing tier applicable
+                                foreach (var bulk in bulkPricingList)
                                 {
-                                    strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(bulkPrice);
+                                    if (newQuantity >= bulk.Quantity)
+                                    {
+                                        selectedBulkQuantity = bulk.Quantity;
+                                        selectedBulkPrice = bulk.Price;
+
+
+                                        strNote = $"Bulk Pricing @{selectedBulkQuantity} for ${selectedBulkPrice}";
+
+                                        break; // Use the highest applicable bulk pricing
+                                    }
                                 }
 
-                                parsedPrice = (Convert.ToInt32(Convert.ToInt32(newQuantity) / Convert.ToInt32(strQuan)) * bulkPrice) + ((Convert.ToInt32(newQuantity) % Convert.ToInt32(strQuan)) * parsedPrice);
-
-                                //parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
+                                // Calculate total price
+                                totalPrice = (Convert.ToInt32(newQuantity / selectedBulkQuantity) * selectedBulkPrice) +
+                                             ((newQuantity % selectedBulkQuantity) * parsedPrice);
                             }
+
+
+                            //if (dataRow.Any())
+                            //{
+                            //    decimal bulkPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
+                            //    string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
+                            //    //strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(parsedPrice);
+
+
+                            //    if (Convert.ToInt32(strQuan) <= Convert.ToInt32(newQuantity))
+                            //    {
+                            //        strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(bulkPrice);
+                            //    }
+
+                            //    totalPrice = (Convert.ToInt32(Convert.ToInt32(newQuantity) / Convert.ToInt32(strQuan)) * bulkPrice) + ((Convert.ToInt32(newQuantity) % Convert.ToInt32(strQuan)) * parsedPrice);
+
+                            //    //parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
+                            //}
 
                             decimal discount = Convert.ToDecimal(existingItem.Discount);
 
-                            parsedPrice = parsedPrice * (1 - discount / 100);
+                            totalPrice = totalPrice * (1 - discount / 100);
 
-                            decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
+                            decimal tax = CalculatePriceAfterTax(totalPrice, dr[0], dtTax);
                             //decimal taxedPrice = parsedPrice + tax;
                             decimal taxedPrice = tax;
                             existingItem.Price = Convert.ToString(parsedPrice);
-                            existingItem.Tax = (tax - parsedPrice).ToString();
+                            existingItem.Tax = ((tax - totalPrice)/ newQuantity).ToString();
                             existingItem.Quantity = Convert.ToString(newQuantity);
                             existingItem.Discount = Convert.ToString(discount);
-                            existingItem.TotalPrice = (taxedPrice * newQuantity).ToString("F2");
+                            existingItem.TotalPrice = taxedPrice.ToString("F2");
                             existingItem.Note = strNote;
                             // Clear the TextBox controls for new input
                             txtUPC.Clear();
@@ -1418,26 +1695,61 @@ namespace WinePOSFinal
                             DataRow[] dataRow = dtBulkPricing.Select(" ItemID = " + Convert.ToString(ItemID));
                             string strNote = string.Empty;
 
+                            decimal totalPrice = parsedPrice * parsedQuantity;
                             if (dataRow.Any())
                             {
-                                decimal bulkPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
-                                string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
-                                //strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(parsedPrice);
+                                // Extract all bulk pricing configurations and sort them in descending order based on quantity
+                                var bulkPricingList = dataRow
+                                    .Select(row => new
+                                    {
+                                        Quantity = Convert.ToInt32(row["Quantity"]),
+                                        Price = Convert.ToDecimal(row["Pricing"])
+                                    })
+                                    .OrderByDescending(x => x.Quantity) // Sort in descending order
+                                    .ToList();
 
-                                if (Convert.ToInt32(strQuan) <= Convert.ToInt32(parsedQuantity))
+                                int selectedBulkQuantity = 1;  // Default to normal price
+                                decimal selectedBulkPrice = parsedPrice; // Default normal price
+
+                                // Determine the best bulk pricing tier applicable
+                                foreach (var bulk in bulkPricingList)
                                 {
-                                    strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(bulkPrice);
+                                    if (parsedQuantity >= bulk.Quantity)
+                                    {
+                                        selectedBulkQuantity = bulk.Quantity;
+                                        selectedBulkPrice = bulk.Price;
+
+                                        strNote = $"Bulk Pricing @{selectedBulkQuantity} for ${selectedBulkPrice}";
+
+                                        break; // Use the highest applicable bulk pricing
+                                    }
                                 }
 
-                                parsedPrice = (Convert.ToInt32(Convert.ToInt32(parsedQuantity) / Convert.ToInt32(strQuan)) * bulkPrice) + ((Convert.ToInt32(parsedQuantity) % Convert.ToInt32(strQuan)) * parsedPrice);
 
-                                //parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
+                                // Calculate total price
+                                totalPrice = (Convert.ToInt32(parsedQuantity / selectedBulkQuantity) * selectedBulkPrice) +
+                                             ((parsedQuantity % selectedBulkQuantity) * parsedPrice);
                             }
 
-                            decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
+                            //if (dataRow.Any())
+                            //{
+                            //    decimal bulkPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
+                            //    string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
+                            //    //strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(parsedPrice);
+
+                            //    if (Convert.ToInt32(strQuan) <= Convert.ToInt32(parsedQuantity))
+                            //    {
+                            //        strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(bulkPrice);
+                            //    }
+
+                            //    totalPrice = (Convert.ToInt32(Convert.ToInt32(parsedQuantity) / Convert.ToInt32(strQuan)) * bulkPrice) + ((Convert.ToInt32(parsedQuantity) % Convert.ToInt32(strQuan)) * parsedPrice);
+
+                            //    //parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
+                            //}
+
+                            decimal tax = CalculatePriceAfterTax(totalPrice, dr[0], dtTax);
                             //decimal taxedPrice = parsedPrice + tax;
                             decimal taxedPrice = tax;
-                            decimal totalPrice = taxedPrice * parsedQuantity;
 
                             // Create a new BillingItem
                             BillingItem newItem = new BillingItem
@@ -1446,9 +1758,9 @@ namespace WinePOSFinal
                                 Name = strName,
                                 Price = Convert.ToString(parsedPrice),
                                 Quantity = Convert.ToString(parsedQuantity),
-                                Tax = (tax - parsedPrice).ToString("F2"), // Format total price as a string with 2 decimals
+                                Tax = ((tax - totalPrice) / parsedQuantity).ToString("F2"), // Format total price as a string with 2 decimals
                                 Discount = "0",
-                                TotalPrice = totalPrice.ToString("F2"), // Format total price as a string with 2 decimals
+                                TotalPrice = taxedPrice.ToString("F2"), // Format total price as a string with 2 decimals
                                 UserName = AccessRightsManager.GetUserName(),
                                 Note = strNote,
                                 ItemID = Convert.ToString(ItemID),
@@ -1506,15 +1818,16 @@ namespace WinePOSFinal
         {
             if (dgBilling.SelectedItem is BillingItem selectedItem)
             {
-                // Check if '>' or '<' keys are pressed
-                if (e.Key == Key.OemPeriod || e.Key == Key.OemComma)
+                // Store the current selection
+                int selectedIndex = dgBilling.SelectedIndex;
+
+                if (e.Key == Key.OemPeriod || e.Key == Key.OemComma || e.Key == Key.Up || e.Key == Key.Down)
                 {
-                    string keyPressed = e.Key == Key.OemPeriod ? ">" : "<";
+                    string keyPressed = e.Key == Key.OemPeriod ? ">" :
+                                        e.Key == Key.OemComma ? "<" :
+                                        e.Key == Key.Up ? ">" : "<"; // Up Arrow acts as '>', Down Arrow acts as '<'
 
-                    // Preserve the selected item and its index
-                    int selectedIndex = dgBilling.SelectedIndex;
-
-                    DataRow[] dr = dtAllItems.Select("UPC = '" + selectedItem.UPC + "'");
+                    DataRow[] dr = dtAllItems.Select("ItemID = '" + selectedItem.ItemID + "'");
                     int iQuantity = Convert.ToInt32(selectedItem.Quantity);
                     decimal discount = Convert.ToDecimal(selectedItem.Discount);
 
@@ -1528,12 +1841,11 @@ namespace WinePOSFinal
                         if (iQuantity <= 0)
                         {
                             MessageBoxResult result = MessageBox.Show(
-                                   $"Do you want to remove selected Item?",
-                                   "Confirm Edit",
-                                   MessageBoxButton.YesNo,
-                                   MessageBoxImage.Question);
+                                $"Do you want to remove selected Item?",
+                                "Confirm Edit",
+                                MessageBoxButton.YesNo,
+                                MessageBoxImage.Question);
 
-                            // Handle user response
                             if (result == MessageBoxResult.Yes)
                             {
                                 btnRemoveItem_Click(null, null);
@@ -1546,66 +1858,58 @@ namespace WinePOSFinal
                         }
                     }
 
-                    DataRow[] dataRow = dtBulkPricing.Select("ItemID = " + selectedItem.ItemID + " AND " + Convert.ToString(iQuantity) + " % Quantity = 0");
+                    DataRow[] dataRow = dtBulkPricing.Select("ItemID = " + selectedItem.ItemID);
                     string strNote = string.Empty;
-
                     decimal parsedPrice = Convert.ToDecimal(dr[0]["ChargedCost"]);
+                    decimal totalPrice = parsedPrice * iQuantity;
 
                     if (dataRow.Any())
                     {
-                        decimal bulkPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
-                        string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
-                        //strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(parsedPrice);
+                        var bulkPricingList = dataRow
+                            .Select(row => new
+                            {
+                                Quantity = Convert.ToInt32(row["Quantity"]),
+                                Price = Convert.ToDecimal(row["Pricing"])
+                            })
+                            .OrderByDescending(x => x.Quantity)
+                            .ToList();
 
+                        int selectedBulkQuantity = 1;
+                        decimal selectedBulkPrice = parsedPrice;
 
-                        if (Convert.ToInt32(strQuan) <= Convert.ToInt32(iQuantity))
+                        foreach (var bulk in bulkPricingList)
                         {
-                            strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(bulkPrice);
+                            if (iQuantity >= bulk.Quantity)
+                            {
+                                selectedBulkQuantity = bulk.Quantity;
+                                selectedBulkPrice = bulk.Price;
+                                strNote = $"Bulk Pricing @{selectedBulkQuantity} for ${selectedBulkPrice}";
+                                break;
+                            }
                         }
 
-                        parsedPrice = (Convert.ToInt32(Convert.ToInt32(iQuantity) / Convert.ToInt32(strQuan)) * bulkPrice) + ((Convert.ToInt32(iQuantity) % Convert.ToInt32(strQuan)) * parsedPrice);
-
-                        //parsedPrice = parsedPrice / Convert.ToDecimal(strQuan);
+                        totalPrice = (Convert.ToInt32(iQuantity / selectedBulkQuantity) * selectedBulkPrice) +
+                                     ((iQuantity % selectedBulkQuantity) * parsedPrice);
                     }
 
-                    parsedPrice = parsedPrice * (1 - discount / 100);
-                    decimal tax = CalculatePriceAfterTax(parsedPrice, dr[0], dtTax);
+                    totalPrice = totalPrice * (1 - discount / 100);
+                    decimal tax = CalculatePriceAfterTax(totalPrice, dr[0], dtTax);
                     decimal taxedPrice = tax;
 
-                    // Update the selected item properties
                     selectedItem.Price = Convert.ToString(parsedPrice);
-                    selectedItem.Tax = (tax - parsedPrice).ToString();
+                    selectedItem.Tax = ((tax - totalPrice) / iQuantity).ToString();
                     selectedItem.Discount = Convert.ToString(discount);
                     selectedItem.Quantity = Convert.ToString(iQuantity);
-                    selectedItem.TotalPrice = (taxedPrice * iQuantity).ToString("F2");
+                    selectedItem.TotalPrice = taxedPrice.ToString("F2");
+                    selectedItem.Note = strNote;
 
-                    //// Instead of refreshing the entire grid, modify the ObservableCollection
-                    //var itemsList = objBillingItems.ToList(); // Convert ObservableCollection to a List
-                    //int index = itemsList.FindIndex(item => item.UPC == selectedItem.UPC); // Find the index
-                    //if (index != -1)
-                    //{
-                    //    itemsList[index] = selectedItem; // Update the item in the list
-                    //    objBillingItems = new ObservableCollection<BillingItem>(itemsList); // Reassign to the ObservableCollection
-                    //}
+                    // Notify UI without full refresh
+                    CollectionViewSource.GetDefaultView(dgBilling.ItemsSource).Refresh();
 
-                    //// Update the DataGrid with the new ItemsSource
-                    //dgBilling.ItemsSource = objBillingItems;
-
-                    //// Explicitly reselect the item after refreshing
-                    //dgBilling.SelectedIndex = selectedIndex; // Ensure the selected index is set
-                    //dgBilling.SelectedItem = selectedItem;  // Set the selected item explicitly
-                    //dgBilling.ScrollIntoView(selectedItem); // Ensure the selected item is visible
-
-                    //// Recalculate totals
-                    //CalculateTotals();
-
-                    // Avoid full refresh, only update the specific item
-                    dgBilling.Items.Refresh();
-
-                    // Re-set the selection explicitly to preserve it after the refresh
-                    dgBilling.SelectedIndex = selectedIndex; // Ensure the selected index is set
-                    dgBilling.SelectedItem = selectedItem;  // Set the selected item explicitly
-                    dgBilling.ScrollIntoView(selectedItem); // Ensure the selected item is visible
+                    // Restore the selection explicitly
+                    dgBilling.SelectedIndex = selectedIndex;
+                    dgBilling.SelectedItem = selectedItem;
+                    dgBilling.ScrollIntoView(selectedItem);
 
                     // Recalculate totals
                     CalculateTotals();
@@ -1639,6 +1943,123 @@ namespace WinePOSFinal
             }
             return strBuf + tab + strPrice;
         }
+
+        private void btnSplitPayment_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var addWindow = new SplitPayment(paymentList, GrandTotal);
+                if (addWindow.ShowDialog() == true)
+                {
+                    if (SaveInvoice(objBillingItems, false, "SPLIT", paymentList, editinvoiceNumber))
+                    {
+                        //MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        // Optionally, clear the  after paymentDataGrid
+                        objBillingItems.Clear();
+                        paymentList.Clear();
+                        //OpenCashDrawer();
+
+
+                        //MessageBoxResult result = MessageBox.Show(
+                        //    $"Payment confirmed. Thank you! Do you want to print invoice?",
+                        //    "Print Invoice",
+                        //    MessageBoxButton.YesNo,
+                        //    MessageBoxImage.Question);
+                        //if (result == MessageBoxResult.Yes)
+                        //    btnPrintInvoice_Click(null, null);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error while saving the current Invoice.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                    //do nothing
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error 1: {ex.Message}");
+            }
+
+
+        }
+        public void PopulateInvoiceData(int iNumber)
+        {
+            editinvoiceNumber = iNumber;
+
+            InitializeComponent();
+            //InitializeCashDrawer(true);
+            ReloadBillingData();
+
+            objBillingItems.Clear();
+            paymentList.Clear();
+            DataSet dsInvoiceData = objService.FetchAndPopulateInvoice(true, null, null, Convert.ToString(editinvoiceNumber));
+
+            DataTable dtInvoice = dsInvoiceData.Tables[0];
+
+            foreach (DataRow dr in dtInvoice.Rows)
+            {
+                string strUPC = Convert.ToString(dr["UPC"]);
+                int ItemID = 0;
+                // Update the quantity of the existing item
+                int newQuantity = Convert.ToInt32(dr["Quantity"]);
+
+                //DataRow[] dataRow = dtBulkPricing.Select(" UPC = " + strUPC + " AND " + newQuantity + " % Quantity = 0");
+                DataRow[] dataRow = dtBulkPricing.Select(" UPC = '" + strUPC + "'");
+
+                string strNamer = Convert.ToString(dr["Name"]);
+
+                DataRow[] drAll;
+                if (strNamer == "NUTS" || strNamer == "ICE BAG")
+                {
+                    drAll = dtAllItems.Select(" Description = '" + strNamer + "'");
+                }
+                else
+                {
+                    drAll = dtAllItems.Select(" UPC = '" + strUPC + "'");
+                }
+                ItemID = Convert.ToInt32(drAll[0]["ItemID"]);
+                string strNote = string.Empty;
+
+                if (dataRow.Any())
+                {
+                    decimal bulkPrice = Convert.ToDecimal(dataRow[0]["Pricing"]);
+                    string strQuan = Convert.ToString(dataRow[0]["Quantity"]);
+                    if (Convert.ToInt32(strQuan) <= Convert.ToInt32(newQuantity))
+                    {
+                        strNote = "Bulk Pricing @" + strQuan + " for $" + Convert.ToString(bulkPrice);
+                    }
+
+                }
+                
+
+                BillingItem newItem = new BillingItem
+                {
+                    UPC = strUPC,
+                    Name = Convert.ToString(dr["Name"]),
+                    Price = Convert.ToString(dr["Price"]),
+                    Quantity = Convert.ToString(dr["Quantity"]),
+                    Tax = Convert.ToString(dr["Tax"]), // Format total price as a string with 2 decimals
+                    Discount = Convert.ToString(dr["Discount"]),
+                    TotalPrice = Convert.ToString(dr["TotalPrice"]), // Format total price as a string with 2 decimals
+                    UserName = AccessRightsManager.GetUserName(),
+                    Note = strNote,
+                    ItemID = Convert.ToString(ItemID),
+                };
+
+
+                // Add the new item to the ObservableCollection
+                objBillingItems.Add(newItem);
+            }
+
+            dgBilling.ItemsSource = null;
+            dgBilling.ItemsSource = objBillingItems;
+
+            // Clear the TextBox controls for new input
+            txtUPC.Clear();
+            txtName.Clear();
+            txtQuantity.Text = "1";
+        }
+
     }
 
     //public class ComboBoxItem

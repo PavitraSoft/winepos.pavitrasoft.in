@@ -11,7 +11,6 @@ using System.Windows;
 using System.ComponentModel;
 using System.Xml.Serialization;
 using System.IO;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace WinePOSFinal.DataAccessLayer
 {
@@ -31,7 +30,7 @@ namespace WinePOSFinal.DataAccessLayer
                 conn.Open();
 
                 // Sample query to retrieve data
-                string query = "SELECT CatagoryID AS Code, [Description] FROM CategoryMaster ORDER BY Description ASC"; // Replace with your actual query
+                string query = "SELECT Code AS Code, [Description] FROM CategoryMaster ORDER BY Description ASC"; // Replace with your actual query
 
                 using (SqlCommand command = new SqlCommand(query, conn))
                 {
@@ -48,7 +47,7 @@ namespace WinePOSFinal.DataAccessLayer
         public bool SaveItem(Items objItem)
         {
             bool bIsSuccess = false;
-
+            SqlParameter param;
             // Create SQL connection
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -67,14 +66,45 @@ namespace WinePOSFinal.DataAccessLayer
                     cmd.Parameters.AddWithValue("Category", objItem.Category);
                     cmd.Parameters.AddWithValue("UPC", objItem.UPC);
                     cmd.Parameters.AddWithValue("Additional_Description", objItem.Additional_Description);
-                    cmd.Parameters.AddWithValue("ItemCost", objItem.ItemCost);
-                    cmd.Parameters.AddWithValue("ChargedCost", objItem.ChargedCost);
+                    //cmd.Parameters.AddWithValue("ItemCost", objItem.ItemCost);
+
+
+                    param = new SqlParameter("ItemCost", SqlDbType.Decimal);
+                    param.Precision = 13;  // Matches SQL precision
+                    param.Scale = 5;       // Matches SQL scale
+                    param.Value = objItem.ItemCost;
+
+                    cmd.Parameters.Add(param);
+
+                    param = new SqlParameter("ChargedCost", SqlDbType.Decimal);
+                    param.Precision = 13;  // Matches SQL precision
+                    param.Scale = 5;       // Matches SQL scale
+                    param.Value = objItem.ChargedCost;
+
+                    cmd.Parameters.Add(param);
+
+                    //cmd.Parameters.AddWithValue("ChargedCost", objItem.ChargedCost);
                     cmd.Parameters.AddWithValue("Sales_Tax", objItem.Sales_Tax);
                     cmd.Parameters.AddWithValue("InStock", objItem.InStock);
                     cmd.Parameters.AddWithValue("VendorName", objItem.VendorName);
-                    cmd.Parameters.AddWithValue("CaseCost", objItem.CaseCost);
+                    //cmd.Parameters.AddWithValue("CaseCost", objItem.CaseCost);
+
+
+                    param = new SqlParameter("CaseCost", SqlDbType.Decimal);
+                    param.Precision = 13;  // Matches SQL precision
+                    param.Scale = 5;       // Matches SQL scale
+                    param.Value = objItem.CaseCost;
+
+                    cmd.Parameters.Add(param);
                     cmd.Parameters.AddWithValue("InCase", objItem.InCase);
-                    cmd.Parameters.AddWithValue("SalesTaxAmt", objItem.SalesTaxAmt);
+                    //cmd.Parameters.AddWithValue("SalesTaxAmt", objItem.SalesTaxAmt);
+
+
+                    param = new SqlParameter("SalesTaxAmt", SqlDbType.Decimal);
+                    param.Precision = 13;  // Matches SQL precision
+                    param.Scale = 5;       // Matches SQL scale
+                    param.Value = objItem.SalesTaxAmt;
+
                     cmd.Parameters.AddWithValue("QuickADD", objItem.QuickADD);
 
                     if (objItem.BulkPricingItems != null && objItem.BulkPricingItems.Count > 0)
@@ -104,6 +134,25 @@ namespace WinePOSFinal.DataAccessLayer
             try
             {
                 var serializer = new XmlSerializer(typeof(List<BulkPricingItem>));
+                using (var stringWriter = new StringWriter())
+                {
+                    serializer.Serialize(stringWriter, list);
+                    return stringWriter.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred during serialization: {ex.Message}", "Serialization Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+        }
+
+        // Helper method to serialize the list to XML
+        private string SerializeToXml(List<Payments> list)
+        {
+            try
+            {
+                var serializer = new XmlSerializer(typeof(List<Payments>));
                 using (var stringWriter = new StringWriter())
                 {
                     serializer.Serialize(stringWriter, list);
@@ -318,11 +367,10 @@ namespace WinePOSFinal.DataAccessLayer
                 // Handle any errors that occur during the execution
                 MessageBox.Show($"Error6: {ex.Message}");
             }
-
             return bIsSuccess;
         }
 
-        public bool SaveInvoice(BillingItem objBillingItem, bool IsVoidInvoice, string PaymentType, ref int invoiceNumber)
+        public bool SaveInvoice(BillingItem objBillingItem, bool IsVoidInvoice, string PaymentType, ref int invoiceNumber, List<Payments> objPayments)
         {
             bool bIsSuccess = false;
 
@@ -366,6 +414,12 @@ namespace WinePOSFinal.DataAccessLayer
                     cmd.Parameters.AddWithValue("InvoiceCode", nextInvoiceCode);
                     cmd.Parameters.AddWithValue("PaymentType", PaymentType);
                     cmd.Parameters.AddWithValue("Discount", objBillingItem.Discount);
+
+                    if (objPayments != null && objPayments.Count > 0)
+                    {
+                        string xmlData = SerializeToXml(objPayments);
+                        cmd.Parameters.AddWithValue("Payments", xmlData);
+                    }
 
                     // Execute the stored procedure (this will not return anything)
                     int rowsAffected = cmd.ExecuteNonQuery();
@@ -428,9 +482,9 @@ namespace WinePOSFinal.DataAccessLayer
         }
 
 
-        public DataTable FetchAndPopulateInvoice(bool IsAdmin, DateTime? fromDate, DateTime? toDate, string InvoiceNumber)
+        public DataSet FetchAndPopulateInvoice(bool IsAdmin, DateTime? fromDate, DateTime? toDate, string InvoiceNumber)
         {
-            DataTable dt = new DataTable();
+            DataSet ds = new DataSet();
 
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
@@ -445,32 +499,39 @@ namespace WinePOSFinal.DataAccessLayer
 
                 if (fromDate.HasValue)
                 {
-                    where += " AND CreatedDateTime >= CONVERT(DATETIME, '" + fromDate.Value.Date.ToString("yyyy-MM-dd") + "') ";
+                    where += " AND I.CreatedDateTime >= CONVERT(DATETIME, '" + fromDate.Value.Date.ToString("yyyy-MM-dd") + "') ";
                 }
 
                 if (toDate.HasValue)
                 {
-                    where += " AND CreatedDateTime <= DATEADD(DAY,1,CONVERT(DATETIME, '" + toDate.Value.Date.ToString("yyyy-MM-dd") + "')) ";
+                    where += " AND I.CreatedDateTime <= DATEADD(DAY,1,CONVERT(DATETIME, '" + toDate.Value.Date.ToString("yyyy-MM-dd") + "')) ";
                 }
 
                 if (!string.IsNullOrWhiteSpace(InvoiceNumber))
                 {
-                    where += " AND InvoiceCode = '" + InvoiceNumber + "' ";
+                    where += " AND I.InvoiceCode = '" + InvoiceNumber + "' ";
                 }
 
 
                 // Sample query to retrieve data
-                string query = "SELECT InvoiceCode, UPC, Name ,Price,Quantity,Tax,TotalPrice,UserName,CreatedDateTime,PaymentType, CASE WHEN IsVoided = 1 THEN 'Yes' ELSE 'No' END AS IsVoided, Discount FROM Invoice WITH (NOLOCK) WHERE 1 = 1 " + where + " ORDER BY CreatedDateTime DESC"; // Replace with your actual query
+                //string query = "SELECT InvoiceCode, UPC, Name ,Price,Quantity,Tax,TotalPrice,UserName,CreatedDateTime,PaymentType, CASE WHEN IsVoided = 1 THEN 'Yes' ELSE 'No' END AS IsVoided, Discount FROM Invoice WITH (NOLOCK) WHERE 1 = 1 " + where + " ORDER BY CreatedDateTime DESC"; // Replace with your actual query
+
+                // Sample query to retrieve data
+                string query = "usp_GetSalesHistoryData_2"; // Replace with your actual query
 
                 using (SqlCommand command = new SqlCommand(query, conn))
                 {
-                    // Create a DataAdapter to fill the DataTable
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                    // Add parameters to the command
+                    command.Parameters.AddWithValue("Where", where);
+
                     SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
-                    dataAdapter.Fill(dt); // Fill the DataTable with data from the database
+                    dataAdapter.Fill(ds); // Fill the DataTable with data from the database
                 }
             }
 
-            return dt;
+            return ds;
 
         }
 
@@ -688,6 +749,37 @@ namespace WinePOSFinal.DataAccessLayer
             }
 
             return dt;
+        }
+
+        public bool DeleteInvoiceByNumber(int intInvoiceNumber)
+        {
+            bool bIsSuccess = false;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    // Sample query to retrieve data
+                    string query = "DELETE FROM INVOICE WHERE InvoiceCode = " + Convert.ToString(intInvoiceNumber); // Replace with your actual query
+
+                    using (SqlCommand command = new SqlCommand(query, conn))
+                    {
+                        int rowsAffected = command.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            bIsSuccess = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during the execution
+                MessageBox.Show($"Error4: {ex.Message}");
+            }
+
+            return bIsSuccess;
         }
     }
 }

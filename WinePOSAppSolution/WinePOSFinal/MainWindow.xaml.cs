@@ -35,19 +35,26 @@ namespace WinePOSFinal
 
         public MainWindow()
         {
-            InitializeComponent();
-
-
-            InitializeCashDrawer();
-            InitializePrinter();
-
-            string currentRole = AccessRightsManager.GetUserRole();
-
-            Inventorymaintenance.Visibility = Visibility.Collapsed;
-
-            if (currentRole.ToUpper() == "ADMIN")
+            try
             {
-                Inventorymaintenance.Visibility = Visibility.Visible;
+                InitializeComponent();
+
+
+                InitializeCashDrawer();
+                InitializePrinter();
+
+                string currentRole = AccessRightsManager.GetUserRole();
+
+                Inventorymaintenance.Visibility = Visibility.Collapsed;
+
+                if (currentRole.ToUpper() == "ADMIN")
+                {
+                    Inventorymaintenance.Visibility = Visibility.Visible;
+                }
+            }
+            catch (Exception ex)
+            {
+                int i = 1;
             }
         }
 
@@ -347,12 +354,12 @@ namespace WinePOSFinal
 
 
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        public void Window_Closing()
         {
             // Put your code here
             //cashDrawer.Release();
             //m_Printer.Release();
-            MessageBox.Show("Application is closing!");
+            //MessageBox.Show("Application is closing!");
 
             if (cashDrawer != null)
             {

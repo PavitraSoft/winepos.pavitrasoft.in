@@ -14,6 +14,7 @@ using System.IO;
 using DocumentFormat.OpenXml.Vml.Office;
 using Microsoft.PointOfService;
 using System.Globalization;
+using static WinePOSFinal.TenderWindow;
 
 namespace WinePOSFinal.UserControls
 {
@@ -23,6 +24,7 @@ namespace WinePOSFinal.UserControls
         private string selectedInvoiceCode;
         private bool isAdmin = false;
         DataTable dtInvoice = new DataTable();
+        DataTable dtPayment = new DataTable();
 
         public SalesHistory()
         {
@@ -121,7 +123,11 @@ namespace WinePOSFinal.UserControls
             try
             {
 
-                DataTable InvoiceData = objService.FetchAndPopulateInvoice(true, null, null, Convert.ToString(invoiceNumber));
+                //DataTable InvoiceData = objService.FetchAndPopulateInvoice(true, null, null, Convert.ToString(invoiceNumber));
+                DataSet dsInvoiceData = objService.FetchAndPopulateInvoice(true, null, null, Convert.ToString(invoiceNumber));
+
+                DataTable InvoiceData = dsInvoiceData.Tables[0];
+                DataTable PaymentData = dsInvoiceData.Tables[1];
 
                 string[] name = InvoiceData.AsEnumerable()
                              .Select(row => row.Field<string>("Name").ToString())
@@ -149,7 +155,30 @@ namespace WinePOSFinal.UserControls
 
                 string paymentType = Convert.ToString(InvoiceData.Rows[0]["PaymentType"]);
 
-                PrintInvoice(name, price, quantity, tax, totalPrice, discount, paymentType);
+                string strCashAmt = string.Empty;
+                string strCheckAmt = string.Empty;
+                string strCreditAmt = string.Empty;
+                string strPalmPayAmt = string.Empty;
+
+                foreach (DataRow dataRow in PaymentData.Rows)
+                {
+                    string strPaymentType = Convert.ToString(dataRow["PaymentType"]).ToUpper();
+                    decimal Amount = Convert.ToDecimal(dataRow["Amount"]);
+
+                    if (Amount > 0)
+                    {
+                        if (strPaymentType == "CASH")
+                            strCashAmt = Amount.ToString("G29");
+                        else if (strPaymentType == "CHECK")
+                            strCheckAmt = Amount.ToString("G29");
+                        else if (strPaymentType == "CREDIT")
+                            strCreditAmt = Amount.ToString("G29");
+                        else if (strPaymentType == "PALMPAY")
+                            strPalmPayAmt = Amount.ToString("G29");
+                    }
+                }
+
+                PrintInvoice(name, price, quantity, tax, totalPrice, discount, strCashAmt, strCheckAmt, strCreditAmt, strPalmPayAmt, Convert.ToString(invoiceNumber));
 
                 //// Create a new report document
                 //ReportDocument report = new ReportDocument();
@@ -198,7 +227,7 @@ namespace WinePOSFinal.UserControls
             }
         }
 
-        private void PrintInvoice(string[] name, string[] price, string[] quantity, string[] tax, string[] totalPrice, string[] discount, string paymentType)
+        private void PrintInvoice(string[] name, string[] price, string[] quantity, string[] tax, string[] totalPrice, string[] discount, string strCashAmt, string strCheckAmt, string strCreditAmt, string strPalmPayAmt, string invoiceNumber)
         {
             var mainWindow = (MainWindow)Application.Current.MainWindow;
             PosPrinter m_Printer = mainWindow.m_Printer;
@@ -208,7 +237,7 @@ namespace WinePOSFinal.UserControls
             DateTimeFormatInfo dateFormat = new DateTimeFormatInfo();   //Date Format
             dateFormat.MonthDayPattern = "MMMM";
             string strDate = nowDate.ToString("MMMM,dd,yyyy  HH:mm", dateFormat);
-            string strbcData = "4902720005074";
+            string strbcData = invoiceNumber;
             //String[] astritem = { "apples", "grapes", "bananas", "lemons", "oranges" };
             //String[] astrprice = { "10.00", "20.00", "30.00", "40.00", "50.00" };
 
@@ -304,33 +333,70 @@ namespace WinePOSFinal.UserControls
 
                     m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
 
+                    if (!string.IsNullOrWhiteSpace(strCashAmt))
+                    {
+                        strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "CASH", "$"
+                            + strCashAmt);
 
-                    strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "Payment Type", "$"
-                        + paymentType);
+                        m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
+                            + strPrintData + "\n");
+                    }
+                    if (!string.IsNullOrWhiteSpace(strCheckAmt))
+                    {
+                        strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "CHECK", "$"
+                            + strCheckAmt);
 
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
-                        + strPrintData + "\n");
+                        m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
+                            + strPrintData + "\n");
+                    }
+                    if (!string.IsNullOrWhiteSpace(strPalmPayAmt))
+                    {
+                        strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "PALM PAY", "$"
+                            + strPalmPayAmt);
+
+                        m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
+                            + strPrintData + "\n");
+                    }
+                    if (!string.IsNullOrWhiteSpace(strCreditAmt))
+                    {
+                        strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "CREDIT", "$"
+                            + strCreditAmt);
+
+                        m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
+                            + strPrintData + "\n");
+                    }
+
+                    //strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "Payment Type", "$"
+                    //    + paymentType);
+
+                    //m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
+                    //    + strPrintData + "\n");
 
                     //Make 5mm speces
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
+                    //m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
 
                     //<<<step4>>>--Start
                     if (m_Printer.CapRecBarCode == true)
                     {
+                        string barcodeData = ConvertInvoiceToEAN13(Convert.ToInt32(strbcData));
+
                         //Barcode printing
-                        m_Printer.PrintBarCode(PrinterStation.Receipt, strbcData,
+                        m_Printer.PrintBarCode(PrinterStation.Receipt, barcodeData,
                             BarCodeSymbology.EanJan13, 1000,
                             m_Printer.RecLineWidth, PosPrinter.PrinterBarCodeLeft,
                             BarCodeTextPosition.Below);
                     }
                     //<<<step4>>>--End
-                    //<<<step5>>>--End
 
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|fP");
+
+                    //Make 5mm speces
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
 
                     strPrintData = "Thank you for shopping at Crown Liquor!";
 
                     m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
+
+                    //<<<step5>>>--End
 
 
                     m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|fP");
@@ -347,13 +413,27 @@ namespace WinePOSFinal.UserControls
                 }
             }
 
-            //<<<step6>>>--Start
-            // When a cursor is back to its default shape, it means the process ends
-            //Cursor.Current = Cursors.Default;
-            //<<<step6>>>--End
-
         }
 
+        public static string ConvertInvoiceToEAN13(int invoiceNumber)
+        {
+            // Convert invoice number to string
+            string base12Digits = invoiceNumber.ToString();
+
+            // Ensure it's at least 12 digits by padding with leading zeros
+            base12Digits = base12Digits.PadLeft(12, '0');
+
+            // Calculate EAN-13 checksum
+            int sum = 0;
+            for (int i = 0; i < 12; i++)
+            {
+                int digit = base12Digits[i] - '0'; // Convert char to integer
+                sum += (i % 2 == 0) ? digit : digit * 3; // Odd position: digit * 1, Even position: digit * 3
+            }
+
+            int checksum = (10 - (sum % 10)) % 10; // Compute the checksum
+            return base12Digits + checksum; // Return valid 13-digit barcode
+        }
 
         // Placeholder for the print logic
         //private void PrintInvoice(string invoiceCode)
@@ -413,95 +493,95 @@ namespace WinePOSFinal.UserControls
 
         private void FlashReportButton_Click(object sender, RoutedEventArgs e)
         {
-            if (dtInvoice.Rows.Count > 0)
-            {
-                try
-                { 
+            //if (dtInvoice.Rows.Count > 0)
+            //{
+            //    try
+            //    { 
 
                     SearchButton_Click(null, null);
 
-                    var addWindow = new FlashReport(dtInvoice, FromDatePicker.SelectedDate, ToDatePicker.SelectedDate);
+                    var addWindow = new FlashReport(dtInvoice, dtPayment, FromDatePicker.SelectedDate, ToDatePicker.SelectedDate);
                     addWindow.ShowDialog();
 
 
                     // Create a new report document
-                    ReportDocument report = new ReportDocument();
+                    //ReportDocument report = new ReportDocument();
 
-                    // path for development
+                    //// path for development
+                    ////string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                    ////string projectRoot = Path.GetFullPath(Path.Combine(baseDirectory, @"..\..\..\"));
+                    ////string targetFile = Path.Combine("Reports", "flashReport.rpt");
+                    ////string reportPath = Path.Combine(projectRoot, targetFile);
+
+                    ////path for static file
+                    ////string reportPath = System.IO.Path.Combine(@"D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\flashReport.rpt");
+                    ////report.Load(reportPath);
+
+                    //// path fo live report
                     //string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                    //string projectRoot = Path.GetFullPath(Path.Combine(baseDirectory, @"..\..\..\"));
-                    //string targetFile = Path.Combine("Reports", "flashReport.rpt");
-                    //string reportPath = Path.Combine(projectRoot, targetFile);
 
-                    //path for static file
-                    //string reportPath = System.IO.Path.Combine(@"D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\Reports\flashReport.rpt");
+                    //string targetFile = Path.Combine("Reports", "flashReport.rpt");
+
+
+                    //string reportPath = Path.Combine(baseDirectory, targetFile);
+
                     //report.Load(reportPath);
 
-                    // path fo live report
-                    string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-                    string targetFile = Path.Combine("Reports", "flashReport.rpt");
+                    //decimal GrossSales = Convert.ToDecimal(dtInvoice.Compute("SUM(TotalPrice)", string.Empty));
+                    //decimal Tax = Convert.ToDecimal(dtInvoice.Compute("SUM(Tax)", string.Empty));
 
+                    //decimal NetSales = GrossSales - Tax;
 
-                    string reportPath = Path.Combine(baseDirectory, targetFile);
+                    //var Cash = dtInvoice.AsEnumerable()
+                    //                          .Where(row => row.Field<string>("PaymentType") == "CASH")
+                    //                          .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
 
-                    report.Load(reportPath);
+                    //var Checks = dtInvoice.AsEnumerable()
+                    //                          .Where(row => row.Field<string>("PaymentType") == "CHECK")
+                    //                          .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
 
+                    //var Credit = dtInvoice.AsEnumerable()
+                    //                          .Where(row => row.Field<string>("PaymentType") == "CREDIT")
+                    //                          .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
 
-                    decimal GrossSales = Convert.ToDecimal(dtInvoice.Compute("SUM(TotalPrice)", string.Empty));
-                    decimal Tax = Convert.ToDecimal(dtInvoice.Compute("SUM(Tax)", string.Empty));
+                    //var PalmPay = dtInvoice.AsEnumerable()
+                    //                          .Where(row => row.Field<string>("PaymentType") == "PALMPAY")
+                    //                          .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
 
-                    decimal NetSales = GrossSales - Tax;
+                    //string QuantitySold = Convert.ToString(dtInvoice.Compute("SUM(Quantity)", string.Empty));
 
-                    var Cash = dtInvoice.AsEnumerable()
-                                              .Where(row => row.Field<string>("PaymentType") == "CASH")
-                                              .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
-
-                    var Checks = dtInvoice.AsEnumerable()
-                                              .Where(row => row.Field<string>("PaymentType") == "CHECK")
-                                              .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
-
-                    var Credit = dtInvoice.AsEnumerable()
-                                              .Where(row => row.Field<string>("PaymentType") == "CREDIT")
-                                              .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
-
-                    var PalmPay = dtInvoice.AsEnumerable()
-                                              .Where(row => row.Field<string>("PaymentType") == "PALMPAY")
-                                              .Sum(row => row.IsNull("TotalPrice") ? 0 : row.Field<decimal>("TotalPrice"));
-
-                    string QuantitySold = Convert.ToString(dtInvoice.Compute("SUM(Quantity)", string.Empty));
-
-                    string Transactions = Convert.ToString(dtInvoice.AsEnumerable()
-                                                    .Select(row => row.Field<int>("InvoiceCode"))
-                                                    .Distinct()
-                                                    .Count());
+                    //string Transactions = Convert.ToString(dtInvoice.AsEnumerable()
+                    //                                .Select(row => row.Field<int>("InvoiceCode"))
+                    //                                .Distinct()
+                    //                                .Count());
 
 
-                    DateTime? fromDate = FromDatePicker.SelectedDate;
-                    DateTime? toDate = ToDatePicker.SelectedDate;
+                    //DateTime? fromDate = FromDatePicker.SelectedDate;
+                    //DateTime? toDate = ToDatePicker.SelectedDate;
 
-                    DateTime dateFrom = fromDate ?? dtInvoice.AsEnumerable().Min(row => row.Field<DateTime>("CreatedDateTime"));
-                    DateTime dateTo = toDate ?? dtInvoice.AsEnumerable().Max(row => row.Field<DateTime>("CreatedDateTime"));
+                    //DateTime dateFrom = fromDate ?? dtInvoice.AsEnumerable().Min(row => row.Field<DateTime>("CreatedDateTime"));
+                    //DateTime dateTo = toDate ?? dtInvoice.AsEnumerable().Max(row => row.Field<DateTime>("CreatedDateTime"));
 
-                    // Set database logon credentials (if required)
-                    SetDatabaseLogin(report);
+                    //// Set database logon credentials (if required)
+                    //SetDatabaseLogin(report);
 
-                    // Dynamically set the InvoiceCode parameter for the report
-                    report.SetParameterValue("NetSales", "$" + Convert.ToString(NetSales));
-                    report.SetParameterValue("Tax", "$" + Convert.ToString(Tax));
-                    report.SetParameterValue("GrossSales", "$" + Convert.ToString(GrossSales));
-                    report.SetParameterValue("QuantitySold", Convert.ToString(QuantitySold));
-                    report.SetParameterValue("Cash", "$" + Convert.ToString(Cash));
-                    report.SetParameterValue("Checks", "$" + Convert.ToString(Checks));
-                    report.SetParameterValue("Credit", "$" + Convert.ToString(Credit));
-                    report.SetParameterValue("PalmPay", "$" + Convert.ToString(PalmPay));
-                    report.SetParameterValue("Transactions", Convert.ToString(Transactions));
-                    report.SetParameterValue("DateFrom", dateFrom);
-                    report.SetParameterValue("DateTo", dateTo);
+                    //// Dynamically set the InvoiceCode parameter for the report
+                    //report.SetParameterValue("NetSales", "$" + Convert.ToString(NetSales));
+                    //report.SetParameterValue("Tax", "$" + Convert.ToString(Tax));
+                    //report.SetParameterValue("GrossSales", "$" + Convert.ToString(GrossSales));
+                    //report.SetParameterValue("QuantitySold", Convert.ToString(QuantitySold));
+                    //report.SetParameterValue("Cash", "$" + Convert.ToString(Cash));
+                    //report.SetParameterValue("Checks", "$" + Convert.ToString(Checks));
+                    //report.SetParameterValue("Credit", "$" + Convert.ToString(Credit));
+                    //report.SetParameterValue("PalmPay", "$" + Convert.ToString(PalmPay));
+                    //report.SetParameterValue("Transactions", Convert.ToString(Transactions));
+                    //report.SetParameterValue("DateFrom", dateFrom);
+                    //report.SetParameterValue("DateTo", dateTo);
 
-                    ReportViewerWindow viewer = new ReportViewerWindow();
-                    viewer.SetReport(report);
-                    viewer.Show();
+                    //ReportViewerWindow viewer = new ReportViewerWindow();
+                    //viewer.SetReport(report);
+                    //viewer.Show();
 
                     // Export the report to a PDF file
                     //string exportPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "flashReport.pdf");
@@ -515,16 +595,16 @@ namespace WinePOSFinal.UserControls
                     //System.Diagnostics.Process.Start(exportPath);
 
                     //MessageBox.Show("Report generated and displayed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                catch (Exception ex)
-                {
-                    //MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            else
-            {
-                MessageBox.Show("No Data To Show.", "Flash Report", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        //MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            //    }
+            //}
+            //else
+            //{
+            //    MessageBox.Show("No Data To Show.", "Flash Report", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //}
         }
 
         private void SetDatabaseLogin(ReportDocument report)
@@ -583,7 +663,13 @@ namespace WinePOSFinal.UserControls
             DateTime? toDate = ToDatePicker.SelectedDate;
             string invoiceNumber = InvoiceNumberTextBox.Text;
 
-            dtInvoice = objService.FetchAndPopulateInvoice(isAdmin, fromDate, toDate, invoiceNumber);
+            //dtInvoice = objService.FetchAndPopulateInvoice(isAdmin, fromDate, toDate, invoiceNumber);
+
+            DataSet dsInvoice = objService.FetchAndPopulateInvoice(isAdmin, fromDate, toDate, invoiceNumber);
+
+            dtInvoice = dsInvoice.Tables[0];
+            dtPayment = dsInvoice.Tables[1];
+
             // Bind to DataGrid
             SalesInventoryDataGrid.ItemsSource = dtInvoice.DefaultView;
         }
@@ -733,6 +819,42 @@ namespace WinePOSFinal.UserControls
             {
             }
             return strBuf + tab + strPrice;
+        }
+
+        private void EditInvoice_Click(object sender, RoutedEventArgs e)
+        {
+
+            if (!string.IsNullOrEmpty(selectedInvoiceCode))
+            {
+                // Get reference to the MainWindow
+                var mainWindow = (MainWindow)Application.Current.MainWindow;
+
+                if (mainWindow != null)
+                {
+                    // Get the content inside the "Billing" TabItem (assuming it's a UserControl)
+                    var billingControl = mainWindow.Billing.Content as Billing;
+
+                    if (billingControl != null)
+                    {
+                        // Call the method inside Billing user control
+                        billingControl.PopulateInvoiceData(Convert.ToInt32(selectedInvoiceCode));
+                        // Switch to the Billing tab
+                        mainWindow.MainTabControl.SelectedItem = mainWindow.Billing;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Billing UserControl is not properly loaded.");
+                    }
+                }
+
+                // Call the method to generate and display the Crystal Report
+                //PrintInvoice(selectedInvoiceCode);
+            }
+            else
+            {
+                MessageBox.Show("Please select a row before editing the invoice.");
+            }
+
         }
     }
 }

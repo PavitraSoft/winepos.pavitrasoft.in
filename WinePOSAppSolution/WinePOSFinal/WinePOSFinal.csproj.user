@@ -36,6 +36,9 @@
     <Compile Update="ReportViewerWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="SplitPayment.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="TaxWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -72,6 +75,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="ReportViewerWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="SplitPayment.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="TaxWindow.xaml">

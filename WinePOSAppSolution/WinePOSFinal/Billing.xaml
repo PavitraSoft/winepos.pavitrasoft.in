@@ -159,10 +159,11 @@
                     <!--<Button Content="PAY THROUGH PALM PAY"/>-->
                     <Button Content="CHECK" Name="btnCheck" Background="Yellow" Click="btnCheck_Click"/>
                     <Button Content="CREDIT/DEBIT" Name="btnCredit" Background="Yellow" Click="btnCredit_Click"/>
+                    <Button Content="Split Payment" Name="btnSplitPayment" Background="Green" Click="btnSplitPayment_Click"/>
                     <Button Content="CLEAR INVOICE" Background="Red" Foreground="White" Name="btnVoidInvoice" Click="btnVoidInvoice_Click"/>
                     <!--<WebBrowser Name="pdfWebViewer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>-->
                     <Button Content="REMOVE ITEM" Background="Red" Name="btnRemoveItem" Click="btnRemoveItem_Click"/>
-                    <Button Content="PRINT INVOICE" Background="Yellow" Name="btnPrintInvoice" Click="btnPrintInvoice_Click"/>
+                    <!--<Button Content="PRINT INVOICE" Background="Yellow" Name="btnPrintInvoice" Click="btnPrintInvoice_Click"/>-->
                     <Button Content="TENDER WINDOW" Background="Yellow" Name="btnTenderWindow" Click="btnTenderWindow_Click"/>
                     <Button Content="TAX CONFIG" Background="Red" Name="btnTaxConfig" Click="btnTaxConfig_Click"/>
                     <Button Content="CASH DRAWER" Background="Red" Name="btnCashDrawer" Click="btnCashDrawer_Click"/>

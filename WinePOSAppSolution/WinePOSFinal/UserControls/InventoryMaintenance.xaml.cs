@@ -197,10 +197,23 @@ namespace WinePOSFinal
             {
                 MessageBox.Show("Item Saved Successfully.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                Billing objBilling = new Billing();
+                var mainWindow = (MainWindow)Application.Current.MainWindow;
 
-                objBilling.ReloadBillingData();
+                if (mainWindow != null)
+                {
+                    // Get the content inside the "Billing" TabItem (assuming it's a UserControl)
+                    var billingControl = mainWindow.Billing.Content as Billing;
 
+                    if (billingControl != null)
+                    {
+                        // Call the method inside Billing user control
+                        billingControl.ReloadBillingData();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Billing UserControl is not properly loaded.");
+                    }
+                }
 
                 ClearFields();
             }
@@ -375,13 +388,7 @@ namespace WinePOSFinal
 
         private void Price_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            var textBox = sender as TextBox;
-
-            // Simulate the resulting text if the input is added
-            string fullText = textBox.Text.Insert(textBox.SelectionStart, e.Text);
-
-            // Regex to match decimals up to 12 digits before and 3 digits after the decimal point
-            e.Handled = !Regex.IsMatch(fullText, @"^\d{0,9}(\.\d{0,3})?$");
+            e.Handled = !Regex.IsMatch(e.Text, @"[\d.]");
         }
     }
     public class ComboBoxItem
