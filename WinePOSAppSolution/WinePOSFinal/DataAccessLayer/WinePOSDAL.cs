@@ -113,6 +113,8 @@ namespace WinePOSFinal.DataAccessLayer
                         cmd.Parameters.AddWithValue("BulkPricing", xmlData);
                     }
 
+                    cmd.Parameters.AddWithValue("EnableStockAlert", objItem.EnableStockAlert);
+                    cmd.Parameters.AddWithValue("StockAlertLimit", objItem.StockAlertLimit);
                     // Execute the stored procedure (this will not return anything)
                     int rowsAffected = cmd.ExecuteNonQuery();
 
@@ -237,6 +239,8 @@ namespace WinePOSFinal.DataAccessLayer
                         items.InCase = dt.Rows[0]["NumberInCase"] != DBNull.Value ? Convert.ToInt32(dt.Rows[0]["NumberInCase"]) : 0;
                         items.QuickADD = dt.Rows[0]["QuickADD"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["QuickADD"]) : false;
                         items.DroppedItem = dt.Rows[0]["DroppedItem"] != DBNull.Value ? Convert.ToString(dt.Rows[0]["DroppedItem"]) : string.Empty;
+                        items.EnableStockAlert = dt.Rows[0]["EnableStockAlert"] != DBNull.Value ? Convert.ToBoolean(dt.Rows[0]["EnableStockAlert"]) : false;
+                        items.StockAlertLimit = dt.Rows[0]["StockAlertLimit"] != DBNull.Value ? Convert.ToInt32(dt.Rows[0]["StockAlertLimit"]) : 0;
 
                         items.BulkPricingItems = new List<BulkPricingItem>();
 
@@ -492,10 +496,10 @@ namespace WinePOSFinal.DataAccessLayer
 
                 string where = " AND 1 = 1 ";
 
-                if (IsAdmin)
-                {
-                    where = " AND 1 = 1 ";
-                }
+                //if (!IsAdmin)
+                //{
+                //    where = " AND I.IsVoided <> 1 ";
+                //}
 
                 if (fromDate.HasValue)
                 {
@@ -509,7 +513,7 @@ namespace WinePOSFinal.DataAccessLayer
 
                 if (!string.IsNullOrWhiteSpace(InvoiceNumber))
                 {
-                    where += " AND I.InvoiceCode = '" + InvoiceNumber + "' ";
+                    where += " AND I.InvoiceCode IN ('" + InvoiceNumber + "') ";
                 }
 
 
@@ -780,6 +784,32 @@ namespace WinePOSFinal.DataAccessLayer
             }
 
             return bIsSuccess;
+        }
+
+        public string GetValueFromConfig(string strKey)
+        {
+            string strValue = string.Empty;
+            DataTable dt = new DataTable();
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+
+                // Sample query to retrieve data
+                string query = "SELECT [Value] FROM Config WITH (NOLOCK) WHERE [Key] = '" + strKey + "'"; // Replace with your actual query
+
+                using (SqlCommand command = new SqlCommand(query, conn))
+                {
+                    // Create a DataAdapter to fill the DataTable
+                    SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
+                    dataAdapter.Fill(dt); // Fill the DataTable with data from the database
+                    if (dt != null && dt.Rows.Count > 0)
+                    {
+                        strValue = Convert.ToString(dt.Rows[0][0]);
+                    }
+                }
+            }
+            return strValue;
         }
     }
 }

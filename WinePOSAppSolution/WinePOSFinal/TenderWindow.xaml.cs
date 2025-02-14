@@ -191,7 +191,7 @@ namespace WinePOSFinal
                 _lblAmtChange.Visibility = Visibility.Collapsed;
             }
 
-
+            OpenCashDrawer();
             this.Close(); // Close the TenderWindow
         }
 
@@ -321,6 +321,9 @@ namespace WinePOSFinal
         {
             try
             {
+                var mainWindow = (MainWindow)Application.Current.MainWindow;
+                CashDrawer cashDrawer = mainWindow.cashDrawer;
+
                 if (cashDrawer != null && cashDrawer.DeviceEnabled)
                 {
                     cashDrawer.OpenDrawer();

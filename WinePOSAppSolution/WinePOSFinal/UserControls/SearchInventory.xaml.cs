@@ -58,21 +58,34 @@ namespace WinePOSFinal
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
+            //if (selectedRow != null)
+            //{
+            //    // Navigate to the second tab
+            //    var mainWindow = (MainWindow)System.Windows.Application.Current.MainWindow;
+            //    mainWindow.MainTabControl.SelectedIndex = 2; // Select Tab 2
+
+            //    // Call the method to populate data in UserControl2
+            //    InventoryMaintenance InventoryMaintenance = mainWindow.InventoryMaintenance as InventoryMaintenance;
+            //    if (InventoryMaintenance != null)
+            //    {
+            //        int selectedId = (int)selectedRow["ItemID"];
+
+            //        // Fetch data based on the selected ID and populate the fields in UserControl2
+            //        InventoryMaintenance.PopulateData(selectedId);
+            //    }
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Please select a row to edit.");
+            //}
+
             if (selectedRow != null)
             {
-                // Navigate to the second tab
-                var mainWindow = (MainWindow)System.Windows.Application.Current.MainWindow;
-                mainWindow.MainTabControl.SelectedIndex = 2; // Select Tab 2
+                int selectedId = (int)selectedRow["ItemID"];
 
-                // Call the method to populate data in UserControl2
-                InventoryMaintenance InventoryMaintenance = mainWindow.InventoryMaintenance as InventoryMaintenance;
-                if (InventoryMaintenance != null)
-                {
-                    int selectedId = (int)selectedRow["ItemID"];
-
-                    // Fetch data based on the selected ID and populate the fields in UserControl2
-                    InventoryMaintenance.PopulateData(selectedId);
-                }
+                // Create a new Inventory Maintenance window and pass the selected item ID
+                InventoryMaintenanceWindow inventoryWindow = new InventoryMaintenanceWindow(selectedId);
+                inventoryWindow.ShowDialog(); // Opens the window as a modal dialog (blocks interaction with the main window)
             }
             else
             {
@@ -82,16 +95,19 @@ namespace WinePOSFinal
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            var mainWindow = (MainWindow)System.Windows.Application.Current.MainWindow;
-            mainWindow.MainTabControl.SelectedIndex = 2; // Select Tab 2
+            //var mainWindow = (MainWindow)System.Windows.Application.Current.MainWindow;
+            //mainWindow.MainTabControl.SelectedIndex = 2; // Select Tab 2
 
-            // Call the method to populate data in UserControl2
-            InventoryMaintenance InventoryMaintenance = mainWindow.InventoryMaintenance as InventoryMaintenance;
-            if (InventoryMaintenance != null)
-            {
-                // Fetch data based on the selected ID and populate the fields in UserControl2
-                InventoryMaintenance.btnClear_Click(null, null);
-            }
+            //// Call the method to populate data in UserControl2
+            //InventoryMaintenance InventoryMaintenance = mainWindow.InventoryMaintenance as InventoryMaintenance;
+            //if (InventoryMaintenance != null)
+            //{
+            //    // Fetch data based on the selected ID and populate the fields in UserControl2
+            //    InventoryMaintenance.btnClear_Click(null, null);
+            //}
+
+            InventoryMaintenanceWindow inventoryWindow = new InventoryMaintenanceWindow();
+            inventoryWindow.ShowDialog(); // Open as a modal window
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
@@ -392,7 +408,7 @@ namespace WinePOSFinal
 
                             if (decimal.TryParse(Convert.ToString(dr["Cost"]), out decValue))
                             {
-                                objItem.ItemCost = decValue;
+                                objItem.ItemCost = Math.Round(decValue,2);
                             }
                             else
                             {
@@ -403,7 +419,7 @@ namespace WinePOSFinal
 
                             if (decimal.TryParse(Convert.ToString(dr["Price"]), out decValue))
                             {
-                                objItem.ChargedCost = decValue;
+                                objItem.ChargedCost = Math.Round(decValue,2);
                             }
                             else
                             {
@@ -434,7 +450,7 @@ namespace WinePOSFinal
                             //objItem.VendorPartNo = Convert.ToString(dr["Vendor_Part_Num"]);
                             if (decimal.TryParse(Convert.ToString(dr["Case_Cost"]), out decValue))
                             {
-                                objItem.CaseCost = decValue;
+                                objItem.CaseCost = Math.Round(decValue, 2);
                             }
                             else
                             {

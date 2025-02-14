@@ -111,5 +111,11 @@ namespace WinePOSFinal.ServicesLayer
         {
             return objDAL.VoidInvoicesByCodes(strInvoiceCode, strUserName);
         }
+
+
+        public string GetValueFromConfig(string strKey)
+        {
+            return objDAL.GetValueFromConfig(strKey);
+        }
     }
 }

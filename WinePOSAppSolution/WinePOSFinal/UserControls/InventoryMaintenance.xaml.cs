@@ -30,6 +30,18 @@ namespace WinePOSFinal
             BindDropdown();
         }
 
+        public InventoryMaintenance(int selectedId)
+        {
+            InitializeComponent();
+            BulkPricingItems = new List<BulkPricingItem>();
+
+            ReloadInventoryMaintenanceData();
+
+            BindDropdown();
+
+            PopulateData(selectedId);
+        }
+
 
         public void ReloadInventoryMaintenanceData()
         {
@@ -79,7 +91,7 @@ namespace WinePOSFinal
             txtStock.Text = "";
 
             txtVendorName.Text = "";
-            txtCase.Text = "0";
+            txtCase.Text = "";
             txtCaseCost.Text = "";
 
             txtDroppedItem.Text = string.Empty;
@@ -87,6 +99,10 @@ namespace WinePOSFinal
             txtchkST.IsChecked = false;
             txtQuickAdd.IsChecked = false;
             intItemID = 0;
+
+            chkStockAlert.IsChecked = false;
+            txtStockAlert.Text = "";
+            txtStockAlert.IsEnabled = false;
 
             dgBulkPricing.ItemsSource = null;
 
@@ -127,6 +143,10 @@ namespace WinePOSFinal
             //txtchkBT.IsChecked = objItem.Bar_Tax;
 
             txtQuickAdd.IsChecked = objItem.QuickADD;
+
+            chkStockAlert.IsChecked = objItem.EnableStockAlert;
+            txtStockAlert.Text = Convert.ToString(objItem.StockAlertLimit);
+            chkStockAlert_Checked(null, null);
 
             BulkPricingItems = objItem.BulkPricingItems;
             dgBulkPricing.ItemsSource = null;
@@ -191,6 +211,10 @@ namespace WinePOSFinal
             //objItem.Bar_Tax = txtchkBT.IsChecked == true;
             objItem.QuickADD = txtQuickAdd.IsChecked == true;
 
+
+            objItem.EnableStockAlert = chkStockAlert.IsChecked == true;
+            objItem.StockAlertLimit = !string.IsNullOrWhiteSpace(txtStockAlert.Text) ? Convert.ToInt32(Convert.ToDecimal(txtStockAlert.Text)) : 0;
+
             objItem.BulkPricingItems = BulkPricingItems;
 
             if (objService.SaveItem(objItem))
@@ -203,19 +227,26 @@ namespace WinePOSFinal
                 {
                     // Get the content inside the "Billing" TabItem (assuming it's a UserControl)
                     var billingControl = mainWindow.Billing.Content as Billing;
+                    var searchInventoryControl = mainWindow.SearchInventory.Content as SearchInventory;
 
                     if (billingControl != null)
                     {
                         // Call the method inside Billing user control
                         billingControl.ReloadBillingData();
                     }
-                    else
+                    if (searchInventoryControl != null)
                     {
-                        MessageBox.Show("Billing UserControl is not properly loaded.");
+                        searchInventoryControl.ReloadSearchInventoryData();
                     }
                 }
 
-                ClearFields();
+                Window parentWindow = Window.GetWindow(this);
+                if (parentWindow != null)
+                {
+                    parentWindow.Close();
+                }
+
+                //ClearFields();
             }
             else
             {
@@ -291,6 +322,18 @@ namespace WinePOSFinal
             {
                 // Handle invalid input (e.g., show an error message or revert to previous value)
                 txtChargePrice.Text = "0.00";  // Example default value if input is invalid
+            }
+        }
+
+        private void chkStockAlert_Checked(object sender, RoutedEventArgs e)
+        {
+            if (chkStockAlert.IsChecked == true)
+            {
+                txtStockAlert.IsEnabled = true;
+            }
+            else
+            {
+                txtStockAlert.IsEnabled = false;
             }
         }
 
@@ -389,6 +432,18 @@ namespace WinePOSFinal
         private void Price_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = !Regex.IsMatch(e.Text, @"[\d.]");
+        }
+
+        private void CalculatePrice(object sender, RoutedEventArgs e)
+        {
+            if (decimal.TryParse(txtCaseCost.Text, out decimal caseCost) &&
+               int.TryParse(txtCase.Text, out int inCase) && inCase > 0)
+            {
+                decimal price = caseCost / inCase;
+                txtItemCost.Text = Convert.ToString(Math.Round(price, 2)); // Format price to 2 decimal places
+                txtChargePrice.Text = Convert.ToString(Math.Round(price, 2)); // Format price to 2 decimal places
+                txtChargePrice_TextChanged(null, null);
+            }
         }
     }
     public class ComboBoxItem

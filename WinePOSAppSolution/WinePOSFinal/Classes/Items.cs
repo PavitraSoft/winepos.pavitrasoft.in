@@ -31,6 +31,8 @@ namespace WinePOSFinal.Classes
         public int inCase;
         public decimal salesTaxAmt;
         public bool quickADD;
+        public int stockAlertLimit;
+        public bool enableStockAlert;
         public List<BulkPricingItem> bulkPricingItems;
 
         public int ItemID
@@ -99,5 +101,10 @@ namespace WinePOSFinal.Classes
 
         public List<BulkPricingItem> BulkPricingItems
         { get { return bulkPricingItems; } set { bulkPricingItems = value; } }
+        public bool EnableStockAlert
+        { get { return enableStockAlert; } set { enableStockAlert = value; } }
+
+        public int StockAlertLimit
+        { get { return stockAlertLimit; } set { stockAlertLimit = value; } }
     }
 }

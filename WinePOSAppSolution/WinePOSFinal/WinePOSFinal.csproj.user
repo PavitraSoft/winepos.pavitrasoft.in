@@ -21,6 +21,9 @@
     <Compile Update="FlashReport.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="InventoryMaintenanceWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="LoadingWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -63,6 +66,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="FlashReport.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="InventoryMaintenanceWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="LoadingWindow.xaml">

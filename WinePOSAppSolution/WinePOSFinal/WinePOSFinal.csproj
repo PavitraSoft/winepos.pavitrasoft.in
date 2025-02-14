@@ -25,6 +25,7 @@
     <PackageReference Include="CrystalReports.ReportAppServer.ClientDoc" Version="13.0.4003" />
     <PackageReference Include="CrystalReports.ReportAppServer.CommLayer" Version="13.0.4003" />
     <PackageReference Include="CrystalReports.ReportAppServer.DataSetConversion" Version="13.0.4003" />
+    <PackageReference Include="iTextSharp" Version="5.5.13.4" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.0" />

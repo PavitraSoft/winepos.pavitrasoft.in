@@ -10,7 +10,7 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"></RowDefinition>
-            <RowDefinition Height="4*"></RowDefinition>
+            <RowDefinition Height="4.5*"></RowDefinition>
             <RowDefinition Height="3*"></RowDefinition>
             <RowDefinition Height="1.5*"></RowDefinition>
             <RowDefinition Height="Auto"/>
@@ -45,6 +45,7 @@
                             <ColumnDefinition Width="6*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
+                            <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
@@ -93,6 +94,12 @@
              Background="LightBlue"
              Foreground="Black"/>
                         </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="6" Grid.Column="0" Margin="0,5">
+                            <TextBlock Text="Enable Stock Alert: " Margin="0,5" FontWeight="Bold" Visibility="Collapsed"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" Margin="0,5">
+                            <CheckBox Name="chkStockAlert" Content="Enable Stock Alert"  Checked="chkStockAlert_Checked" Unchecked="chkStockAlert_Checked"/>
+                        </StackPanel>
                     </Grid>
                 </StackPanel>
 
@@ -103,6 +110,7 @@
                             <ColumnDefinition Width="6*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
+                            <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
@@ -138,13 +146,19 @@
                             <TextBlock Text="Case Cost: " Margin="0,5" FontWeight="Bold"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" Margin="0,5">
-                            <TextBox Name="txtCaseCost" Width="150" Height="25"/>
+                            <TextBox Name="txtCaseCost" Width="150" Height="25" LostFocus="CalculatePrice"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="5" Grid.Column="0" Margin="0,5">
                             <TextBlock Text="# In Case: " Margin="0,5" FontWeight="Bold"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Left" Margin="0,5">
-                            <TextBox Name="txtCase" Width="150" Height="25"/>
+                            <TextBox Name="txtCase" Width="150" Height="25" LostFocus="CalculatePrice"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="6" Grid.Column="0" Margin="0,5">
+                            <TextBlock Text="Stock Alert Limit: " Margin="0,5" FontWeight="Bold"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Row="6" Grid.Column="1" HorizontalAlignment="Left" Margin="0,5">
+                            <TextBox Name="txtStockAlert" Width="150" Height="25"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>

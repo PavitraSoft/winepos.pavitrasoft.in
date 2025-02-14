@@ -168,8 +168,8 @@
 
         <!-- Buttons -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,10" Grid.Row="5">
-            <Button Content="PRINT" Width="80" Height="30" Background="Yellow" Margin="10,0" Click="PrintButton_Click" Visibility="Collapsed" />
-            <Button Content="EXPORT" Width="80" Height="30" Background="LightBlue" Margin="10,0" Click="ExportButton_Click" Visibility="Collapsed"  />
+            <Button Content="PRINT" Width="80" Height="30" Background="Yellow" Margin="10,0" Click="PrintButton_Click" />
+            <Button Content="EXPORT" Width="80" Height="30" Background="LightBlue" Margin="10,0" Click="ExportButton_Click"  />
             <Button Content="EXIT" Width="80" Height="30" Background="Red" Margin="10,0" Foreground="White" Click="ExitButton_Click" />
         </StackPanel>
     </Grid>

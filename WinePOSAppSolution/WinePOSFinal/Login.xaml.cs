@@ -22,8 +22,17 @@ namespace WinePOSFinal
     public partial class Login : Window
     {
         WinePOSService objService = new WinePOSService();
+        bool _Prompt = false;
+
         public Login()
         {
+            _Prompt = false;
+            InitializeComponent();
+        }
+
+        public Login(bool Prompt)
+        {
+            _Prompt = Prompt;
             InitializeComponent();
         }
         private void LoginButton_Click(object sender, RoutedEventArgs e)
@@ -37,21 +46,29 @@ namespace WinePOSFinal
             // Validate login credentials
             if (IsValidLogin(username, password))
             {
-                // Open the Main Application Window
-                MainWindow mainApp = new MainWindow();
-                App.SetMainAppInstance(mainApp);  // Store reference to main window
+                if (_Prompt)
+                {
+                    this.DialogResult = true;
+                    this.Close();
+                }
+                else
+                {
+                    // Open the Main Application Window
+                    MainWindow mainApp = new MainWindow();
+                    App.SetMainAppInstance(mainApp);  // Store reference to main window
 
-                mainApp.Show();
-                Application.Current.MainWindow = mainApp;
-                this.Close(); // Close the login window
+                    mainApp.Show();
+                    Application.Current.MainWindow = mainApp;
+                    this.Close(); // Close the login window
 
-                //// If login is successful, hide the current window and show the new window
-                //MainWindow mainwindow = new MainWindow(); // Replace with your actual dashboard window
-                //mainwindow.Show();
+                    //// If login is successful, hide the current window and show the new window
+                    //MainWindow mainwindow = new MainWindow(); // Replace with your actual dashboard window
+                    //mainwindow.Show();
 
-                //// Update the application's MainWindow reference
-                //Application.Current.MainWindow = mainwindow;
-                //this.Hide();
+                    //// Update the application's MainWindow reference
+                    //Application.Current.MainWindow = mainwindow;
+                    //this.Hide();
+                }
             }
             else
             {
@@ -67,8 +84,11 @@ namespace WinePOSFinal
 
             if (!string.IsNullOrWhiteSpace(role))
             {
-                AccessRightsManager.SetUserRole(role);
-                AccessRightsManager.SetUserName(username);
+                if (!_Prompt) //No need to set user role if prompted.
+                {
+                    AccessRightsManager.SetUserRole(role);
+                    AccessRightsManager.SetUserName(username);
+                }
                 return true;
             }
             else
@@ -76,6 +96,14 @@ namespace WinePOSFinal
                 return false;
             }
 
+        }
+
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                LoginButton_Click(LoginButton, new RoutedEventArgs()); // Call the Login button click event
+            }
         }
     }
 }

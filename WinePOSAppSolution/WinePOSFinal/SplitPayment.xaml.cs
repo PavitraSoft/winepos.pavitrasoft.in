@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.PointOfService;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -93,8 +94,9 @@ namespace WinePOSFinal
             }
             else
             {
-                MessageBox.Show("Payment completed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                //MessageBox.Show("Payment completed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 // Close the window and return success
+                OpenCashDrawer();
                 this.DialogResult = true;
             }
         }
@@ -116,6 +118,28 @@ namespace WinePOSFinal
             foreach (var payment in _paymentList)
             {
                 lstPayments.Items.Add($"{payment.Type}: ${payment.Amount.ToString("G29")}");
+            }
+        }
+
+        private void OpenCashDrawer()
+        {
+            try
+            {
+                var mainWindow = (MainWindow)Application.Current.MainWindow;
+                CashDrawer cashDrawer = mainWindow.cashDrawer;
+
+                if (cashDrawer != null && cashDrawer.DeviceEnabled)
+                {
+                    cashDrawer.OpenDrawer();
+                }
+                else
+                {
+                    MessageBox.Show("Cash drawer not found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error opening cash drawer: " + ex.Message);
             }
         }
     }

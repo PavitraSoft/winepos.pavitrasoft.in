@@ -38,6 +38,9 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using DocumentFormat.OpenXml.Bibliography;
 using System.Security.Policy;
 using System.Security.Cryptography.X509Certificates;
+using System.Collections.Specialized;
+using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Utilities.IO;
 
 namespace WinePOSFinal
 {
@@ -67,6 +70,7 @@ namespace WinePOSFinal
         private int editinvoiceNumber = 0;
 
         MainWindow mainWindow = null;
+        bool isAdminLoggedIn = false; //For discount
 
         private List<Payments> paymentList = new List<Payments>();
 
@@ -122,20 +126,17 @@ namespace WinePOSFinal
 
             string currentRole = AccessRightsManager.GetUserRole();
 
-            if (currentRole.ToUpper() != "ADMIN")
-            {
-                // Toggle visibility of the header textbox
-                textDiscount.Visibility = Visibility.Collapsed;
-                txtDiscountValue.Visibility = Visibility.Collapsed;
-                btnApplyDiscount.Visibility = Visibility.Collapsed;
+            //// Toggle visibility of the header textbox
+            //textDiscount.Visibility = Visibility.Collapsed;
+            //txtDiscountValue.Visibility = Visibility.Collapsed;
+            //btnApplyDiscount.Visibility = Visibility.Collapsed;
 
-                // Toggle visibility of the Discount column
-                var discountColumn = dgBilling.Columns.FirstOrDefault(c => c.Header.ToString() == "Discount (%)");
-                if (discountColumn != null)
-                {
-                    discountColumn.Visibility = Visibility.Collapsed;
-                }
-            }
+            //// Toggle visibility of the Discount column
+            //var discountColumn = dgBilling.Columns.FirstOrDefault(c => c.Header.ToString() == "Discount (%)");
+            //if (discountColumn != null)
+            //{
+            //    discountColumn.Visibility = Visibility.Collapsed;
+            //}
 
         }
 
@@ -325,8 +326,8 @@ namespace WinePOSFinal
                                 //}
 
 
-                                if (CurrentQuantity >= newQuantity)
-                                //if (true)
+                                //if (CurrentQuantity >= newQuantity)
+                                if (true)
                                 {
 
                                     decimal discount = Convert.ToDecimal(existingItem.Discount);
@@ -336,16 +337,21 @@ namespace WinePOSFinal
                                     decimal tax = CalculatePriceAfterTax(totalPrice, dr[0], dtTax);
                                     //decimal taxedPrice = parsedPrice + tax;
                                     decimal taxedPrice = tax;
-                                    existingItem.Price = Convert.ToString(parsedPrice);
-                                    existingItem.Tax = ((tax - totalPrice) / newQuantity).ToString();
+                                    existingItem.Price = Convert.ToString(Math.Round(parsedPrice,2));
+                                    existingItem.Tax = Convert.ToString(Math.Round((tax - totalPrice) / newQuantity, 3));
                                     existingItem.Quantity = Convert.ToString(newQuantity);
-                                    existingItem.Discount = Convert.ToString(discount);
-                                    existingItem.TotalPrice = taxedPrice.ToString("F2");
+                                    existingItem.Discount = Convert.ToString(Math.Round(discount));
+                                    existingItem.TotalPrice = Convert.ToString(Math.Round(taxedPrice,2));
                                     existingItem.Note = strNote;
                                     // Clear the TextBox controls for new input
                                     txtUPC.Clear();
                                     txtName.Clear();
                                     txtQuantity.Text = "1";
+
+                                    //var mainWindow = (MainWindow)Application.Current.MainWindow;
+                                    //LineDisplay m_Display = mainWindow.m_Display;
+
+                                    //m_Display.DisplayText(strName + "  " + Convert.ToString(newQuantity) + "  " + Convert.ToString(Math.Round(taxedPrice, 2)));
                                 }
                                 else
                                 {
@@ -354,8 +360,8 @@ namespace WinePOSFinal
                             }
                             else
                             {
-                                if (CurrentQuantity >= parsedQuantity)
-                                //if (true)
+                                //if (CurrentQuantity >= parsedQuantity)
+                                if (true)
                                 {
                                     //DataRow[] dataRow = dtBulkPricing.Select(" UPC = " + strUPC + " AND " + parsedQuantity + " % Quantity = 0");
                                     DataRow[] dataRow = dtBulkPricing.Select(" ItemID = '" + ItemID + "'");
@@ -425,11 +431,11 @@ namespace WinePOSFinal
                                     {
                                         UPC = strUPC,
                                         Name = strName,
-                                        Price = Convert.ToString(parsedPrice),
+                                        Price = Convert.ToString(Math.Round(parsedPrice,2)),
                                         Quantity = Convert.ToString(parsedQuantity),
-                                        Tax = (tax - totalPrice).ToString("F2"), // Format total price as a string with 2 decimals
+                                        Tax = Convert.ToString(Math.Round((tax - totalPrice)/ parsedQuantity, 3)), // Format total price as a string with 2 decimals
                                         Discount = "0",
-                                        TotalPrice = taxedPrice.ToString("F2"), // Format total price as a string with 2 decimals
+                                        TotalPrice = Convert.ToString(Math.Round(taxedPrice,2)), // Format total price as a string with 2 decimals
                                         UserName = AccessRightsManager.GetUserName(),
                                         Note = strNote,
                                         ItemID = Convert.ToString(ItemID),
@@ -442,6 +448,11 @@ namespace WinePOSFinal
                                     txtUPC.Clear();
                                     txtName.Clear();
                                     txtQuantity.Text = "1";
+
+                                    //var mainWindow = (MainWindow)Application.Current.MainWindow;
+                                    //LineDisplay m_Display = mainWindow.m_Display;
+
+                                    //m_Display.DisplayText(strName + "  " + Convert.ToString(parsedQuantity) + "  " + Convert.ToString(Math.Round(taxedPrice, 2)));
                                 }
                                 else
                                 {
@@ -539,41 +550,22 @@ namespace WinePOSFinal
                 //if (result == MessageBoxResult.Yes)
                 //{
 
+
                 decimal totalPrice = objBillingItems.Sum(item => Convert.ToDecimal(item.TotalPrice));
                 paymentList.Add(new Payments("CASH", totalPrice));
 
 
                 btnTenderWindow_Click(null, null);
 
-                MessageBoxResult result = MessageBox.Show(
-                    $"Confirm Payment?",
-                    "Payment",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Question);
-                if (result == MessageBoxResult.Yes)
+
+                if (SaveInvoice(objBillingItems, false, "CASH", paymentList, editinvoiceNumber))
                 {
-
-                    if (SaveInvoice(objBillingItems, false, "CASH", paymentList, editinvoiceNumber))
-                    {
-                        //MessageBox.Show("Payment confirmed. Thank you!", "Payment Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                        // Optionally, clear the  after paymentDataGrid
-                        objBillingItems.Clear();
-                        paymentList.Clear();
-                        //OpenCashDrawer();
-
-
-                        //MessageBoxResult result = MessageBox.Show(
-                        //    $"Payment confirmed. Thank you! Do you want to print invoice?",
-                        //    "Print Invoice",
-                        //    MessageBoxButton.YesNo,
-                        //    MessageBoxImage.Question);
-                        //if (result == MessageBoxResult.Yes)
-                        //    btnPrintInvoice_Click(null, null);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Error while saving the current Invoice.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    }
+                    objBillingItems.Clear();
+                    paymentList.Clear();
+                }
+                else
+                {
+                    MessageBox.Show("Error while saving the current Invoice.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 //}
                 //else
@@ -1019,9 +1011,16 @@ namespace WinePOSFinal
                 decimal TotalPrice = objBillingItems.Sum(item => (decimal.TryParse(item.TotalPrice, out var dectotalPrice) ? dectotalPrice : 0));
                 decimal TaxPrice = objBillingItems.Sum(item => (decimal.TryParse(item.Tax, out var decTax) ? decTax * Convert.ToInt32(item.Quantity) : 0));
 
-                SubTotal = TotalPrice - Tax;
                 Tax = TaxPrice;
+                SubTotal = TotalPrice - Tax;
                 GrandTotal = SubTotal + Tax;
+
+                if (objBillingItems.Count == 1)
+                {
+                    Change.Visibility = Visibility.Collapsed;
+                    txtAmtChange.Text = "0";
+                    txtAmtChange.Visibility = Visibility.Collapsed;
+                }
             }
             else
             {
@@ -1058,6 +1057,22 @@ namespace WinePOSFinal
 
                 dtAllItems = objService.GetInventoryData(string.Empty, string.Empty);
 
+                isAdminLoggedIn = false;
+
+                var mainWindow = (MainWindow)Application.Current.MainWindow;
+
+                if (mainWindow != null)
+                {
+                    // Get the content inside the "Billing" TabItem (assuming it's a UserControl)
+                    var salesHistory = mainWindow.SalesHistory.Content as SalesHistory;
+
+                    if (salesHistory != null)
+                    {
+                        // Call the method inside Billing user control
+                        salesHistory.ReloadSalesHistoryData();
+                    }
+
+                }
 
                 return true;
             }
@@ -1349,8 +1364,32 @@ namespace WinePOSFinal
             }
         }
 
+        private bool PromptAdminLogin()
+        {
+            Login loginWindow = new Login(true);
+            bool? result = loginWindow.ShowDialog();
+
+            return result == true; // Only proceed if authentication succeeds
+        }
+
         private void btnApplyDiscount_Click(object sender, RoutedEventArgs e)
         {
+
+            string userRole = AccessRightsManager.GetUserRole();
+            if (!isAdminLoggedIn)
+            {
+                if (!(userRole == "ADMIN" || userRole == "MANAGER"))
+                {
+                    if (!PromptAdminLogin()) // Prompt for admin credentials
+                    {
+                        MessageBox.Show("Admin authentication failed. Discount cannot be applied.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                }
+            }
+
+            isAdminLoggedIn = true;
+
             if (decimal.TryParse(txtDiscountValue.Text, out decimal discount))
             {
                 if (discount < 0 || discount >= 100)
@@ -1411,6 +1450,22 @@ namespace WinePOSFinal
                 // Check if the edited column is the Discount column
                 if (e.Column.Header.ToString() == "Discount (%)")
                 {
+                    string userRole = AccessRightsManager.GetUserRole();
+                    if (!isAdminLoggedIn)
+                    {
+                        if (!(userRole == "ADMIN" || userRole == "MANAGER"))
+                        {
+                            if (!PromptAdminLogin()) // Prompt for admin credentials
+                            {
+                                MessageBox.Show("Admin authentication failed. Discount cannot be applied.", "Access Denied", MessageBoxButton.OK, MessageBoxImage.Error);
+                                editedItem.Discount = "";
+                                return;
+                            }
+                        }
+                    }
+
+                    isAdminLoggedIn = true;
+
                     // Extract the editing value from the TextBox
                     var editingElement = e.EditingElement as TextBox;
                     if (editingElement != null && decimal.TryParse(editingElement.Text, out decimal discount))
@@ -1605,8 +1660,8 @@ namespace WinePOSFinal
                         //    parsedPrice = (Convert.ToInt32(Convert.ToInt32(newQuantity) / Convert.ToInt32(strQuan)) * bulkPrice) + ((Convert.ToInt32(newQuantity) % Convert.ToInt32(strQuan)) * parsedPrice);
                         //}
 
-                        if (CurrentQuantity >= newQuantity)
-                        //if (true)
+                        //if (CurrentQuantity >= newQuantity)
+                        if (true)
                         {
                             decimal totalPrice = parsedPrice * newQuantity;
 
@@ -1670,16 +1725,21 @@ namespace WinePOSFinal
                             decimal tax = CalculatePriceAfterTax(totalPrice, dr[0], dtTax);
                             //decimal taxedPrice = parsedPrice + tax;
                             decimal taxedPrice = tax;
-                            existingItem.Price = Convert.ToString(parsedPrice);
-                            existingItem.Tax = ((tax - totalPrice)/ newQuantity).ToString();
+                            existingItem.Price = Convert.ToString(Math.Round(parsedPrice, 2));
+                            existingItem.Tax = Convert.ToString(Math.Round((tax - totalPrice) / newQuantity, 3));
                             existingItem.Quantity = Convert.ToString(newQuantity);
                             existingItem.Discount = Convert.ToString(discount);
-                            existingItem.TotalPrice = taxedPrice.ToString("F2");
+                            existingItem.TotalPrice = Convert.ToString(Math.Round(taxedPrice,2));
                             existingItem.Note = strNote;
                             // Clear the TextBox controls for new input
                             txtUPC.Clear();
                             txtName.Clear();
                             txtQuantity.Text = "1";
+
+                            //var mainWindow = (MainWindow)Application.Current.MainWindow;
+                            //LineDisplay m_Display = mainWindow.m_Display;
+
+                            //m_Display.DisplayText(strName + "  " + Convert.ToString(newQuantity) + "  " + Convert.ToString(Math.Round(taxedPrice, 2)));
                         }
                         else
                         {
@@ -1688,8 +1748,8 @@ namespace WinePOSFinal
                     }
                     else
                     {
-                        if (CurrentQuantity >= parsedQuantity)
-                        //if (true)
+                        //if (CurrentQuantity >= parsedQuantity)
+                        if (true)
                         {
                             //DataRow[] dataRow = dtBulkPricing.Select(" ItemID = " + Convert.ToString(ItemID) + " AND " + parsedQuantity + " % Quantity = 0");
                             DataRow[] dataRow = dtBulkPricing.Select(" ItemID = " + Convert.ToString(ItemID));
@@ -1756,11 +1816,11 @@ namespace WinePOSFinal
                             {
                                 UPC = strUPC,
                                 Name = strName,
-                                Price = Convert.ToString(parsedPrice),
+                                Price = Convert.ToString(Math.Round(parsedPrice, 2)),
                                 Quantity = Convert.ToString(parsedQuantity),
-                                Tax = ((tax - totalPrice) / parsedQuantity).ToString("F2"), // Format total price as a string with 2 decimals
+                                Tax = Convert.ToString(Math.Round((tax - totalPrice) / parsedQuantity, 3)), // Format total price as a string with 2 decimals
                                 Discount = "0",
-                                TotalPrice = taxedPrice.ToString("F2"), // Format total price as a string with 2 decimals
+                                TotalPrice = Convert.ToString(Math.Round(taxedPrice, 2)), // Format total price as a string with 2 decimals
                                 UserName = AccessRightsManager.GetUserName(),
                                 Note = strNote,
                                 ItemID = Convert.ToString(ItemID),
@@ -1773,6 +1833,11 @@ namespace WinePOSFinal
                             txtUPC.Clear();
                             txtName.Clear();
                             txtQuantity.Text = "1";
+
+                            //var mainWindow = (MainWindow)Application.Current.MainWindow;
+                            //LineDisplay m_Display = mainWindow.m_Display;
+
+                            //m_Display.DisplayText(strName + "  " + Convert.ToString(parsedQuantity) + "  " + Convert.ToString(Math.Round(taxedPrice, 2)));
                         }
                         else
                         {
@@ -1896,11 +1961,11 @@ namespace WinePOSFinal
                     decimal tax = CalculatePriceAfterTax(totalPrice, dr[0], dtTax);
                     decimal taxedPrice = tax;
 
-                    selectedItem.Price = Convert.ToString(parsedPrice);
-                    selectedItem.Tax = ((tax - totalPrice) / iQuantity).ToString();
+                    selectedItem.Price = Convert.ToString(Math.Round(parsedPrice, 2));
+                    selectedItem.Tax = Convert.ToString(Math.Round((tax - totalPrice) / iQuantity, 3));
                     selectedItem.Discount = Convert.ToString(discount);
                     selectedItem.Quantity = Convert.ToString(iQuantity);
-                    selectedItem.TotalPrice = taxedPrice.ToString("F2");
+                    selectedItem.TotalPrice = Convert.ToString(Math.Round(taxedPrice, 2));
                     selectedItem.Note = strNote;
 
                     // Notify UI without full refresh
@@ -1910,9 +1975,16 @@ namespace WinePOSFinal
                     dgBilling.SelectedIndex = selectedIndex;
                     dgBilling.SelectedItem = selectedItem;
                     dgBilling.ScrollIntoView(selectedItem);
+                    dgBilling.Focus();
 
                     // Recalculate totals
                     CalculateTotals();
+
+
+                    //var mainWindow = (MainWindow)Application.Current.MainWindow;
+                    //LineDisplay m_Display = mainWindow.m_Display;
+
+                    //m_Display.DisplayText(selectedItem.Name + "  " + Convert.ToString(iQuantity) + "  " + Convert.ToString(Math.Round(taxedPrice, 2)));
 
                     // Prevent further processing of the key
                     e.Handled = true;
@@ -1948,7 +2020,7 @@ namespace WinePOSFinal
         {
             try
             {
-                var addWindow = new SplitPayment(paymentList, GrandTotal);
+                var addWindow = new SplitPayment(paymentList, Math.Round(GrandTotal,2));
                 if (addWindow.ShowDialog() == true)
                 {
                     if (SaveInvoice(objBillingItems, false, "SPLIT", paymentList, editinvoiceNumber))
@@ -2059,6 +2131,7 @@ namespace WinePOSFinal
             txtName.Clear();
             txtQuantity.Text = "1";
         }
+
 
     }
 

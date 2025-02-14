@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WinePOSFinal"
         mc:Ignorable="d"
-        Title="Login" Height="450" Width="800">
+        Title="Login" Height="350" Width="450">
     <Grid>
         <!-- Background Gradient applied to a Grid -->
         <!-- Background Rectangle with Gradient applied -->
@@ -31,16 +31,16 @@
             <Border Background="White" CornerRadius="10" Padding="30" Width="350" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                     <!-- Username Label -->
-                    <TextBlock Text="Username" FontSize="16" Margin="0,0,0,5" Foreground="#333333"/>
+                    <TextBlock Text="Username" FontSize="16" Margin="0,0,0,5" Foreground="#333333" />
 
                     <!-- Username TextBox -->
-                    <TextBox Name="txtUserName" Width="280" Height="40" Padding="10" FontSize="16" BorderBrush="#4CAF50" BorderThickness="1" Focusable="True"/>
+                    <TextBox Name="txtUserName" Width="280" Height="40" Padding="10" FontSize="16" BorderBrush="#4CAF50" BorderThickness="1" Focusable="True" KeyDown="TextBox_KeyDown"/>
 
                     <!-- Password Label -->
                     <TextBlock Text="Password" FontSize="16" Margin="0,0,0,5" Foreground="#333333"/>
 
                     <!-- Password Box -->
-                    <PasswordBox Name="txtPassword" Width="280" Height="40" Padding="10" FontSize="16" BorderBrush="#4CAF50" BorderThickness="1"/>
+                    <PasswordBox Name="txtPassword" Width="280" Height="40" Padding="10" FontSize="16" BorderBrush="#4CAF50" BorderThickness="1" KeyDown="TextBox_KeyDown"/>
 
                     <!-- Login Button -->
                     <Button Name="LoginButton" Content="Login" Width="280" Height="45" Background="#4CAF50" Foreground="White" FontSize="16" BorderBrush="#4CAF50" BorderThickness="1" Click="LoginButton_Click"  Margin="0,20,0,0"/>

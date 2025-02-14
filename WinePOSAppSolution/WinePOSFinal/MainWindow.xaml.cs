@@ -13,7 +13,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using WinePOSFinal.Classes;
 using WinePOSFinal.UserControls;
 
@@ -32,6 +31,18 @@ namespace WinePOSFinal
 
         public PosPrinter m_Printer = null;
 
+        public LineDisplay m_Display = null;
+
+        public System.Windows.Forms.Button btnClose;
+        public System.Windows.Forms.Button btnClear;
+        public System.Windows.Forms.Button btnSpecifyPosition;
+        public System.Windows.Forms.Button btnBlinkCharacter;
+        public System.Windows.Forms.Button btnTeletypeCharacters;
+        public System.Windows.Forms.GroupBox grpScroll;
+        public System.Windows.Forms.Button btnLeft;
+        public System.Windows.Forms.Button btnRight;
+        public System.Windows.Forms.Button btnWindowControl;
+
 
         public MainWindow()
         {
@@ -42,14 +53,17 @@ namespace WinePOSFinal
 
                 InitializeCashDrawer();
                 InitializePrinter();
+                //InitializeDisplay();
 
                 string currentRole = AccessRightsManager.GetUserRole();
 
                 Inventorymaintenance.Visibility = Visibility.Collapsed;
+                SearchInventory.Visibility = Visibility.Collapsed;
 
-                if (currentRole.ToUpper() == "ADMIN")
+                if (currentRole.ToUpper() == "ADMIN" || currentRole.ToUpper() == "MANAGER")
                 {
-                    Inventorymaintenance.Visibility = Visibility.Visible;
+                    //Inventorymaintenance.Visibility = Visibility.Visible;
+                    SearchInventory.Visibility = Visibility.Visible;
                 }
             }
             catch (Exception ex)
@@ -111,7 +125,7 @@ namespace WinePOSFinal
                 cashDrawer = (CashDrawer)explorer.CreateInstance(deviceInfo);
 
                 cashDrawer.Open();
-                cashDrawer.Claim(1000);
+                cashDrawer.Claim(5000);
 
                 cashDrawer.DeviceEnabled = true;
 
@@ -124,6 +138,7 @@ namespace WinePOSFinal
                 MessageBox.Show("Error initializing cash drawer: " + ex.Message);
 
             }
+
 
         }
 
@@ -404,8 +419,109 @@ namespace WinePOSFinal
                 }
             }
 
-            // For example, you could save data, log, etc.
+            if (m_Display != null)
+            {
+                try
+                {
+                    //For clear the text on the window be in current use.
+                    m_Display.ClearText();
+
+                    //Cancel the device
+                    m_Display.DeviceEnabled = false;
+
+                    //Release the device exclusive control right.
+                    m_Display.Release();
+
+                }
+                catch (PosControlException)
+                {
+                }
+                finally
+                {
+                    //Finish using the device.
+                    m_Display.Close();
+                }
+            }
             // SaveData();
+        }
+
+        private void InitializeDisplay()
+
+        {
+
+            try
+            {
+                // Create PosExplorer
+                PosExplorer posExplorer = new PosExplorer();
+
+                // Get all available line displays
+                DeviceCollection devices = posExplorer.GetDevices(DeviceType.LineDisplay);
+
+                if (devices.Count == 0)
+                {
+                    MessageBox.Show("No Line Display found.", "Line Display", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    //ChangeButtonStatus();
+                    return;
+                }
+
+
+                //MessageBox.Show($" Display Name '{devices[0].LogicalNames}' .",
+                //    "Line Display", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // Pick the first available line display
+                DeviceInfo deviceInfo = devices[0];
+
+                // Initialize the line display
+                m_Display = (LineDisplay)posExplorer.CreateInstance(deviceInfo);
+
+                // Open the device
+                m_Display.Open();
+
+                // Get the exclusive control right
+                m_Display.Claim(1000);
+
+                // Enable Power Reporting if supported
+                if (m_Display.CapPowerReporting != PowerReporting.None)
+                {
+                    m_Display.PowerNotify = PowerNotification.Enabled;
+                }
+
+                // Enable the device
+                m_Display.DeviceEnabled = true;
+
+                //MessageBox.Show($"Line Display '{deviceInfo.ServiceObjectName}' initialized successfully.",
+                //    "Line Display", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (PosControlException ex)
+            {
+                MessageBox.Show("Error initializing Line Display: " + ex.Message, "Line Display", MessageBoxButton.OK, MessageBoxImage.Warning);
+                //ChangeButtonStatus();
+            }
+
+        }
+
+        public void DisplayText(string strTxt)
+        {
+            //<<<step1>>>--Start
+            try
+            {
+                m_Display.DisplayText("strTxt", DisplayTextMode.Normal);
+            }
+            catch (PosControlException)
+            {
+            }
+            //<<<step1>>>--End
+        }
+
+        private void ChangeButtonStatus()
+        {
+            btnClear.Enabled = false;
+            btnSpecifyPosition.Enabled = false;
+            btnBlinkCharacter.Enabled = false;
+            btnTeletypeCharacters.Enabled = false;
+            btnLeft.Enabled = false;
+            btnRight.Enabled = false;
+            btnWindowControl.Enabled = false;
         }
     }
 }

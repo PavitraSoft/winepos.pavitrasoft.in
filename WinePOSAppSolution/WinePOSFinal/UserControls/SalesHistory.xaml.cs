@@ -46,7 +46,7 @@ namespace WinePOSFinal.UserControls
             {
                 string currentRole = AccessRightsManager.GetUserRole();
 
-                if (currentRole.ToUpper() == "ADMIN")
+                if (currentRole.ToUpper() == "ADMIN" || currentRole.ToUpper() == "MANAGER")
                 {
                     isAdmin = true;
                 }
@@ -60,16 +60,7 @@ namespace WinePOSFinal.UserControls
 
                 string userRole = AccessRightsManager.GetUserRole(); // This is a placeholder method. Replace it with your actual role-fetching logic.
 
-                if (userRole.ToLower() != "admin")
-                {
-                    // Hide the IsVoided column for non-admin users
-                    var isVoidedColumn = SalesInventoryDataGrid.Columns.FirstOrDefault(col => col.Header.ToString() == "Voided");
-                    if (isVoidedColumn != null)
-                    {
-                        isVoidedColumn.Visibility = Visibility.Collapsed;
-                    }
-                }
-                else
+                if (userRole.ToLower() == "admin" || userRole.ToLower() == "manager")
                 {
                     // Show the IsVoided column for admin users
                     var isVoidedColumn = SalesInventoryDataGrid.Columns.FirstOrDefault(col => col.Header.ToString() == "Voided");
@@ -77,6 +68,19 @@ namespace WinePOSFinal.UserControls
                     {
                         isVoidedColumn.Visibility = Visibility.Visible;
                     }
+                    FlashReportButton.Visibility = Visibility.Visible;
+                    VoidInvoice.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    // Hide the IsVoided column for non-admin users
+                    var isVoidedColumn = SalesInventoryDataGrid.Columns.FirstOrDefault(col => col.Header.ToString() == "Voided");
+                    if (isVoidedColumn != null)
+                    {
+                        isVoidedColumn.Visibility = Visibility.Collapsed;
+                    }
+                    FlashReportButton.Visibility = Visibility.Collapsed;
+                    VoidInvoice.Visibility = Visibility.Collapsed;
                 }
             }
             catch (Exception ex)
@@ -238,6 +242,12 @@ namespace WinePOSFinal.UserControls
             dateFormat.MonthDayPattern = "MMMM";
             string strDate = nowDate.ToString("MMMM,dd,yyyy  HH:mm", dateFormat);
             string strbcData = invoiceNumber;
+
+
+            string strAddress = objService.GetValueFromConfig("Address");
+            string strStoreName = objService.GetValueFromConfig("StoreName");
+            string strPhone = objService.GetValueFromConfig("Phone");
+
             //String[] astritem = { "apples", "grapes", "bananas", "lemons", "oranges" };
             //String[] astrprice = { "10.00", "20.00", "30.00", "40.00", "50.00" };
 
@@ -256,10 +266,13 @@ namespace WinePOSFinal.UserControls
                     //<<<step3>>>--End
 
                     m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|N"
-                        + "123xxstreet,xxxcity,xxxxstate\n");
+                        + strStoreName + "\n");
+
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|N"
+                        + strAddress + "\n");
 
                     m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA"
-                        + "TEL 9999-99-9999   C#2\n");
+                        + "TEL " + strPhone + "\n");
 
                     //<<<step5>>--Start
                     //Make 2mm speces
@@ -692,22 +705,26 @@ namespace WinePOSFinal.UserControls
 
         private void SalesInventoryDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Format the total price information
-            // Get selected rows
-            var selectedRows = SalesInventoryDataGrid.SelectedItems.Cast<DataRowView>().ToList();
+            // Get selected rows and filter only cash payment invoices that are not voided
+            var selectedRows = SalesInventoryDataGrid.SelectedItems.Cast<DataRowView>()
+                //.Where(row => row["PaymentType"]?.ToString().Equals("Cash", StringComparison.OrdinalIgnoreCase) == true
+                //           && row["IsVoided"]?.ToString().Equals("No", StringComparison.OrdinalIgnoreCase) == true)
+                .ToList();
+
+            // If no valid cash payment invoice is selected, show $0.00
             if (!selectedRows.Any())
             {
                 TotalPriceLabel.Content = "Total Price: $0.00";
                 return;
             }
 
-            // Calculate total price for all selected rows
-            decimal totalPrice = selectedRows.Where(row => row["IsVoided"].ToString().ToLower() == "no").Sum(row => (decimal)row["TotalPrice"]);
+            // Calculate total price for selected cash invoices
+            decimal totalPrice = selectedRows.Sum(row => Convert.ToDecimal(row["TotalPrice"]));
 
             // Update the label to show the total price
             TotalPriceLabel.Content = $"Total Price: ${totalPrice:0.00}";
 
-
+            // Set the selected invoice code
             if (SalesInventoryDataGrid.SelectedItem is DataRowView selectedRow)
             {
                 try
@@ -722,6 +739,7 @@ namespace WinePOSFinal.UserControls
             }
         }
 
+
         private void VoidInvoice_Click(object sender, RoutedEventArgs e)
         {
             if (SalesInventoryDataGrid.SelectedItems.Count == 0)
@@ -732,20 +750,26 @@ namespace WinePOSFinal.UserControls
 
             string strSelectedInvoiceCodes = string.Empty;
 
-            // Collect all selected rows
-            var selectedRows = SalesInventoryDataGrid.SelectedItems.Cast<DataRowView>().ToList();
+            // Collect selected rows and filter only those with PaymentType = "Cash"
+            var selectedRows = SalesInventoryDataGrid.SelectedItems.Cast<DataRowView>()
+                .Where(row => row["PaymentType"]?.ToString().Equals("Cash", StringComparison.OrdinalIgnoreCase) == true)
+                .ToList();
+
+            if (selectedRows.Count == 0)
+            {
+                MessageBox.Show("No valid cash payment invoice selected to void.", "Void Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             var invoiceCodes = selectedRows.Select(row => row["InvoiceCode"].ToString()).Distinct();
 
-            var result = MessageBox.Show($"Are you sure you want to void selected invoices?", "Confirm Change", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = MessageBox.Show($"Are you sure you want to void selected cash invoices?", "Confirm Change", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
                 foreach (var invoiceCode in invoiceCodes)
                 {
-                    //MessageBox.Show($"Voiding all entries with InvoiceCode: {invoiceCode}");
-                    strSelectedInvoiceCodes += invoiceCode.ToString() + ",";
-
-                    //objService.VoidInvoice(Convert.ToInt32(invoiceCode));
+                    strSelectedInvoiceCodes += invoiceCode + ",";
                 }
 
                 if (!string.IsNullOrWhiteSpace(strSelectedInvoiceCodes))
@@ -757,13 +781,9 @@ namespace WinePOSFinal.UserControls
                         DataRow drVoid = dtVoid.Rows[0];
 
                         string IsAllowed = Convert.ToString(drVoid["IsAllowed"]);
-                        string DateFrom = Convert.ToString(drVoid["DateFrom"]);
-                        string DateTo = Convert.ToString(drVoid["DateTo"]);
                         string TotalInvoices = Convert.ToString(drVoid["TotalInvoices"]);
                         string VoidedInvoices = Convert.ToString(drVoid["VoidedInvoices"]);
                         string ToBeVoided = Convert.ToString(drVoid["ToBeVoided"]);
-                        string Percentage = Convert.ToString(drVoid["Percentage"]);
-                        string UserRole = Convert.ToString(drVoid["UserRole"]);
 
                         if (IsAllowed == "False")
                         {
@@ -778,7 +798,7 @@ namespace WinePOSFinal.UserControls
                         }
                         else
                         {
-                            MessageBox.Show("Invoice voided successfully.", "Void Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            MessageBox.Show("Cash invoices voided successfully.", "Void Invoice", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                     }
                     else
@@ -790,16 +810,11 @@ namespace WinePOSFinal.UserControls
                 }
                 else
                 {
-                    MessageBox.Show("No Invoice to Void.", "Void Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("No valid cash invoice to void.", "Void Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
-            else
-            {
-                // Cancel the edit
-            }
-
-
         }
+
 
 
 
