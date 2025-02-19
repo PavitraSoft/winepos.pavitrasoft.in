@@ -19,6 +19,9 @@ using WinePOSFinal.ServicesLayer;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.VariantTypes;
+using System.Security.Policy;
+using System.Web.Util;
 
 namespace WinePOSFinal
 {
@@ -33,12 +36,18 @@ namespace WinePOSFinal
         DataTable _dtInvoice;
         DataTable _dtPayment;
 
+        DateTime? _FromDate;
+        DateTime? _ToDate;
+
         public FlashReport(DataTable dtInvoice, DataTable dtPayment, DateTime? FromDate, DateTime? ToDate)
         {
             InitializeComponent();
 
             _dtInvoice = dtInvoice;
             _dtPayment = dtPayment;
+
+            _FromDate = FromDate;
+            _ToDate = ToDate;
 
             PopulateReport(FromDate, ToDate);
         }
@@ -120,333 +129,152 @@ namespace WinePOSFinal
 
         }
 
+        private void PrintButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Get Date Range
+                string reportDateFrom = _FromDate.Value.Date.AddHours(0).AddMinutes(0).AddSeconds(0).ToString("dd-MMM-yyyy HH:mm:ss");
+                string reportDateTo = _ToDate.Value.Date.AddHours(23).AddMinutes(59).AddSeconds(59).ToString("dd-MMM-yyyy HH:mm:ss");
+                string reportDate = $"From: {reportDateFrom}  To: {reportDateTo}";
+
+
+                // Financial Data Extraction from Labels
+                string netSales = NetSales.Text;
+                string netSalesT = NetSalesT.Text;  // Taxable Net Sales
+                string netSalesNT = NetSalesNT.Text; // Non-Taxable Net Sales
+                string totalTax = Tax.Text;
+                string totalSales = GrossSales.Text;
+
+                // Payment Breakdown from Labels
+                string cashSales = txtCash.Text;
+                string checkSales = txtChecks.Text;
+                string cardSales = txtCredit.Text;
+                string palmPaySales = txtPalmPay.Text;
+
+                // Transaction Details from Labels
+                string transactions = txtTransactions.Text;
+                string avgTransaction = txtAvgTransactions.Text;
+
+                // Call the Print Function with extracted values
+                PrintInvoice(reportDate, totalSales, totalTax, netSalesT, netSales, netSalesNT, cashSales, cardSales, checkSales, palmPaySales, transactions, avgTransaction);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error generating report: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close(); // Closes the current window
         }
 
-        private void PrintButton_Click(object sender, RoutedEventArgs e)
+
+
+        private void PrintInvoice(string reportDate, string totalSales, string totalTax, string netSalesT, string netSales, string netSalesNT, string cashSales, string cardSales, string checkSales, string palmPaySales, string transactions, string avgTransaction)
         {
-            try
-            {
-                //using (MemoryStream memoryStream = new MemoryStream())
-                //{
-                //    // Group by ItemName and sum TotalPrice & Quantity
-                //    var groupedData = _dtInvoice.AsEnumerable()
-                //        .GroupBy(row => row["Name"].ToString()) // Group by ItemName
-                //        .Select(g => new
-                //        {
-                //            ItemName = g.Key,
-                //            TotalPrice = g.Sum(row => Convert.ToDecimal(row["TotalPrice"])),
-                //            TotalQuantity = g.Sum(row => Convert.ToInt32(row["Quantity"]))
-                //        })
-                //        .ToList();
 
-                //    // Create a new PDF document
-                //    Document document = new Document(PageSize.A4);
-                //    PdfWriter.GetInstance(document, memoryStream);
-                //    document.Open();
-
-                //    // Add Title
-                //    Font titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 16);
-                //    Paragraph title = new Paragraph("Flash Report\n\n", titleFont);
-                //    title.Alignment = Element.ALIGN_CENTER;
-                //    document.Add(title);
-
-                //    // Create a table with 3 columns
-                //    PdfPTable table = new PdfPTable(3);
-                //    table.WidthPercentage = 100;
-                //    table.SetWidths(new float[] { 40f, 30f, 30f }); // Column widths
-
-                //    // Add table headers
-                //    Font headerFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12);
-                //    table.AddCell(new PdfPCell(new Phrase("Item Name", headerFont)) { HorizontalAlignment = Element.ALIGN_CENTER });
-                //    table.AddCell(new PdfPCell(new Phrase("Amount ($)", headerFont)) { HorizontalAlignment = Element.ALIGN_CENTER });
-                //    table.AddCell(new PdfPCell(new Phrase("#OfItem", headerFont)) { HorizontalAlignment = Element.ALIGN_CENTER });
-
-                //    // Add Data Rows
-                //    Font rowFont = FontFactory.GetFont(FontFactory.HELVETICA, 11);
-                //    foreach (var item in groupedData)
-                //    {
-                //        table.AddCell(new PdfPCell(new Phrase(item.ItemName, rowFont)) { HorizontalAlignment = Element.ALIGN_CENTER });
-                //        table.AddCell(new PdfPCell(new Phrase(item.TotalPrice.ToString("0.00"), rowFont)) { HorizontalAlignment = Element.ALIGN_CENTER });
-                //        table.AddCell(new PdfPCell(new Phrase(item.TotalQuantity.ToString(), rowFont)) { HorizontalAlignment = Element.ALIGN_CENTER });
-                //    }
-
-                //    // Add table to document
-                //    document.Add(table);
-                //    document.Close();
-
-                //    // Convert MemoryStream to byte array
-                //    byte[] pdfBytes = memoryStream.ToArray();
-
-                //    // Open PDF directly from memory (use a temporary file)
-                //    string tempFilePath = Path.Combine(Path.GetTempPath(), "FlashReport.pdf");
-                //    File.WriteAllBytes(tempFilePath, pdfBytes);
-                //    Process.Start(new ProcessStartInfo(tempFilePath) { UseShellExecute = true });
-
-                //    //MessageBox.Show("PDF report generated successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                //}
-
-                DataTable InvoiceData = _dtInvoice;
-                DataTable PaymentData = _dtPayment;
-
-                string[] name = InvoiceData.AsEnumerable()
-                             .Select(row => row.Field<string>("Name").ToString())
-                             .ToArray();
-
-                string[] price = InvoiceData.AsEnumerable()
-                             .Select(row => row.Field<decimal>("Price").ToString())
-                             .ToArray();
-
-                string[] quantity = InvoiceData.AsEnumerable()
-                             .Select(row => row.Field<int>("Quantity").ToString())
-                             .ToArray();
-
-                string[] tax = InvoiceData.AsEnumerable()
-                             .Select(row => row.Field<decimal>("Tax").ToString())
-                             .ToArray();
-
-                string[] totalPrice = InvoiceData.AsEnumerable()
-                             .Select(row => row.Field<decimal>("TotalPrice").ToString())
-                             .ToArray();
-
-                string[] discount = InvoiceData.AsEnumerable()
-                             .Select(row => row.Field<decimal>("Discount").ToString())
-                             .ToArray();
-
-                string paymentType = Convert.ToString(InvoiceData.Rows[0]["PaymentType"]);
-
-                string strCashAmt = string.Empty;
-                string strCheckAmt = string.Empty;
-                string strCreditAmt = string.Empty;
-                string strPalmPayAmt = string.Empty;
-
-                foreach (DataRow dataRow in PaymentData.Rows)
-                {
-                    string strPaymentType = Convert.ToString(dataRow["PaymentType"]).ToUpper();
-                    decimal Amount = Convert.ToDecimal(dataRow["Amount"]);
-
-                    if (Amount > 0)
-                    {
-                        if (strPaymentType == "CASH")
-                            strCashAmt = Amount.ToString("G29");
-                        else if (strPaymentType == "CHECK")
-                            strCheckAmt = Amount.ToString("G29");
-                        else if (strPaymentType == "CREDIT")
-                            strCreditAmt = Amount.ToString("G29");
-                        else if (strPaymentType == "PALMPAY")
-                            strPalmPayAmt = Amount.ToString("G29");
-                    }
-                }
-
-                PrintInvoice(name, price, quantity, tax, totalPrice, discount, strCashAmt, strCheckAmt, strCreditAmt, strPalmPayAmt, string.Empty);
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-
-        private void PrintInvoice(string[] name, string[] price, string[] quantity, string[] tax, string[] totalPrice, string[] discount, string strCashAmt, string strCheckAmt, string strCreditAmt, string strPalmPayAmt, string invoiceNumber)
-        {
             var mainWindow = (MainWindow)Application.Current.MainWindow;
             PosPrinter m_Printer = mainWindow.m_Printer;
-            //<<<step2>>>--Start
-            //Initialization
-            DateTime nowDate = DateTime.Now;                            //System date
-            DateTimeFormatInfo dateFormat = new DateTimeFormatInfo();   //Date Format
-            dateFormat.MonthDayPattern = "MMMM";
-            string strDate = nowDate.ToString("MMMM,dd,yyyy  HH:mm", dateFormat);
-            string strbcData = invoiceNumber;
 
-            string strStoreName = objService.GetValueFromConfig("StoreName");
-            string strAddress = objService.GetValueFromConfig("Address");
-            string strPhone = objService.GetValueFromConfig("Phone");
-
-            //String[] astritem = { "apples", "grapes", "bananas", "lemons", "oranges" };
-            //String[] astrprice = { "10.00", "20.00", "30.00", "40.00", "50.00" };
-
-            if (m_Printer.CapRecPresent)
+            try
             {
+                // Open Printer
+                m_Printer.Open();
+                m_Printer.Claim(1000);
+                m_Printer.DeviceEnabled = true;
 
-                try
+                if (m_Printer.CapRecPresent)
                 {
-                    //<<<step6>>>--Start
-                    //Batch processing mode
-                    m_Printer.TransactionPrint(PrinterStation.Receipt
-                        , PrinterTransactionControl.Transaction);
+                    // Start Batch Printing
+                    m_Printer.TransactionPrint(PrinterStation.Receipt, PrinterTransactionControl.Transaction);
 
-                    //<<<step3>>>--Start
+                    // Print Header
                     m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|1B");
-                    //<<<step3>>>--End
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "FLASH REPORT\n");
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + reportDate + "\n");
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "----------------------------------------\n");
 
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|N"
-                        + strStoreName + "\n");
+                    // Print Sales Summary
 
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|N"
-                        + strAddress + "\n");
+                    string strPrintData;
 
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|rA"
-                        + "TEL " + strPhone + "\n");
-
-                    //<<<step5>>--Start
-                    //Make 2mm speces
-                    //ESC|#uF = Line Feed
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|200uF");
-                    //<<<step5>>>-End
-
-                    int iRecLineCharsCount = m_Printer.RecLineCharsList.Length;
-                    if (iRecLineCharsCount >= 2)
-                    {
-                        m_Printer.RecLineChars = m_Printer.RecLineCharsList[1];
-                        m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + strDate + "\n");
-                        m_Printer.RecLineChars = m_Printer.RecLineCharsList[0];
-                    }
-                    else
-                    {
-                        m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + strDate + "\n");
-                    }
-
-                    //<<<step5>>>--Start
-                    //Make 5mm speces
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
-
-                    //Print buying goods
-                    double total = 0.0;
-                    string strPrintData = "";
-                    for (int i = 0; i < name.Length; i++)
-                    {
-                        decimal itemTotal = Convert.ToDecimal(quantity[i]) * Convert.ToDecimal(price[i]);
-
-                        string strDiscount = (Convert.ToDecimal(discount[i]) != 0) ? "* (" + Convert.ToString(discount[i]) + "%)" : string.Empty;
-
-                        strPrintData = MakePrintString(m_Printer.RecLineChars, name[i] + strDiscount, "   " + quantity[i] + " @ $" + price[i] + " $"
-                            + (Convert.ToDecimal(quantity[i]) * Convert.ToDecimal(price[i])));
-
-                        m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
-
-                        total += Convert.ToDouble(itemTotal);
-
-                    }
-
-                    //Make 2mm speces
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|200uF");
-
-                    //Print the total cost
-                    strPrintData = MakePrintString(m_Printer.RecLineChars, "Tax excluded."
-                        , "$" + total.ToString("F"));
-
+                    strPrintData = MakePrintString(m_Printer.RecLineChars, "Net Sales:", "$" + netSales);
                     m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + strPrintData + "\n");
 
-                    decimal totaltax = tax.Select(item => Convert.ToDecimal(item)).Sum();
-                    decimal totalPriceAfterTax = totalPrice.Select(item => Convert.ToDecimal(item)).Sum();
-
-                    strPrintData = MakePrintString(m_Printer.RecLineChars, "Tax ", "$"
-                        + (totaltax).ToString("F"));
-
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|uC" + strPrintData + "\n");
-
-                    strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "Total", "$"
-                        + (totalPriceAfterTax).ToString("F"));
-
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
-                        + strPrintData + "\n");
-
-                    //strPrintData = MakePrintString(m_Printer.RecLineChars, "Customer's payment", "$200.00");
-
-                    m_Printer.PrintNormal(PrinterStation.Receipt
-                        , strPrintData + "\n");
-
-                    //strPrintData = MakePrintString(m_Printer.RecLineChars, "Change", "$" + (200.00 - (total * 1.05)).ToString("F"));
-
+                    strPrintData = MakePrintString(m_Printer.RecLineChars, "Net Sales - Taxed:", "$" + netSalesT);
                     m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
 
-                    if (!string.IsNullOrWhiteSpace(strCashAmt))
-                    {
-                        strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "CASH", "$"
-                            + strCashAmt);
+                    strPrintData = MakePrintString(m_Printer.RecLineChars, "Net Sales - NOT Taxed:", "$" + netSalesNT);
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + strPrintData + "\n");
 
-                        m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
-                            + strPrintData + "\n");
-                    }
-                    if (!string.IsNullOrWhiteSpace(strCheckAmt))
-                    {
-                        strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "CHECK", "$"
-                            + strCheckAmt);
-
-                        m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
-                            + strPrintData + "\n");
-                    }
-                    if (!string.IsNullOrWhiteSpace(strPalmPayAmt))
-                    {
-                        strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "PALM PAY", "$"
-                            + strPalmPayAmt);
-
-                        m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
-                            + strPrintData + "\n");
-                    }
-                    if (!string.IsNullOrWhiteSpace(strCreditAmt))
-                    {
-                        strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "CREDIT", "$"
-                            + strCreditAmt);
-
-                        m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
-                            + strPrintData + "\n");
-                    }
-
-                    //strPrintData = MakePrintString(m_Printer.RecLineChars / 2, "Payment Type", "$"
-                    //    + paymentType);
-
-                    //m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|bC" + "\u001b|2C"
-                    //    + strPrintData + "\n");
-
-                    //Make 5mm speces
-                    //m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
-
-                    //<<<step4>>>--Start
-                    if (string.IsNullOrWhiteSpace(strbcData))
-                    {
-                        if (m_Printer.CapRecBarCode == true)
-                        {
-                            string barcodeData = ConvertInvoiceToEAN13(Convert.ToInt32(strbcData));
-
-                            //Barcode printing
-                            m_Printer.PrintBarCode(PrinterStation.Receipt, barcodeData,
-                                BarCodeSymbology.EanJan13, 1000,
-                                m_Printer.RecLineWidth, PosPrinter.PrinterBarCodeLeft,
-                                BarCodeTextPosition.Below);
-                        }
-                    }
-                    //<<<step4>>>--End
-
-
-                    //Make 5mm speces
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
-
-                    strPrintData = "Thank you for shopping at Crown Liquor!";
-
+                    strPrintData = MakePrintString(m_Printer.RecLineChars, "Taxes:", "$" + totalTax);
                     m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
 
-                    //<<<step5>>>--End
+                    strPrintData = MakePrintString(m_Printer.RecLineChars, "Gross Sales:", "$" + totalSales);
+                    m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
 
+                    // Payment Breakdown
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "----------------------------------------\n");
 
+                    if (!string.IsNullOrWhiteSpace(cashSales))
+                    {
+                        strPrintData = MakePrintString(m_Printer.RecLineChars, "Cash:", "$" + cashSales);
+                        m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(cardSales))
+                    {
+                        strPrintData = MakePrintString(m_Printer.RecLineChars, "Credit/Debit\r\n:", "$" + cardSales);
+                        m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(checkSales))
+                    {
+                        strPrintData = MakePrintString(m_Printer.RecLineChars, "Checks:", "$" + checkSales);
+                        m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(palmPaySales))
+                    {
+                        strPrintData = MakePrintString(m_Printer.RecLineChars, "PalmPAY:", "$" + palmPaySales);
+                        m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
+                    }
+
+                    // Transaction Info
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "----------------------------------------\n");
+                    strPrintData = MakePrintString(m_Printer.RecLineChars, "Transactions:", transactions);
+                    m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
+
+                    strPrintData = MakePrintString(m_Printer.RecLineChars, "Average Transaction\r\n:", "$" + avgTransaction);
+                    m_Printer.PrintNormal(PrinterStation.Receipt, strPrintData + "\n");
+
+                    // Footer
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "----------------------------------------\n");
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + "End of Report\n");
+
+                    // Cut Paper
                     m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|fP");
-                    //<<<step2>>>--End
 
-                    //print all the buffer data. and exit the batch processing mode.
-                    m_Printer.TransactionPrint(PrinterStation.Receipt
-                        , PrinterTransactionControl.Normal);
-                    //<<<step6>>>--End
-                }
-                catch (PosControlException ex)
-                {
-                    MessageBox.Show("Error while printing invoice. Exception:" + ex.ToString(), "Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    // End Batch Printing
+                    m_Printer.TransactionPrint(PrinterStation.Receipt, PrinterTransactionControl.Normal);
                 }
             }
-
+            catch (PosControlException ex)
+            {
+                MessageBox.Show("Error while printing flash report. Exception: " + ex.ToString(), "Flash Report", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            finally
+            {
+                if (m_Printer != null)
+                {
+                    m_Printer.DeviceEnabled = false;
+                    m_Printer.Release();
+                    m_Printer.Close();
+                }
+            }
         }
 
         public static string ConvertInvoiceToEAN13(int invoiceNumber)
@@ -495,25 +323,107 @@ namespace WinePOSFinal
                 // Create a new Excel workbook
                 using (var workbook = new XLWorkbook())
                 {
-                    var worksheet = workbook.Worksheets.Add("Invoices");
+                    //var worksheet = workbook.Worksheets.Add("Invoices");
 
-                    // Add headers
-                    worksheet.Cell(1, 1).Value = "ItemName";
-                    worksheet.Cell(1, 2).Value = "Amount";
-                    worksheet.Cell(1, 3).Value = "#OfItem";
+                    //// Add headers
+                    //worksheet.Cell(1, 1).Value = "ItemName";
+                    //worksheet.Cell(1, 2).Value = "Amount";
+                    //worksheet.Cell(1, 3).Value = "#OfItem";
 
-                    // Apply styling (bold header)
-                    worksheet.Range("A1:C1").Style.Font.Bold = true;
+                    //// Apply styling (bold header)
+                    //worksheet.Range("A1:C1").Style.Font.Bold = true;
 
-                    // Populate data from grouped results
-                    int row = 2;
-                    foreach (var item in groupedData)
-                    {
-                        worksheet.Cell(row, 1).Value = item.ItemName;
-                        worksheet.Cell(row, 2).Value = item.TotalPrice;
-                        worksheet.Cell(row, 3).Value = item.TotalQuantity;
-                        row++;
-                    }
+                    //// Populate data from grouped results
+                    //int row = 2;
+                    //foreach (var item in groupedData)
+                    //{
+                    //    worksheet.Cell(row, 1).Value = item.ItemName;
+                    //    worksheet.Cell(row, 2).Value = item.TotalPrice;
+                    //    worksheet.Cell(row, 3).Value = item.TotalQuantity;
+                    //    row++;
+                    //}
+
+                    //// Auto-fit columns for better visibility
+                    //worksheet.Columns().AdjustToContents();
+
+                    //// Save the workbook
+                    //workbook.SaveAs(fullFolderPath);
+
+                    var worksheet = workbook.Worksheets.Add("Flash Report");
+
+                    int row = 1; // Start at first row
+
+                    // Title
+                    worksheet.Cell(row, 1).Value = "FLASH REPORT";
+                    worksheet.Cell(row, 1).Style.Font.Bold = true;
+                    worksheet.Cell(row, 1).Style.Font.FontSize = 16;
+                    worksheet.Range(row, 1, row, 3).Merge().Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    row += 2; // Move to next section
+
+                    // Date Range
+                    worksheet.Cell(row, 1).Value = "From: " + txtDateFrom.Text;
+                    worksheet.Cell(row, 3).Value = "To: " + txtDateTo.Text;
+                    worksheet.Row(row).Style.Font.Bold = true;
+                    row += 2;
+
+                    // **Sales Totals**
+                    worksheet.Cell(row, 1).Value = "SALES TOTALS";
+                    worksheet.Cell(row, 1).Style.Font.Bold = true;
+                    row++;
+
+                    worksheet.Cell(row, 1).Value = "Net Sales";
+                    worksheet.Cell(row, 2).Value = NetSales.Text;
+                    row++;
+
+                    worksheet.Cell(row, 1).Value = "Net Sales - Taxed";
+                    worksheet.Cell(row, 2).Value = NetSalesT.Text;
+                    row++;
+
+                    worksheet.Cell(row, 1).Value = "Net Sales - NOT Taxed";
+                    worksheet.Cell(row, 2).Value = NetSalesNT.Text;
+                    row++;
+
+                    worksheet.Cell(row, 1).Value = "Taxes";
+                    worksheet.Cell(row, 2).Value = Tax.Text;
+                    row++;
+
+                    worksheet.Cell(row, 1).Value = "Gross Sales";
+                    worksheet.Cell(row, 2).Value = GrossSales.Text;
+                    row += 2;
+
+                    // **Payment Breakdown**
+                    worksheet.Cell(row, 1).Value = "PAYMENT TYPE BREAKDOWN";
+                    worksheet.Cell(row, 1).Style.Font.Bold = true;
+                    row++;
+
+                    worksheet.Cell(row, 1).Value = "Cash";
+                    worksheet.Cell(row, 2).Value = txtCash.Text;
+                    row++;
+
+                    worksheet.Cell(row, 1).Value = "Checks";
+                    worksheet.Cell(row, 2).Value = txtChecks.Text;
+                    row++;
+
+                    worksheet.Cell(row, 1).Value = "Credit/Debit";
+                    worksheet.Cell(row, 2).Value = txtCredit.Text;
+                    row++;
+
+                    worksheet.Cell(row, 1).Value = "PalmPAY";
+                    worksheet.Cell(row, 2).Value = txtPalmPay.Text;
+                    row += 2;
+
+                    // **Transaction Statistics**
+                    worksheet.Cell(row, 1).Value = "TRANSACTION STATISTICS";
+                    worksheet.Cell(row, 1).Style.Font.Bold = true;
+                    row++;
+
+                    worksheet.Cell(row, 1).Value = "Transactions";
+                    worksheet.Cell(row, 2).Value = txtTransactions.Text;
+                    row++;
+
+                    worksheet.Cell(row, 1).Value = "Average Transaction";
+                    worksheet.Cell(row, 2).Value = txtAvgTransactions.Text;
+                    row++;
 
                     // Auto-fit columns for better visibility
                     worksheet.Columns().AdjustToContents();

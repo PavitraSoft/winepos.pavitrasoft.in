@@ -62,7 +62,7 @@ namespace WinePOSFinal {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/WinePOSFinal;component/taxwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/OnestopPOS;component/taxwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\TaxWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

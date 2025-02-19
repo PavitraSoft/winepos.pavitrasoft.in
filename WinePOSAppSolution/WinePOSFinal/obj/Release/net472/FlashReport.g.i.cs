@@ -158,7 +158,7 @@ namespace WinePOSFinal {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/WinePOSFinal;component/flashreport.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/OnestopPOS;component/flashreport.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\FlashReport.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

@@ -1,0 +1,108 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\WinePOSFinal.csproj": {}
+  },
+  "projects": {
+    "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\WinePOSFinal.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\WinePOSFinal.csproj",
+        "projectName": "WinePOSFinal",
+        "projectPath": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\WinePOSFinal.csproj",
+        "packagesPath": "C:\\Users\\Parth Sabhadiya\\.nuget\\packages\\",
+        "outputPath": "D:\\Study\\Dotnet\\WinePOSGIT\\winepos.pavitrasoft.in\\WinePOSAppSolution\\WinePOSFinal\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Parth Sabhadiya\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net472": {
+            "targetAlias": "net472",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.100"
+      },
+      "frameworks": {
+        "net472": {
+          "targetAlias": "net472",
+          "dependencies": {
+            "ClosedXML": {
+              "target": "Package",
+              "version": "[0.104.2, )"
+            },
+            "CrystalDecisions.ReportSource": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "CrystalDecisions.Shared": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "CrystalReports.Engine": {
+              "target": "Package",
+              "version": "[13.0.4003, )"
+            },
+            "CrystalReports.ReportAppServer.ClientDoc": {
+              "target": "Package",
+              "version": "[13.0.4003, )"
+            },
+            "CrystalReports.ReportAppServer.CommLayer": {
+              "target": "Package",
+              "version": "[13.0.4003, )"
+            },
+            "CrystalReports.ReportAppServer.DataSetConversion": {
+              "target": "Package",
+              "version": "[13.0.4003, )"
+            },
+            "System.Data.DataSetExtensions": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "System.Data.SqlClient": {
+              "target": "Package",
+              "version": "[4.9.0, )"
+            },
+            "System.Drawing.Common": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "System.Runtime": {
+              "target": "Package",
+              "version": "[4.3.1, )"
+            },
+            "iTextSharp": {
+              "target": "Package",
+              "version": "[5.5.13.4, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

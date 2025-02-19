@@ -319,11 +319,14 @@ namespace WinePOSFinal
 
         private void OpenCashDrawer()
         {
+            var mainWindow = (MainWindow)Application.Current.MainWindow;
+            CashDrawer cashDrawer = mainWindow.cashDrawer;
             try
             {
-                var mainWindow = (MainWindow)Application.Current.MainWindow;
-                CashDrawer cashDrawer = mainWindow.cashDrawer;
 
+                cashDrawer.Open();
+                cashDrawer.Claim(5000);
+                cashDrawer.DeviceEnabled = true;
                 if (cashDrawer != null && cashDrawer.DeviceEnabled)
                 {
                     cashDrawer.OpenDrawer();
@@ -336,6 +339,17 @@ namespace WinePOSFinal
             catch (Exception ex)
             {
                 MessageBox.Show("Error opening cash drawer: " + ex.Message);
+            }
+
+            finally
+            {
+                // ✅ Ensure the device is properly released before initializing the printer
+                if (cashDrawer != null)
+                {
+                    cashDrawer.DeviceEnabled = false;
+                    cashDrawer.Release();
+                    cashDrawer.Close();
+                }
             }
         }
 

@@ -10,11 +10,11 @@ none
 false
 TRACE;RELEASE;NETFRAMEWORK;NET472;
 D:\Study\Dotnet\WinePOSGIT\winepos.pavitrasoft.in\WinePOSAppSolution\WinePOSFinal\App.xaml
-161449253015
+17-1268452652
 
-2833009328
+29-1417422090
 1631362613516
-Billing.xaml;BulkPricing.xaml;ConnectionTester.xaml;FlashReport.xaml;InventoryMaintenanceWindow.xaml;LoadingWindow.xaml;Login.xaml;MainWindow.xaml;QuickAdd.xaml;ReportViewerWindow.xaml;SplitPayment.xaml;TaxWindow.xaml;TenderWindow.xaml;UserControls\InventoryMaintenance.xaml;UserControls\SalesHistory.xaml;UserControls\SearchInventory.xaml;
+Billing.xaml;BulkPricing.xaml;ConnectionTester.xaml;FlashReport.xaml;HourlyReport.xaml;InventoryMaintenanceWindow.xaml;LoadingWindow.xaml;Login.xaml;MainWindow.xaml;QuickAdd.xaml;ReportViewerWindow.xaml;SplitPayment.xaml;TaxWindow.xaml;TenderWindow.xaml;UserControls\InventoryMaintenance.xaml;UserControls\SalesHistory.xaml;UserControls\SearchInventory.xaml;
 
-False
+True
 

@@ -41,6 +41,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Collections.Specialized;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Utilities.IO;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace WinePOSFinal
 {
@@ -113,7 +114,7 @@ namespace WinePOSFinal
 
         }
 
-       
+
 
         public void ReloadBillingData()
         {
@@ -337,21 +338,18 @@ namespace WinePOSFinal
                                     decimal tax = CalculatePriceAfterTax(totalPrice, dr[0], dtTax);
                                     //decimal taxedPrice = parsedPrice + tax;
                                     decimal taxedPrice = tax;
-                                    existingItem.Price = Convert.ToString(Math.Round(parsedPrice,2));
+                                    existingItem.Price = Convert.ToString(Math.Round(parsedPrice, 2));
                                     existingItem.Tax = Convert.ToString(Math.Round((tax - totalPrice) / newQuantity, 3));
                                     existingItem.Quantity = Convert.ToString(newQuantity);
                                     existingItem.Discount = Convert.ToString(Math.Round(discount));
-                                    existingItem.TotalPrice = Convert.ToString(Math.Round(taxedPrice,2));
+                                    existingItem.TotalPrice = Convert.ToString(Math.Round(taxedPrice, 2));
                                     existingItem.Note = strNote;
                                     // Clear the TextBox controls for new input
                                     txtUPC.Clear();
                                     txtName.Clear();
                                     txtQuantity.Text = "1";
 
-                                    //var mainWindow = (MainWindow)Application.Current.MainWindow;
-                                    //LineDisplay m_Display = mainWindow.m_Display;
-
-                                    //m_Display.DisplayText(strName + "  " + Convert.ToString(newQuantity) + "  " + Convert.ToString(Math.Round(taxedPrice, 2)));
+                                    ShowTextOnDisplay(strName, existingItem.Quantity, existingItem.TotalPrice);
                                 }
                                 else
                                 {
@@ -431,11 +429,11 @@ namespace WinePOSFinal
                                     {
                                         UPC = strUPC,
                                         Name = strName,
-                                        Price = Convert.ToString(Math.Round(parsedPrice,2)),
+                                        Price = Convert.ToString(Math.Round(parsedPrice, 2)),
                                         Quantity = Convert.ToString(parsedQuantity),
-                                        Tax = Convert.ToString(Math.Round((tax - totalPrice)/ parsedQuantity, 3)), // Format total price as a string with 2 decimals
+                                        Tax = Convert.ToString(Math.Round((tax - totalPrice) / parsedQuantity, 3)), // Format total price as a string with 2 decimals
                                         Discount = "0",
-                                        TotalPrice = Convert.ToString(Math.Round(taxedPrice,2)), // Format total price as a string with 2 decimals
+                                        TotalPrice = Convert.ToString(Math.Round(taxedPrice, 2)), // Format total price as a string with 2 decimals
                                         UserName = AccessRightsManager.GetUserName(),
                                         Note = strNote,
                                         ItemID = Convert.ToString(ItemID),
@@ -449,10 +447,8 @@ namespace WinePOSFinal
                                     txtName.Clear();
                                     txtQuantity.Text = "1";
 
-                                    //var mainWindow = (MainWindow)Application.Current.MainWindow;
-                                    //LineDisplay m_Display = mainWindow.m_Display;
 
-                                    //m_Display.DisplayText(strName + "  " + Convert.ToString(parsedQuantity) + "  " + Convert.ToString(Math.Round(taxedPrice, 2)));
+                                    ShowTextOnDisplay(strName, newItem.Quantity, newItem.TotalPrice);
                                 }
                                 else
                                 {
@@ -578,7 +574,7 @@ namespace WinePOSFinal
                 MessageBox.Show($"Error 1: {ex.Message}");
             }
 
-            
+
 
         }
 
@@ -1074,6 +1070,8 @@ namespace WinePOSFinal
 
                 }
 
+                ShowTextOnDisplay("Thank you for shopping.", "", "");
+
                 return true;
             }
             catch
@@ -1491,7 +1489,7 @@ namespace WinePOSFinal
                         decimal taxedPrice = tax;
                         editedItem.Price = Convert.ToString(parsedPrice);
                         editedItem.Tax = (tax - parsedPrice).ToString();
-                        editedItem.Discount =Convert.ToString(discount);
+                        editedItem.Discount = Convert.ToString(discount);
                         editedItem.TotalPrice = (taxedPrice * iQuantity).ToString("F2");
 
                         // Refresh the grid (not strictly necessary if binding is set up correctly
@@ -1573,7 +1571,7 @@ namespace WinePOSFinal
 
         private void NonScanNoTax_Click(object sender, RoutedEventArgs e)
         {
-            var addWindow = new QuickAdd(objBillingItems, 1,0, "NON SCAN NO TAX");
+            var addWindow = new QuickAdd(objBillingItems, 1, 0, "NON SCAN NO TAX");
             if (addWindow.ShowDialog() == true)
             {
                 CalculateTotals();
@@ -1636,7 +1634,7 @@ namespace WinePOSFinal
                     // Check if the item already exists in the ObservableCollection
                     var existingItem = objBillingItems.FirstOrDefault(item => item.ItemID == Convert.ToString(ItemID));
 
-                   
+
                     if (existingItem != null)
                     {
                         // Update the quantity of the existing item
@@ -1729,17 +1727,15 @@ namespace WinePOSFinal
                             existingItem.Tax = Convert.ToString(Math.Round((tax - totalPrice) / newQuantity, 3));
                             existingItem.Quantity = Convert.ToString(newQuantity);
                             existingItem.Discount = Convert.ToString(discount);
-                            existingItem.TotalPrice = Convert.ToString(Math.Round(taxedPrice,2));
+                            existingItem.TotalPrice = Convert.ToString(Math.Round(taxedPrice, 2));
                             existingItem.Note = strNote;
                             // Clear the TextBox controls for new input
                             txtUPC.Clear();
                             txtName.Clear();
                             txtQuantity.Text = "1";
 
-                            //var mainWindow = (MainWindow)Application.Current.MainWindow;
-                            //LineDisplay m_Display = mainWindow.m_Display;
 
-                            //m_Display.DisplayText(strName + "  " + Convert.ToString(newQuantity) + "  " + Convert.ToString(Math.Round(taxedPrice, 2)));
+                            ShowTextOnDisplay(strName, existingItem.Quantity, existingItem.TotalPrice);
                         }
                         else
                         {
@@ -1834,10 +1830,8 @@ namespace WinePOSFinal
                             txtName.Clear();
                             txtQuantity.Text = "1";
 
-                            //var mainWindow = (MainWindow)Application.Current.MainWindow;
-                            //LineDisplay m_Display = mainWindow.m_Display;
 
-                            //m_Display.DisplayText(strName + "  " + Convert.ToString(parsedQuantity) + "  " + Convert.ToString(Math.Round(taxedPrice, 2)));
+                            ShowTextOnDisplay(strName, newItem.Quantity, newItem.TotalPrice);
                         }
                         else
                         {
@@ -1859,11 +1853,13 @@ namespace WinePOSFinal
 
         private void OpenCashDrawer()
         {
+            var mainWindow = (MainWindow)Application.Current.MainWindow;
+            CashDrawer cashDrawer = mainWindow.cashDrawer;
             try
             {
-                var mainWindow = (MainWindow)Application.Current.MainWindow;
-                CashDrawer cashDrawer = mainWindow.cashDrawer;
-
+                cashDrawer.Open();
+                cashDrawer.Claim(5000);
+                cashDrawer.DeviceEnabled = true;
                 if (cashDrawer != null && cashDrawer.DeviceEnabled)
                 {
                     cashDrawer.OpenDrawer();
@@ -1876,6 +1872,16 @@ namespace WinePOSFinal
             catch (Exception ex)
             {
                 MessageBox.Show("Error opening cash drawer: " + ex.Message);
+            }
+            finally
+            {
+                // ✅ Ensure the device is properly released before initializing the printer
+                if (cashDrawer != null)
+                {
+                    cashDrawer.DeviceEnabled = false;
+                    cashDrawer.Release();
+                    cashDrawer.Close();
+                }
             }
         }
 
@@ -1981,10 +1987,8 @@ namespace WinePOSFinal
                     CalculateTotals();
 
 
-                    //var mainWindow = (MainWindow)Application.Current.MainWindow;
-                    //LineDisplay m_Display = mainWindow.m_Display;
 
-                    //m_Display.DisplayText(selectedItem.Name + "  " + Convert.ToString(iQuantity) + "  " + Convert.ToString(Math.Round(taxedPrice, 2)));
+                    ShowTextOnDisplay(selectedItem.Name, selectedItem.Quantity, selectedItem.TotalPrice);
 
                     // Prevent further processing of the key
                     e.Handled = true;
@@ -2020,7 +2024,7 @@ namespace WinePOSFinal
         {
             try
             {
-                var addWindow = new SplitPayment(paymentList, Math.Round(GrandTotal,2));
+                var addWindow = new SplitPayment(paymentList, Math.Round(GrandTotal, 2));
                 if (addWindow.ShowDialog() == true)
                 {
                     if (SaveInvoice(objBillingItems, false, "SPLIT", paymentList, editinvoiceNumber))
@@ -2102,7 +2106,7 @@ namespace WinePOSFinal
                     }
 
                 }
-                
+
 
                 BillingItem newItem = new BillingItem
                 {
@@ -2132,7 +2136,11 @@ namespace WinePOSFinal
             txtQuantity.Text = "1";
         }
 
-
+        public void ShowTextOnDisplay(string ItemName, string ItemQuantity, string ItemPrice)
+        {
+            //var mainWindow = (MainWindow)Application.Current.MainWindow;
+            //mainWindow.DisplayText(ItemName + "     " + ItemQuantity, "$" + ItemPrice);
+        }
     }
 
     //public class ComboBoxItem

@@ -29,13 +29,6 @@
                             VerticalAlignment="Center" 
                             Margin="10,0,0,0" 
                             Click="PrintInvoiceButton_Click"/>
-                    <Button Name="FlashReportButton" 
-                            Content="Flash Report" 
-                            Width="120" 
-                            Height="30" 
-                            Margin="5,0" 
-                            VerticalAlignment="Center" 
-                            Click="FlashReportButton_Click"/>
                     <Button Name="VoidInvoice" 
                             Content="Void Invoice" 
                             Width="120" 
@@ -50,6 +43,20 @@
                             Margin="5,0" 
                             VerticalAlignment="Center" 
                             Click="EditInvoice_Click"/>
+                    <Button Name="FlashReportButton" 
+                            Content="Flash Report" 
+                            Width="120" 
+                            Height="30" 
+                            Margin="5,0" 
+                            VerticalAlignment="Center" 
+                            Click="FlashReportButton_Click"/>
+                    <Button Name="HourlyReportButton" 
+                            Content="Hourly Report" 
+                            Width="120" 
+                            Height="30" 
+                            Margin="5,0" 
+                            VerticalAlignment="Center" 
+                            Click="HourlyReportButton_Click"/>
                 </StackPanel>
             </Border>
         </StackPanel>

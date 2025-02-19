@@ -31,7 +31,6 @@ namespace WinePOSFinal
 
         public PosPrinter m_Printer = null;
 
-        public LineDisplay m_Display = null;
 
         public System.Windows.Forms.Button btnClose;
         public System.Windows.Forms.Button btnClear;
@@ -44,6 +43,9 @@ namespace WinePOSFinal
         public System.Windows.Forms.Button btnWindowControl;
 
 
+        private LineDisplay lineDisplay;
+
+
         public MainWindow()
         {
             try
@@ -53,7 +55,7 @@ namespace WinePOSFinal
 
                 InitializeCashDrawer();
                 InitializePrinter();
-                //InitializeDisplay();
+                //InitializeLineDisplay();
 
                 string currentRole = AccessRightsManager.GetUserRole();
 
@@ -125,20 +127,26 @@ namespace WinePOSFinal
                 cashDrawer = (CashDrawer)explorer.CreateInstance(deviceInfo);
 
                 cashDrawer.Open();
-                cashDrawer.Claim(5000);
+                cashDrawer.Claim(1000);
 
                 cashDrawer.DeviceEnabled = true;
 
             }
 
             catch (Exception ex)
-
             {
-
                 MessageBox.Show("Error initializing cash drawer: " + ex.Message);
-
             }
-
+            finally
+            {
+                // ✅ Ensure the device is properly released before initializing the printer
+                if (cashDrawer != null)
+                {
+                    cashDrawer.DeviceEnabled = false;
+                    cashDrawer.Release();
+                    cashDrawer.Close();
+                }
+            }
 
         }
 
@@ -365,6 +373,16 @@ namespace WinePOSFinal
                 //ChangeButtonStatus();
             }
             //<<<step1>>>--End
+            finally
+            {
+                // ✅ Always release resources properly after use
+                if (m_Printer != null)
+                {
+                    m_Printer.DeviceEnabled = false;
+                    m_Printer.Release();
+                    m_Printer.Close();
+                }
+            }
         }
 
 
@@ -419,18 +437,18 @@ namespace WinePOSFinal
                 }
             }
 
-            if (m_Display != null)
+            if (lineDisplay != null)
             {
                 try
                 {
                     //For clear the text on the window be in current use.
-                    m_Display.ClearText();
+                    lineDisplay.ClearText();
 
                     //Cancel the device
-                    m_Display.DeviceEnabled = false;
+                    lineDisplay.DeviceEnabled = false;
 
                     //Release the device exclusive control right.
-                    m_Display.Release();
+                    lineDisplay.Release();
 
                 }
                 catch (PosControlException)
@@ -439,78 +457,86 @@ namespace WinePOSFinal
                 finally
                 {
                     //Finish using the device.
-                    m_Display.Close();
+                    lineDisplay.Close();
                 }
             }
             // SaveData();
         }
 
-        private void InitializeDisplay()
-
+        public void DisplayText(string strLine1, string strLine2)
         {
+            var mainWindow = (MainWindow)Application.Current.MainWindow;
+            LineDisplay lineDisplay = mainWindow.lineDisplay;
 
             try
             {
-                // Create PosExplorer
-                PosExplorer posExplorer = new PosExplorer();
+                lineDisplay.Open();
+                lineDisplay.Claim(5000);
+                lineDisplay.DeviceEnabled = true;
 
-                // Get all available line displays
-                DeviceCollection devices = posExplorer.GetDevices(DeviceType.LineDisplay);
-
-                if (devices.Count == 0)
+                if (lineDisplay != null && lineDisplay.DeviceEnabled)
                 {
-                    MessageBox.Show("No Line Display found.", "Line Display", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    //ChangeButtonStatus();
-                    return;
+                    lineDisplay.ClearText();  // Clear previous content
+                    lineDisplay.DisplayTextAt(1, 0, strLine1);
+                    lineDisplay.DisplayTextAt(2, 0, strLine2);
                 }
-
-
-                //MessageBox.Show($" Display Name '{devices[0].LogicalNames}' .",
-                //    "Line Display", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                // Pick the first available line display
-                DeviceInfo deviceInfo = devices[0];
-
-                // Initialize the line display
-                m_Display = (LineDisplay)posExplorer.CreateInstance(deviceInfo);
-
-                // Open the device
-                m_Display.Open();
-
-                // Get the exclusive control right
-                m_Display.Claim(1000);
-
-                // Enable Power Reporting if supported
-                if (m_Display.CapPowerReporting != PowerReporting.None)
+                else
                 {
-                    m_Display.PowerNotify = PowerNotification.Enabled;
+                    MessageBox.Show("Line display not found.");
                 }
-
-                // Enable the device
-                m_Display.DeviceEnabled = true;
-
-                //MessageBox.Show($"Line Display '{deviceInfo.ServiceObjectName}' initialized successfully.",
-                //    "Line Display", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-            catch (PosControlException ex)
+            catch (Exception ex)
             {
-                MessageBox.Show("Error initializing Line Display: " + ex.Message, "Line Display", MessageBoxButton.OK, MessageBoxImage.Warning);
-                //ChangeButtonStatus();
+                MessageBox.Show("Error displaying text: " + ex.Message);
             }
-
+            finally
+            {
+                // ✅ Ensure the device is properly released
+                if (lineDisplay != null)
+                {
+                    lineDisplay.DeviceEnabled = false;
+                    lineDisplay.Release();
+                    lineDisplay.Close();
+                }
+            }
         }
 
-        public void DisplayText(string strTxt)
+        private void InitializeLineDisplay()
         {
-            //<<<step1>>>--Start
             try
             {
-                m_Display.DisplayText("strTxt", DisplayTextMode.Normal);
+                explorer = new PosExplorer();
+                string logicalName = "LineDisplay"; // Ensure this matches your device's OPOS name
+
+                DeviceInfo deviceInfo = explorer.GetDevice(DeviceType.LineDisplay, logicalName);
+
+                lineDisplay = (LineDisplay)explorer.CreateInstance(deviceInfo);
+
+                lineDisplay.Open();
+                lineDisplay.Claim(1000);
+                lineDisplay.DeviceEnabled = true;
+
+                // Clear display and set cursor to home position
+                //lineDisplay.ClearText();
+                lineDisplay.DisplayText("Welcome to our store!", DisplayTextMode.Normal);
+                lineDisplay.DisplayText("Hello!", DisplayTextMode.Blink);
+
+                lineDisplay.DisplayTextAt(1, 0, "Welcome!"); // Row 1, Column 0
+                lineDisplay.DisplayTextAt(2, 0, "Enjoy your day!"); // Row 2, Column 0
             }
-            catch (PosControlException)
+            catch (Exception ex)
             {
+                MessageBox.Show("Error initializing Line Display: " + ex.Message);
             }
-            //<<<step1>>>--End
+            finally
+            {
+                if (lineDisplay != null)
+                {
+                    lineDisplay.DeviceEnabled = false;
+                    lineDisplay.Release();
+                    lineDisplay.Close();
+                }
+            }
         }
 
         private void ChangeButtonStatus()

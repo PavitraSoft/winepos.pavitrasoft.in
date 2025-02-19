@@ -233,29 +233,36 @@ namespace WinePOSFinal.UserControls
 
         private void PrintInvoice(string[] name, string[] price, string[] quantity, string[] tax, string[] totalPrice, string[] discount, string strCashAmt, string strCheckAmt, string strCreditAmt, string strPalmPayAmt, string invoiceNumber)
         {
+
             var mainWindow = (MainWindow)Application.Current.MainWindow;
             PosPrinter m_Printer = mainWindow.m_Printer;
-            //<<<step2>>>--Start
-            //Initialization
-            DateTime nowDate = DateTime.Now;                            //System date
-            DateTimeFormatInfo dateFormat = new DateTimeFormatInfo();   //Date Format
-            dateFormat.MonthDayPattern = "MMMM";
-            string strDate = nowDate.ToString("MMMM,dd,yyyy  HH:mm", dateFormat);
-            string strbcData = invoiceNumber;
 
-
-            string strAddress = objService.GetValueFromConfig("Address");
-            string strStoreName = objService.GetValueFromConfig("StoreName");
-            string strPhone = objService.GetValueFromConfig("Phone");
-
-            //String[] astritem = { "apples", "grapes", "bananas", "lemons", "oranges" };
-            //String[] astrprice = { "10.00", "20.00", "30.00", "40.00", "50.00" };
-
-            if (m_Printer.CapRecPresent)
+            try
             {
+                //<<<step2>>>--Start
+                //Initialization
+                DateTime nowDate = DateTime.Now;                            //System date
+                DateTimeFormatInfo dateFormat = new DateTimeFormatInfo();   //Date Format
+                dateFormat.MonthDayPattern = "MMMM";
+                string strDate = nowDate.ToString("MMMM,dd,yyyy  HH:mm", dateFormat);
+                string strbcData = invoiceNumber;
 
-                try
+
+                string strAddress = objService.GetValueFromConfig("Address");
+                string strStoreName = objService.GetValueFromConfig("StoreName");
+                string strPhone = objService.GetValueFromConfig("Phone");
+
+                //String[] astritem = { "apples", "grapes", "bananas", "lemons", "oranges" };
+                //String[] astrprice = { "10.00", "20.00", "30.00", "40.00", "50.00" };
+
+
+                m_Printer.Open();
+                m_Printer.Claim(1000);
+                m_Printer.DeviceEnabled = true;
+
+                if (m_Printer.CapRecPresent)
                 {
+
                     //<<<step6>>>--Start
                     //Batch processing mode
                     m_Printer.TransactionPrint(PrinterStation.Receipt
@@ -277,15 +284,19 @@ namespace WinePOSFinal.UserControls
                     //<<<step5>>--Start
                     //Make 2mm speces
                     //ESC|#uF = Line Feed
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|200uF");
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|20uF");
                     //<<<step5>>>-End
 
                     int iRecLineCharsCount = m_Printer.RecLineCharsList.Length;
                     if (iRecLineCharsCount >= 2)
                     {
-                        m_Printer.RecLineChars = m_Printer.RecLineCharsList[1];
+                        //m_Printer.RecLineChars = m_Printer.RecLineCharsList[1];
+
+                        //m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
                         m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|cA" + strDate + "\n");
-                        m_Printer.RecLineChars = m_Printer.RecLineCharsList[0];
+
+                        //m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
+                        //m_Printer.RecLineChars = m_Printer.RecLineCharsList[0];
                     }
                     else
                     {
@@ -294,7 +305,7 @@ namespace WinePOSFinal.UserControls
 
                     //<<<step5>>>--Start
                     //Make 5mm speces
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|50uF");
 
                     //Print buying goods
                     double total = 0.0;
@@ -315,7 +326,7 @@ namespace WinePOSFinal.UserControls
                     }
 
                     //Make 2mm speces
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|200uF");
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|20uF");
 
                     //Print the total cost
                     strPrintData = MakePrintString(m_Printer.RecLineChars, "Tax excluded."
@@ -391,11 +402,13 @@ namespace WinePOSFinal.UserControls
                     //<<<step4>>>--Start
                     if (m_Printer.CapRecBarCode == true)
                     {
+                        //int barcodeHeight = Math.Min(100, m_Printer.RecBarCodeMaxHeight); // Ensure it's within limits
+
                         string barcodeData = ConvertInvoiceToEAN13(Convert.ToInt32(strbcData));
 
                         //Barcode printing
                         m_Printer.PrintBarCode(PrinterStation.Receipt, barcodeData,
-                            BarCodeSymbology.EanJan13, 1000,
+                            BarCodeSymbology.EanJan13, 100,
                             m_Printer.RecLineWidth, PosPrinter.PrinterBarCodeLeft,
                             BarCodeTextPosition.Below);
                     }
@@ -403,7 +416,7 @@ namespace WinePOSFinal.UserControls
 
 
                     //Make 5mm speces
-                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|500uF");
+                    m_Printer.PrintNormal(PrinterStation.Receipt, "\u001b|50uF");
 
                     strPrintData = "Thank you for shopping at Crown Liquor!";
 
@@ -418,14 +431,24 @@ namespace WinePOSFinal.UserControls
                     //print all the buffer data. and exit the batch processing mode.
                     m_Printer.TransactionPrint(PrinterStation.Receipt
                         , PrinterTransactionControl.Normal);
-                    //<<<step6>>>--End
                 }
-                catch (PosControlException ex)
+
+                //<<<step6>>>--End
+            }
+            catch (PosControlException ex)
+            {
+                MessageBox.Show("Error while printing invoice. Exception:" + ex.ToString(), "Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            finally
+            {
+                if (m_Printer != null)
                 {
-                    MessageBox.Show("Error while printing invoice. Exception:" + ex.ToString(), "Invoice", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    m_Printer.DeviceEnabled = false;
+                    m_Printer.Release();
+                    m_Printer.Close();
+                    Console.WriteLine("✅ Printer Released.");
                 }
             }
-
         }
 
         public static string ConvertInvoiceToEAN13(int invoiceNumber)
@@ -870,6 +893,14 @@ namespace WinePOSFinal.UserControls
                 MessageBox.Show("Please select a row before editing the invoice.");
             }
 
+        }
+
+        private void HourlyReportButton_Click(object sender, RoutedEventArgs e)
+        {
+            SearchButton_Click(null, null);
+
+            var addWindow = new HourlyReport(dtInvoice, dtPayment, FromDatePicker.SelectedDate, ToDatePicker.SelectedDate);
+            addWindow.ShowDialog();
         }
     }
 }

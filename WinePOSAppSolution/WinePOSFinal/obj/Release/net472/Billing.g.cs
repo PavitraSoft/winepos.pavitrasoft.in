@@ -310,7 +310,7 @@ namespace WinePOSFinal {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/WinePOSFinal;component/billing.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/OnestopPOS;component/billing.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\Billing.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

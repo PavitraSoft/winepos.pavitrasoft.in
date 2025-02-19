@@ -246,7 +246,7 @@ namespace WinePOSFinal {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/WinePOSFinal;component/usercontrols/inventorymaintenance.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/OnestopPOS;component/usercontrols/inventorymaintenance.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\UserControls\InventoryMaintenance.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

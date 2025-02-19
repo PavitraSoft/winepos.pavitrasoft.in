@@ -54,7 +54,7 @@ namespace WinePOSFinal {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/WinePOSFinal;component/loadingwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/OnestopPOS;component/loadingwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\LoadingWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

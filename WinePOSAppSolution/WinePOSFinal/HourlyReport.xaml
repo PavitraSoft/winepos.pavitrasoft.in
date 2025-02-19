@@ -1,0 +1,48 @@
+﻿<Window x:Class="WinePOSFinal.HourlyReport"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WinePOSFinal"
+        mc:Ignorable="d"
+        Title="HourlyReport" Height="700" Width="400">
+    <Grid Background="White">
+        <!-- Define Grid Rows -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <!-- Title -->
+            <RowDefinition Height="Auto" />
+            <!-- Date Range -->
+            <RowDefinition Height="*" />
+            <!-- Data Grid -->
+            <RowDefinition Height="Auto" />
+            <!-- Buttons -->
+        </Grid.RowDefinitions>
+
+        <!-- Title -->
+        <TextBlock Text="HOURLY REPORT" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,10" Grid.Row="0" />
+
+        <!-- Date Range -->
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="1" Margin="0,10">
+            <TextBlock Name="txtDateFrom" Text="1/3/2025 12:00:00 AM" FontSize="12" TextAlignment="Center" />
+            <TextBlock Name="txtDateTo" Text="1/3/2025 11:59:59 PM" FontSize="12" TextAlignment="Center" />
+        </StackPanel>
+
+        <!-- Data Grid Section -->
+        <Border BorderThickness="1" BorderBrush="Gray" CornerRadius="5" Margin="20,10" Grid.Row="2">
+            <DataGrid x:Name="dataGrid" 
+                  AutoGenerateColumns="True"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                      CanUserAddRows="False"
+                      IsReadOnly="True"/>
+        </Border>
+
+        <!-- Buttons -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,10" Grid.Row="3">
+            <Button Content="PRINT" Width="80" Height="30" Background="Yellow" Margin="10,0" Click="PrintButton_Click" />
+            <Button Content="EXPORT" Width="80" Height="30" Background="LightBlue" Margin="10,0" Click="ExportButton_Click"  />
+            <Button Content="EXIT" Width="80" Height="30" Background="Red" Margin="10,0" Foreground="White" Click="ExitButton_Click" />
+        </StackPanel>
+    </Grid>
+</Window>

@@ -94,7 +94,7 @@ namespace WinePOSFinal {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/WinePOSFinal;component/splitpayment.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/OnestopPOS;component/splitpayment.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\SplitPayment.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

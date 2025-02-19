@@ -86,7 +86,7 @@ namespace WinePOSFinal {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/WinePOSFinal;component/tenderwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/OnestopPOS;component/tenderwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\TenderWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
